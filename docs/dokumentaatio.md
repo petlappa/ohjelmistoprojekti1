@@ -39,7 +39,7 @@ Järjestelmää voidaan myöhemmin laajentaa verkkokaupaksi. Tämän kurssin aik
 | Tietokanta myöhemmin | PostgreSQL tai MariaDB (päätetään tiimissä) |
 | Käyttöliittymä | Alustavat näkymät dokumentoitu; toteutus myöhemmässä sprintissä |
 | Versionhallinta | Git + GitHub |
-| Prosessi | Scrum, kahden viikon sprintit |
+| Prosessi | Scrum, yhden viikon sprintit |
 
 Lähdekoodi ja tämä dokumentaatio ovat samassa GitHub-repositoriossa.
 
