@@ -11,6 +11,8 @@ Esimerkit käyttävät luentojen **pankkia** (konttori, asiakas, talletus, laina
 
 Tarvitset: Spring Boot -projektin, jossa on `spring-boot-starter-data-jpa` ja tietokanta (kurssilla aluksi **H2**). Annotaatiot ovat `jakarta.persistence` (Spring Boot 3 ja 4).
 
+Jos et ole vielä käynyt backend-kurssia: lue ensin luku **Mitä syntyy automaattisesti** ja sen kohta *Tiedosto vai käynnistys?*. Framework ei kirjoita Entity- tai Repository-tiedostoja puolestasi.
+
 ---
 
 ## Mitä tehdään ja missä järjestyksessä
@@ -58,6 +60,46 @@ Kolme “automaattista” asiaa, jotka usein sekoitetaan:
 3. **Spring Data** ei kirjoita `AsiakasRepository.java`-tiedostoa. Se toteuttaa *sinun kirjoittamasi* rajapinnan. CRUD (`save`, `findById`, `findAll`, `delete`) tulee `JpaRepository`-perinnästä ilman että kirjoitat metodirunkoja.
 
 Jos et kirjoita yhtään Entityä, H2-konsolissa ei ole `ASIAKAS`-taulua. Jos kirjoitat Entityn mutta et Repositoryä, taulu voi syntyä, mutta et voi hakea rivejä Springin kautta.
+
+### Tiedosto vai käynnistys?
+
+Backend-kurssin käyneet tunnistavat tämän. Muille Spring Bootin “automaatio” kuulostaa siltä, että kansioihin ilmestyy valmista koodia. **Ei ilmesty.** Automaatio tapahtuu vasta kun sovellus *ajetaan*, eikä se luo uusia `.java`-tiedostoja.
+
+**Framework** (tässä Spring Boot + JPA + Hibernate) on valmis koneisto. Sinä annat sille *kuvauksen* (luokat ja rajapinnat). Koneisto hoitaa SQL:n ja `save`/`findAll`-toteutuksen. Se ei suunnittele lipunmyyntiä eikä keksi kenttiä.
+
+| Näkyy kansiossa (`src/…`) | Ei näy kansiossa |
+| --- | --- |
+| `TicketGuruApplication.java` — vain käynnistys, **ei Entityjä tähän tiedostoon** | Repositoryn toteutusluokka (`…RepositoryImpl`) |
+| **sinä luot** kansion `domain/` ja tiedoston `Tapahtuma.java` | Hibernatein generoima `CREATE TABLE` (näkyy konsolilokissa ja H2:ssa) |
+| **sinä luot** kansion `repository/` ja tiedoston `TapahtumaRepository.java` (interface) | SQL, jonka `findByKaupunki` aiheuttaa |
+
+Tyypillinen rakenne. `Application`-luokka jää lyhyeksi:
+
+```text
+…/ticketguru/
+  TicketGuruApplication.java     ← älä kirjoita Entityjä tänne
+  web/HealthController.java
+  domain/Tapahtuma.java          ← sinä luot
+  repository/TapahtumaRepository.java  ← sinä luot (vain interface)
+```
+
+Repository **tiedosto** on muutama rivi, jotka kirjoitat itse:
+
+```java
+public interface TapahtumaRepository extends JpaRepository<Tapahtuma, Long> {
+}
+```
+
+Tämä tiedosto ei “synny itsestään”. Kun sen olet luonut ja käynnistät sovelluksen, Spring *täyttää* metodit (`save`, `findAll`, `findById`) muistiin. Siksi et kirjoita `class TapahtumaRepositoryImpl` etkä SQL:ää. Jos et luo interface-tiedostoa, Springilla ei ole mitään täytettävää.
+
+Sama Hibernateen: se ei luo `Tapahtuma.java`:ta. Se lukee sen ja tekee taulun tietokantaan.
+
+Lyhyt järjestys:
+
+1. Suunnittele taulut (käsitekaavio).
+2. Luo `domain/`- ja `repository/`-kansiot ja niihin tiedostot.
+3. Käynnistä sovellus.
+4. Vasta nyt Hibernate tekee taulut ja Spring repositoryn toteutuksen.
 
 ---
 
@@ -428,6 +470,10 @@ public class Talletus {
 `Laina` samoin: kaksi `@ManyToOne`-kenttää (`asiakas`, `konttori`) + `saldo`. Lainalle luennossa ei ole IBAN-avainta, joten `@Id @GeneratedValue Long id` riittää.
 
 ### Vaihe 3 — Repository-rajapinta
+
+**Mitä repository tekee:** se on tietokannan ovi. Entity kuvaa *yhden rivin muodon*. Repositoryn kautta *haetaan, tallennetaan ja poistetaan* rivejä. Controller ei kirjoita SQL:ää; se kutsuu esim. `talletusRepository.save(...)` tai `findAll()`.
+
+Tämä tiedosto luodaan **käsin** kansioon `repository/`. Se on `interface`, ei `class`. Spring täyttää metodit käynnistyessä — toteutusta ei ilmesty `src/`-kansioon.
 
 ```java
 package fi.haagahelia.esimerkki.repository;

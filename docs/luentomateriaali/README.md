@@ -17,6 +17,8 @@ Nämä ovat opiskelijoille jaettuja ohjeita. Esimerkit noudattavat luentojen aih
 | --- | --- |
 | Käsiteanalyysi → tietokanta → Spring Boot (Entity, DAO/Repository, JPA Query Methods) | [tietokanta-spring-bootissa.md](tietokanta-spring-bootissa.md) |
 
+Jos et ole käynyt backend-kurssia, aloita ohjeesta kohdasta **Mitä syntyy automaattisesti** (*Tiedosto vai käynnistys?*): Entity- ja Repository-`.java`-tiedostot kirjoitetaan itse; Hibernate ja Spring täyttävät taulut ja `save`/`findAll` vasta kun sovellus käynnistyy.
+
 ## Viikkokohtaiset muistiinpanot
 
 Täydennä luennon jälkeen: mitä painotettiin, mitä tiimi päätti TicketGurussa, mitä jäi auki.
