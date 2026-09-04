@@ -1,0 +1,30 @@
+name: Käyttäjätarina
+description: Product Backlog -kohde Scrum-muodossa
+title: "Xx Roolina haluan ..."
+labels: ["user-story"]
+body:
+  - type: textarea
+    id: story
+    attributes:
+      label: Käyttäjätarina
+      description: "Roolina haluan [toiminnon], jotta [hyöty]."
+    validations:
+      required: true
+  - type: textarea
+    id: ac
+    attributes:
+      label: Hyväksymiskriteerit
+      value: |
+        - [ ] Given ... When ... Then ...
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioriteetti
+      options:
+        - Korkea
+        - Keskitaso
+        - Matala
+    validations:
+      required: true
