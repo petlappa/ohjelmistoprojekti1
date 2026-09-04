@@ -14,6 +14,8 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 | Scrum GitHubissa (tiimin muistiinpanot) | [docs/scrum.md](docs/scrum.md) |
 | Scrum-taulun rakennusohje (opiskelijoille) | [docs/github-projects-scrum-ohje.md](docs/github-projects-scrum-ohje.md) |
 | Kehitysympäristö | [docs/kehitysymparisto.md](docs/kehitysymparisto.md) |
+| Luentomateriaalin tarkennukset | [docs/luentomateriaali/](docs/luentomateriaali/) |
+| Tietokanta Spring Bootissa (luento-ohje) | [docs/luentomateriaali/tietokanta-spring-bootissa.md](docs/luentomateriaali/tietokanta-spring-bootissa.md) |
 
 ## Tiimi
 
@@ -56,7 +58,7 @@ Testit:
 
 ```
 backend/     Spring Boot 4.1 REST-palvelin (Java 25)
-docs/        Projektidokumentaatio
+docs/        Projektidokumentaatio (tuote) ja luentomuistiinpanot
 .github/     CI-työnkulku
 ```
 
