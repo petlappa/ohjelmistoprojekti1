@@ -14,8 +14,8 @@ GitHubin käyttöliittymä on yleensä englanniksi. Painikkeiden nimet on merkit
 | --- | --- |
 | Käyttäjätarina / tehtävä | **Issue** |
 | Product Backlog | Projectin **Table**-näkymä |
-| Sprintin Scrum-taulu | Projectin **Board**-näkymä, suodatin `iteration:@current` |
-| Sprintit | Projectin **Iteration**-kenttä (nimellä Sprint) |
+| Sprintin Scrum-taulu | Projectin **Board**-näkymä, suodatin `Sprint:@current` tai `Sprint:"Sprint 1"` |
+| Sprintit | Projectin kenttä **Sprint** (tyyppi Iteration) |
 
 **Issues** on työjonon rivi (tarina, tehtävä, bugi).  
 **Project** on taulu, jolla nuo rivit järjestetään sprintteihin ja sarakkeisiin.
@@ -39,7 +39,8 @@ Kun ohje on tehty, tiimillä on **yksi** GitHub Project, jossa on:
 Esimerkki (julkinen):
 
 - Product Backlog: https://github.com/users/petlappa/projects/1/views/1
-- Current sprint: https://github.com/users/petlappa/projects/1/views/2
+- Current sprint: https://github.com/users/petlappa/projects/1/views/9
+- Sprint 1: https://github.com/users/petlappa/projects/1/views/3
 
 ---
 
@@ -99,7 +100,9 @@ GitHub luo iteraatioita automaattisesti. Nimeä ne:
 2. Muuta otsikoiksi `Sprint 1`, `Sprint 2`, `Sprint 3`, … (yksi viikko per sprintti).
 3. Tarkista päivämäärät. Lisää iteraatioita, jotta koko kurssi mahtuu (esim. 6 × 1 vk).
 
-`iteration:@current` tarkoittaa sitä iteraatiota, jonka aikaväliin kuluva päivä osuu. Pidä päivämäärät ajan tasalla, muuten Current sprint -näkymä on tyhjä.
+`Sprint:@current` tarkoittaa sitä iteraatiota, jonka aikaväliin kuluva päivä osuu. Pidä päivämäärät ajan tasalla, muuten Current sprint -näkymä on tyhjä.
+
+Suodattimessa käytetään **kentän nimeä** (`Sprint`), ei sanaa `iteration`. Väärä suodatin `iteration:"Sprint 1"` jättää taulun tyhjäksi vaikka kortit olisivat merkitty oikein.
 
 ### 4.2 Priority
 
@@ -182,6 +185,37 @@ Jokaiselle viikolle oma välilehti:
    Kentän nimi on **Sprint**, ei `iteration`.
 4. **Save changes**.
 5. Toista Sprint 1, 3, 4, …
+
+Board näyttää kortit **Status-sarakkeissa** (Todo, In Progress, Done), ei yhtenä listana. Sprint 1:n työt ovat usein sarakkeessa Todo.
+
+---
+
+## 5.4 Näin siirrät issuen (tärkein päivittäinen taito)
+
+Sprint **ei** vaihdu labelilla, milestonella eikä raahaamalla Todo → In Progress. Vain kenttä **Sprint**.
+
+**Backlogista sprinttiin**
+
+1. Avaa **Product Backlog**.
+2. Klikkaa rivin saraketta **Sprint** (tyhjä).
+3. Valitse esim. **Sprint 2**.
+
+Kortti katoaa backlogin ja ilmestyy Sprint 2 -välilehdelle.
+
+**Sprintistä toiseen**
+
+1. Avaa sen sprintin välilehti (tai klikkaa kortti auki).
+2. Vaihda kenttä **Sprint** uuteen viikkoon.
+
+**Issuen sivulta**
+
+1. Avaa issue (`#5`).
+2. Oikea palsta → **Projects** → tiimin Project.
+3. Kenttä **Sprint** → valitse viikko tai tyhjennä.
+
+**Takaisin backlogin**
+
+Sprint-kenttä → tyhjennä (Clear). Suodatin `no:Sprint` näyttää sen taas Product Backlogissa.
 
 ---
 
@@ -293,7 +327,8 @@ Issue on Done vasta kun:
 | --- | --- |
 | GitHub-repositorio | https://github.com/<omistaja>/<repo> |
 | Tuotteen työjono | https://github.com/users/<kayttaja>/projects/<n>/views/1 |
-| Scrum-taulu | https://github.com/users/<kayttaja>/projects/<n>/views/2 |
+| Scrum-taulu (tämä viikko) | https://github.com/users/<kayttaja>/projects/<n>/views/9 |
+| Sprint 1 | https://github.com/users/<kayttaja>/projects/<n>/views/3 |
 ```
 
 Tarkista ennen palautusta:
@@ -309,7 +344,9 @@ Tarkista ennen palautusta:
 
 | Oire | Syy | Korjaus |
 | --- | --- | --- |
-| Current sprint on tyhjä | Kortilla ei ole Sprint-arvoa, tai iteraation päivämäärät eivät kata tänään | Aseta Sprint; korjaa iteraation start/duration |
+| Sprint-välilehti on tyhjä, vaikka kortit ovat Projectissa | Suodatin on `iteration:"Sprint 1"` | Vaihda `Sprint:"Sprint 1"` (kentän nimi) |
+| Kortteja ei näy listana boardilla | Board ryhmittelee Statusin mukaan | Katso sarake **Todo** |
+| Current sprint on tyhjä | Kortilla ei ole Sprint-arvoa, tai iteraation päivät eivät kata tänään | Aseta Sprint; korjaa start/duration; suodatin `Sprint:@current` |
 | Backlogissa näkyy valmiit työt | Suodatin puuttuu | `-status:Done` |
 | Opettaja saa 404 | Project on Private | Visibility → Public tai Manage access |
 | Tiimiläinen ei näe sarakkeita | Näkymää ei ole tallennettu | **View** → **Save changes** |
@@ -343,4 +380,4 @@ Taulu ei korvaa GitHub-flow’ta:
 9. [ ] Molemmat näkymät **Save changes**
 10. [ ] Workflow: Auto-add `is:issue` tiimin reposta
 11. [ ] Käyttäjätarinat Issueina (`user-story`), ei pelkkinä draft-kortteina
-12. [ ] README:n kaksi URL:a (views/1 ja views/2)
+12. [ ] README:n URL:t (Product Backlog + Current sprint tai Sprint 1)

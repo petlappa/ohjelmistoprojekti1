@@ -5,7 +5,8 @@ Tiimin roolit ja Definition of Done. **Taulun rakentaminen klikki kerrallaan:** 
 | Artefakti | Linkki |
 | --- | --- |
 | Product Backlog | https://github.com/users/petlappa/projects/1/views/1 |
-| Current sprint | https://github.com/users/petlappa/projects/1/views/2 |
+| Current sprint | https://github.com/users/petlappa/projects/1/views/9 |
+| Sprint 1 | https://github.com/users/petlappa/projects/1/views/3 |
 
 GitHubissa:
 
@@ -25,30 +26,22 @@ Scrum Master ei ole pomo. Hän huolehtii, että Daily Scrum pidetään, taulu va
 
 ## Miten palaset liittyvät toisiinsa
 
-```text
-Product Backlog     Sprint Planning      Sprint Backlog         Daily          Review
-(GitHub Issues,     valitaan milestone   (taulun sarake         kortit         suljetaan
- ilman milestonea    + siirretään         "Sprintissä")          liikkuvat      Done-sarakkeeseen
- tai Backlog-sarakkeessa)  tauluun
-```
+- **Issue** = tarina tai tehtävä (`#1`). Luodaan Issues-välilehdellä.
+- **Product Backlog** = Project-näkymä: issuet ilman Sprint-arvoa.
+- **Sprint 1 … 6** = Project-näkymät: issuet, joiden kenttä **Sprint** on kyseinen viikko.
+- **Status** (Todo / In Progress / Done) = onko työ käynnissä, ei mikä viikko.
 
-- **Product Backlog:** kaikki tiedossa olevat käyttäjätarinat. Osa odottaa myöhempiä sprinttejä.
-- **Sprint Backlog:** ne issuet, joihin tiimi sitoutui tässä sprintissä (milestone = nykyinen sprintti).
-- **Increment:** sprintin lopussa `main`-haarassa toimiva, testattu lisäys + päivitetty dokumentaatio.
+Siirto backlogista sprinttiin: Product Backlog → sarake **Sprint**. Ei milestonea, ei sprint-labelia.
 
-## Taulun sarakkeet
+## Taulun sarakkeet (Board)
 
-Suositeltu Scrum-taulu (GitHub Project, Board-näkymä):
+Board ryhmittelee **Statuksen** mukaan:
 
 | Sarake | Mitä siinä on |
 | --- | --- |
-| **Backlog** | Tuotteen työjono, ei vielä tässä sprintissä |
-| **Sprintissä** | Tämän sprintin sitoumus |
-| **Doing** | Työn alla (yksi kortti / henkilö mieluiten) |
-| **Review** | PR auki tai odottaa demoa / koodikatselmusta |
-| **Done** | Yhdistetty `main`-haaraan, Definition of Done täyttyy |
-
-Lisäkenttä **Sprint** (Sprint 1 / 2 / 3) mahdollistaa suodatuksen. Milestone issuen päällä tekee saman Issues-listassa.
+| **Todo** | Sprintissä, ei vielä aloitettu |
+| **In Progress** | Työn alla |
+| **Done** | Definition of Done täyttyy |
 
 ### Definition of Done (alustava)
 
