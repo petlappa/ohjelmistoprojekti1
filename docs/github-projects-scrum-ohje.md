@@ -142,9 +142,9 @@ Tallenna aina muutokset: **View** → **Save changes**.
 
 | Välilehti | Layout | Suodatin | Käyttö |
 | --- | --- | --- | --- |
-| Product Backlog | Table | `-status:Done no:iteration` | Kaikki, joita ei ole otettu sprinttiin |
-| Current sprint | Board | `iteration:@current` | Daily: tämä viikko automaattisesti |
-| Sprint 1 … Sprint 6 | Board | `iteration:"Sprint 1"` jne. | Yhden viikon lista |
+| Product Backlog | Table | `-status:Done no:Sprint` | Kaikki, joita ei ole otettu sprinttiin |
+| Current sprint | Board | `Sprint:@current` | Daily: tämä viikko automaattisesti |
+| Sprint 1 … Sprint 6 | Board | `Sprint:"Sprint 1"` jne. | Yhden viikon lista |
 
 Siirto: Product Backlog → klikkaa **Sprint**-solua → Sprint 2. Kortti katoaa backlogin ja ilmestyy Sprint 2 -välilehdelle.
 
@@ -155,7 +155,7 @@ Siirto: Product Backlog → klikkaa **Sprint**-solua → Sprint 2. Kortti katoaa
 3. Suodatin:
 
    ```text
-   -status:Done no:iteration
+   -status:Done no:Sprint
    ```
 
 4. Näytä sarakkeet: Title, Status, Sprint, Priority, Estimate, Assignees, Labels.
@@ -167,7 +167,7 @@ Palautuslinkki: `.../projects/<n>/views/1`
 
 1. **New view** → **Layout** → **Board**.
 2. Nimi: `Current sprint`.
-3. Suodatin: `iteration:@current`
+3. Suodatin: `Sprint:@current`
 4. **Save changes**.
 
 Daily Scrumissa avaa tämä välilehti.
@@ -178,7 +178,8 @@ Jokaiselle viikolle oma välilehti:
 
 1. **New view** → Board.
 2. Nimi: `Sprint 2`.
-3. Suodatin: `iteration:"Sprint 2"` (lainausmerkit mukaan, koska nimessä on välilyönti).
+3. Suodatin: `Sprint:"Sprint 2"` (lainausmerkit mukaan, koska nimessä on välilyönti).
+   Kentän nimi on **Sprint**, ei `iteration`.
 4. **Save changes**.
 5. Toista Sprint 1, 3, 4, …
 
@@ -336,9 +337,9 @@ Taulu ei korvaa GitHub-flow’ta:
 4. [ ] Field **Sprint** = Iteration, **7 days**, nimet Sprint 1, Sprint 2, …
 5. [ ] Field **Priority** = High / Medium / Low
 6. [ ] Field **Estimate** = Number
-7. [ ] Näkymä **Product Backlog**: Table, suodatin `-status:Done no:iteration`
-8. [ ] Näkymä **Current sprint**: Board, `iteration:@current`
-8b. [ ] Näkymät **Sprint 1–6**: Board, `iteration:"Sprint n"`
+7. [ ] Näkymä **Product Backlog**: Table, suodatin `-status:Done no:Sprint`
+8. [ ] Näkymä **Current sprint**: Board, `Sprint:@current`
+8b. [ ] Näkymät **Sprint 1–6**: Board, `Sprint:"Sprint n"`
 9. [ ] Molemmat näkymät **Save changes**
 10. [ ] Workflow: Auto-add `is:issue` tiimin reposta
 11. [ ] Käyttäjätarinat Issueina (`user-story`), ei pelkkinä draft-kortteina
