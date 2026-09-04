@@ -33,6 +33,34 @@ Spring Bootissa nämä kolme vaihetta ovat (luentokalvo *Tietokannan toteutuksen
 
 ---
 
+## Mitä syntyy automaattisesti, mitä koodaat itse
+
+**Entityjä, repositoryjä tai tauluja ei synny, kun luot Spring Boot -projektin.** Initializr (start.spring.io tai IDE:n Spring Starter) antaa vain **koneiston**: riippuvuudet, tyhjän applikaatioluokan ja asetustiedoston. Pankin `Asiakas`-luokkaa ei ole olemassa, ennen kuin kirjoitat sen.
+
+| Mitä | Kuka tekee | Milloin |
+| --- | --- | --- |
+| `pom.xml`, `@SpringBootApplication`, tyhjä `src/` | **Initializr** (projektin luonti) | kerran alussa |
+| `spring-boot-starter-data-jpa` + H2 | **sinä rastitat** Initializrissa, tai lisäät riippuvuuden | projektin luonti |
+| Käsitekaavio, taulujen suunnittelu | **sinä** | ennen koodia |
+| Entity-luokat (`@Entity`, kentät, getterit) | **sinä kirjoitat** | vaihe 1 |
+| Suhteet (`@ManyToOne`, `@JoinColumn`, …) | **sinä kirjoitat** | vaihe 2 |
+| Repository-**rajapinta** (`interface … extends JpaRepository`) | **sinä kirjoitat** (vain rajapinta, ei luokkaa) | vaihe 3 |
+| `findBySukunimi(…)` ja muut omat metodit | **sinä nimeät** rajapintaan | vaihe 3 |
+| Repositoryn **toteutus** (`save`, `findAll`, query methodit) | **Spring Data JPA** generoi | kun sovellus käynnistyy |
+| SQL `CREATE TABLE` / sarakkeet | **Hibernate** Entity-luokistasi | käynnistyessä, jos `ddl-auto=update` |
+| `CREATE TABLE` -SQL käsin | **ei tarvita** kehityksessä | Hibernate tekee sen Entityistä |
+| REST-controllerit, HTML, testidata | **sinä** | myöhemmin, ei JPA:n tehtävä |
+
+Kolme “automaattista” asiaa, jotka usein sekoitetaan:
+
+1. **Projektin luonti** ei tiedä domainistasi mitään. Valitset vain “tarvitsen JPA:n ja H2:n”.
+2. **Hibernate** ei keksi käsitteitä. Se lukee *sinun* `@Entity`-luokkasi ja tekee niistä taulut. Ei Entityjä tauluista (ellei käytä erillistä reverse engineering -työkalua, jota tällä kurssilla ei käytetä).
+3. **Spring Data** ei kirjoita `AsiakasRepository.java`-tiedostoa. Se toteuttaa *sinun kirjoittamasi* rajapinnan. CRUD (`save`, `findById`, `findAll`, `delete`) tulee `JpaRepository`-perinnästä ilman että kirjoitat metodirunkoja.
+
+Jos et kirjoita yhtään Entityä, H2-konsolissa ei ole `ASIAKAS`-taulua. Jos kirjoitat Entityn mutta et Repositoryä, taulu voi syntyä, mutta et voi hakea rivejä Springin kautta.
+
+---
+
 ## Osa A — Käsiteanalyysista tietokantaan
 
 ### A.1 Käsite vai attribuutti?
@@ -168,13 +196,26 @@ Kaavionotaatioita on useita (crow’s foot, Chen, UML-luokkakaavio). Periaate on
 
 **ORM** (Object-Relational Mapping) tekee relaatiotaulusta olioita. Sovellus ei kirjoita SQL:ää joka hakuun, vaan käyttää Java-olioita. Hibernate hoitaa SQL:n.
 
-| Kerros | Rooli |
-| --- | --- |
-| **JPA** (Jakarta Persistence API) | Rajapinta: `@Entity`, `@Id`, `EntityManager`, … |
-| **Hibernate** | JPA-toteutus, Spring Bootin oletus |
-| **Spring Data JPA** | Repositoryt, query methodit, transaktiot |
+Kolme nimeä sekoittuvat helposti. Ne eivät ole kolme kilpailevaa tietokantaa, vaan **standardi, sen toteutus ja Springin apu niiden päälle**.
 
-Spring Frameworkin ORM-luku: Spring integroi JPA/Hibernaten transaktioihin ja DAO-poikkeuksiin. Kurssiprojektissa et konfiguroi `EntityManagerFactoryä` käsin — `spring-boot-starter-data-jpa` riittää.
+| Kerros | Rooli | Analogia |
+| --- | --- | --- |
+| **JPA** (Jakarta Persistence API) | Sääntökirja: mitä annotaatiot (`@Entity`, `@Id`) tarkoittavat | USB-standardi |
+| **Hibernate** | Ohjelmisto, joka noudattaa tuota sääntökirjaa ja puhuu SQL:ää tietokannalle | Tietyn merkin USB-kaapeli |
+| **Spring Data JPA** | Springin kerros Hibernaten päälle: Repositoryt, query methodit, transaktiot | Puhelin, joka käyttää kaapelia — et kytke USB:tä käsin |
+
+**JPA ei ole kirjasto, jonka asennat erikseen.** Se on Java-ekosysteemin *spesifikaatio* (rajapinta + annotaatiot). Kukaan ei “käynnistä JPA:ta”. Hibernate (tai EclipseLink) *toteuttaa* JPA:n. Kun kirjoitat `@Entity`, käytät JPA:n kieltä; kun sovellus käynnistyy, Hibernate tulkitsee sen ja luo taulut.
+
+Nimi **Jakarta** Persistence API on sama asia kuin vanha **Java** Persistence API. Java EE siirtyi Eclipse-säätiölle ja sai nimen Jakarta EE. Paketti vaihtui:
+
+| Spring Boot | Import |
+| --- | --- |
+| 2.x (vanha, älä käytä tässä kurssissa) | `javax.persistence.Entity` |
+| 3 ja 4 (tämä projekti) | `jakarta.persistence.Entity` |
+
+Jos IDE tai kopioitu esimerkki ehdottaa `javax.persistence`, vaihda `jakarta.persistence`. Muuten koodi ei käänny Boot 4:ssä.
+
+Spring Frameworkin ORM-luku: Spring integroi JPA/Hibernaten transaktioihin ja DAO-poikkeuksiin. Kurssiprojektissa et konfiguroi `EntityManagerFactoryä` käsin — `spring-boot-starter-data-jpa` riittää. Se tuo sekä JPA-annotaatiot että Hibernaten. Se **ei** luo `Asiakas.java`-tiedostoa.
 
 ### B.2 DAO-malli vs Repository
 
@@ -194,16 +235,18 @@ public interface Dao<T> {
 
 Ilman Springiä kirjoittaisit `JpaUserDao`-luokan, joka kutsuu `entityManager.find(...)`, `persist`, `merge`. Spring Bootissa **Repository on DAO**:
 
-- rajapinta, ei omaa luokkaa
-- Spring generoi toteutuksen käynnistyessä
-- CRUD tulee `JpaRepository`:sta valmiina
-- omat haut metodin nimellä (query methods)
+- **sinä** kirjoitat rajapinnan (`interface TalletusRepository extends JpaRepository<Talletus, String>`)
+- **Spring generoi toteutuksen** käynnistyessä — et kirjoita `class TalletusRepositoryImpl`
+- CRUD (`save`, `findAll`, …) tulee `JpaRepository`:sta valmiina, kun rajapinta perii sen
+- omat haut: **sinä** lisäät metodin nimen (`findByAsiakas`); Spring kirjoittaa SQL:n
 
 Controller tai palvelu riippuu repositorystä, ei SQL:stä. Tietokannan vaihto (H2 → PostgreSQL) ei muuta Entity-luokkia, jos tyypit ovat kannettavia.
 
 ---
 
 ## Osa C — Kolme vaihetta koodissa
+
+Nämä kolme vaihetta ovat **omaa koodia**. Initializr on jo tehty ennen tätä.
 
 Sijoitus:
 
@@ -224,7 +267,7 @@ spring.h2.console.enabled=true
 spring.h2.console.path=/h2-console
 ```
 
-`ddl-auto=update` luo/päivittää taulut Entityistä. Kehityksessä ok; tuotannossa käytetään myöhemmin migraatioita (Flyway/Liquibase).
+`ddl-auto=update` = Hibernate **luo tai päivittää taulut** niistä Entity-luokista, jotka olet jo kirjoittanut. Kehityksessä ok; tuotannossa käytetään myöhemmin migraatioita (Flyway/Liquibase). Ilman Entity-luokkaa ei synny taulua.
 
 ### Vaihe 1 — Entity-luokka
 
