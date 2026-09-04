@@ -6,10 +6,10 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 
 | Artefakti | Linkki |
 | --- | --- |
-| GitHub-repositorio | *täytetään repon luonnin jälkeen* |
+| GitHub-repositorio | https://github.com/petlappa/ohjelmistoprojekti1 |
 | Dokumentaatio | [docs/dokumentaatio.md](docs/dokumentaatio.md) |
-| Tuotteen työjono (Product Backlog) | *Issues-näkymä, täytetään repon luonnin jälkeen* |
-| Scrum-taulu | *GitHub Project, täytetään repon luonnin jälkeen* |
+| Tuotteen työjono (Product Backlog) | https://github.com/users/petlappa/projects/1/views/1 |
+| Scrum-taulu (nykyinen sprintti) | https://github.com/users/petlappa/projects/1/views/2 |
 | Scrum-ohje | [docs/scrum.md](docs/scrum.md) |
 | Kehitysympäristö | [docs/kehitysymparisto.md](docs/kehitysymparisto.md) |
 
