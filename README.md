@@ -10,7 +10,8 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 | Dokumentaatio | [docs/dokumentaatio.md](docs/dokumentaatio.md) |
 | Tuotteen työjono (Product Backlog) | https://github.com/users/petlappa/projects/1/views/1 |
 | Scrum-taulu (nykyinen sprintti) | https://github.com/users/petlappa/projects/1/views/2 |
-| Scrum-ohje | [docs/scrum.md](docs/scrum.md) |
+| Scrum GitHubissa (tiimin muistiinpanot) | [docs/scrum.md](docs/scrum.md) |
+| Scrum-taulun rakennusohje (opiskelijoille) | [docs/github-projects-scrum-ohje.md](docs/github-projects-scrum-ohje.md) |
 | Kehitysympäristö | [docs/kehitysymparisto.md](docs/kehitysymparisto.md) |
 
 ## Tiimi
