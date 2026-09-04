@@ -168,13 +168,26 @@ Kaavionotaatioita on useita (crow’s foot, Chen, UML-luokkakaavio). Periaate on
 
 **ORM** (Object-Relational Mapping) tekee relaatiotaulusta olioita. Sovellus ei kirjoita SQL:ää joka hakuun, vaan käyttää Java-olioita. Hibernate hoitaa SQL:n.
 
-| Kerros | Rooli |
-| --- | --- |
-| **JPA** (Jakarta Persistence API) | Rajapinta: `@Entity`, `@Id`, `EntityManager`, … |
-| **Hibernate** | JPA-toteutus, Spring Bootin oletus |
-| **Spring Data JPA** | Repositoryt, query methodit, transaktiot |
+Kolme nimeä sekoittuvat helposti. Ne eivät ole kolme kilpailevaa tietokantaa, vaan **standardi, sen toteutus ja Springin apu niiden päälle**.
 
-Spring Frameworkin ORM-luku: Spring integroi JPA/Hibernaten transaktioihin ja DAO-poikkeuksiin. Kurssiprojektissa et konfiguroi `EntityManagerFactoryä` käsin — `spring-boot-starter-data-jpa` riittää.
+| Kerros | Rooli | Analogia |
+| --- | --- | --- |
+| **JPA** (Jakarta Persistence API) | Sääntökirja: mitä annotaatiot (`@Entity`, `@Id`) tarkoittavat | USB-standardi |
+| **Hibernate** | Ohjelmisto, joka noudattaa tuota sääntökirjaa ja puhuu SQL:ää tietokannalle | Tietyn merkin USB-kaapeli |
+| **Spring Data JPA** | Springin kerros Hibernaten päälle: Repositoryt, query methodit, transaktiot | Puhelin, joka käyttää kaapelia — et kytke USB:tä käsin |
+
+**JPA ei ole kirjasto, jonka asennat erikseen.** Se on Java-ekosysteemin *spesifikaatio* (rajapinta + annotaatiot). Kukaan ei “käynnistä JPA:ta”. Hibernate (tai EclipseLink) *toteuttaa* JPA:n. Kun kirjoitat `@Entity`, käytät JPA:n kieltä; kun sovellus käynnistyy, Hibernate tulkitsee sen ja luo taulut.
+
+Nimi **Jakarta** Persistence API on sama asia kuin vanha **Java** Persistence API. Java EE siirtyi Eclipse-säätiölle ja sai nimen Jakarta EE. Paketti vaihtui:
+
+| Spring Boot | Import |
+| --- | --- |
+| 2.x (vanha, älä käytä tässä kurssissa) | `javax.persistence.Entity` |
+| 3 ja 4 (tämä projekti) | `jakarta.persistence.Entity` |
+
+Jos IDE tai kopioitu esimerkki ehdottaa `javax.persistence`, vaihda `jakarta.persistence`. Muuten koodi ei käänny Boot 4:ssä.
+
+Spring Frameworkin ORM-luku: Spring integroi JPA/Hibernaten transaktioihin ja DAO-poikkeuksiin. Kurssiprojektissa et konfiguroi `EntityManagerFactoryä` käsin — `spring-boot-starter-data-jpa` riittää. Se tuo sekä JPA-annotaatiot että Hibernaten.
 
 ### B.2 DAO-malli vs Repository
 
