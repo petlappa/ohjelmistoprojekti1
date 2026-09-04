@@ -28,10 +28,10 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 
 ## Pika-aloitus
 
-Vaatimukset: **JDK 17** ja Git. Mavenia ei tarvitse asentaa erikseen (projekti sisältää Maven Wrapperin).
+Vaatimukset: **JDK 25** (LTS) ja Git. Mavenia ei tarvitse asentaa erikseen (projekti sisältää Maven Wrapperin).
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/petlappa/ohjelmistoprojekti1.git
 cd ohjelmistoprojekti1/backend
 ./mvnw spring-boot:run
 ```
@@ -53,7 +53,7 @@ Testit:
 ## Rakenne
 
 ```
-backend/     Spring Boot REST-palvelin (Java 17)
+backend/     Spring Boot 4.1 REST-palvelin (Java 25)
 docs/        Projektidokumentaatio
 .github/     CI-työnkulku
 ```
