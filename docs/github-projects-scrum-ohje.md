@@ -33,8 +33,8 @@ Kun ohje on tehty, tiimillä on **yksi** GitHub Project, jossa on:
 1. Kenttä **Sprint** (tyyppi Iteration, **1 viikko**): Sprint 1, Sprint 2, …
 2. Kenttä **Priority**: High, Medium, Low
 3. Kenttä **Estimate**: numero (esim. story pointit)
-4. Näkymä **Product Backlog** (taulukko): kaikki keskeneräinen työ
-5. Näkymä **Current sprint** (kanban): vain tämän sprintin kortit
+4. Näkymä **Product Backlog** (taulukko): issuet, joita ei ole vielä merkitty mihinkään sprinttiin
+5. Näkymät **Current sprint** sekä **Sprint 1 … Sprint 6** (kanban): yhden viikon kortit
 
 Esimerkki (julkinen):
 
@@ -134,52 +134,53 @@ Sprinttiin kuuluminen **ei** ole Status. Se merkitään kenttään **Sprint**.
 
 ---
 
-## 5. Kaksi näkymää
+## 5. Näkymät (välilehdet)
 
-Näkymät ovat saman Projectin eri suodattimia. Kortti on olemassa kerran; se näkyy niissä näkymissä, joihin suodatin osuu.
+Näkymät ovat saman Projectin eri suodattimia. Kortti on olemassa kerran; se näkyy niissä näkymissä, joihin suodatin osuu. Sprintti merkitään **Sprint**-sarakkeessa, ei Issuen labelissa eikä milestonessa.
 
-Tallenna aina muutokset: **View** → **Save changes**. Muuten tiimikaveri ei näe asettelua.
+Tallenna aina muutokset: **View** → **Save changes**.
+
+| Välilehti | Layout | Suodatin | Käyttö |
+| --- | --- | --- | --- |
+| Product Backlog | Table | `-status:Done no:iteration` | Kaikki, joita ei ole otettu sprinttiin |
+| Current sprint | Board | `iteration:@current` | Daily: tämä viikko automaattisesti |
+| Sprint 1 … Sprint 6 | Board | `iteration:"Sprint 1"` jne. | Yhden viikon lista |
+
+Siirto: Product Backlog → klikkaa **Sprint**-solua → Sprint 2. Kortti katoaa backlogin ja ilmestyy Sprint 2 -välilehdelle.
 
 ### 5.1 Product Backlog (Table)
 
-1. Jos sinulla on jo oletusnäkymä, avaa se.
-2. **View** → **Layout** → **Table**.
-3. **View** → **Rename view** → `Product Backlog`.
-4. Suodatin (Filter / haku näkymän yläreunassa):
+1. **View** → **Layout** → **Table**.
+2. **View** → **Rename view** → `Product Backlog`.
+3. Suodatin:
 
    ```text
-   -status:Done
+   -status:Done no:iteration
    ```
 
-   Näyttää kaiken keskeneräisen työn, myös myöhempien sprinttien tarinat.
-5. Näytä sarakkeet **+**-valikosta: Title, Status, Sprint, Priority, Estimate, Assignees, Labels.
-6. **View** → **Group** → **Priority** (valinnainen, helpottaa Planningia).
-7. **View** → **Save changes**.
+4. Näytä sarakkeet: Title, Status, Sprint, Priority, Estimate, Assignees, Labels.
+5. **View** → **Save changes**.
 
-Tämän näkymän URL on **tuotteen työjonon** palautuslinkki. Muoto:
-
-`https://github.com/users/<kayttajatunnus>/projects/<numero>/views/1`
-
-Organisaatiorepossa polku on `https://github.com/orgs/<org>/projects/<numero>/views/1`.
+Palautuslinkki: `.../projects/<n>/views/1`
 
 ### 5.2 Current sprint (Board)
 
-1. Näkymävälilehtien oikealla **+** / **New view**.
-2. **View** → **Layout** → **Board**.
-3. **View** → **Rename view** → `Current sprint`.
-4. Suodatin:
+1. **New view** → **Layout** → **Board**.
+2. Nimi: `Current sprint`.
+3. Suodatin: `iteration:@current`
+4. **Save changes**.
 
-   ```text
-   iteration:@current
-   ```
+Daily Scrumissa avaa tämä välilehti.
 
-   Board jakautuu Status-sarakkeisiin (Todo, In Progress, Done).
-5. Valinnainen: **View** → **Field sum** → **Estimate** (sarakkeen pisteet näkyvät).
-6. **View** → **Save changes**.
+### 5.3 Sprint 1–6 (Board)
 
-Tämän näkymän URL on **Scrum-taulun** palautuslinkki (`.../views/2`).
+Jokaiselle viikolle oma välilehti:
 
-Daily Scrumissa avataan **vain** Current sprint. Planningissa avataan Product Backlog.
+1. **New view** → Board.
+2. Nimi: `Sprint 2`.
+3. Suodatin: `iteration:"Sprint 2"` (lainausmerkit mukaan, koska nimessä on välilyönti).
+4. **Save changes**.
+5. Toista Sprint 1, 3, 4, …
 
 ---
 
@@ -249,11 +250,11 @@ Toinen workflow: **Item added to project** → aseta Status = Todo.
 
 1. Avaa **Product Backlog**.
 2. Product Owner / tiimi valitsee tarinat Sprinttiin.
-3. Aseta kullekin valitulle riville **Sprint** = `Sprint 1` (tai nykyinen).
+3. Aseta kullekin valitulle riville **Sprint** = `Sprint 1` (tai nykyinen viikko).
 4. Aseta **Estimate** ja **Assignee**.
 5. Status jää *Todo*-tilaan, kunnes työ alkaa.
 
-Kortti ilmestyy **Current sprint** -näkymään, koska `iteration:@current` täsmää.
+Kortti katoaa backlogin ja ilmestyy **Sprint n** -välilehdelle sekä **Current sprint** -näkymään, jos viikko on käynnissä.
 
 ### Daily Scrum
 
@@ -297,8 +298,8 @@ Issue on Done vasta kun:
 Tarkista ennen palautusta:
 
 - [ ] Project on **Public** tai opettaja on lisätty
-- [ ] Product Backlog näyttää avoimet tarinat
-- [ ] Current sprint näyttää vain tämän sprintin kortit
+- [ ] Product Backlog näyttää vain sprinttiin kuulumattomat avoimet tarinat
+- [ ] Current sprint näyttää tämän viikon; Sprint 2 -välilehti vain Sprint 2:n kortit
 - [ ] Sprint-kentän päivämäärät osuvat kuluvaan viikkoon (`@current`)
 
 ---
@@ -335,8 +336,9 @@ Taulu ei korvaa GitHub-flow’ta:
 4. [ ] Field **Sprint** = Iteration, **7 days**, nimet Sprint 1, Sprint 2, …
 5. [ ] Field **Priority** = High / Medium / Low
 6. [ ] Field **Estimate** = Number
-7. [ ] Näkymä **Product Backlog**: Table, suodatin `-status:Done`
-8. [ ] Näkymä **Current sprint**: Board, suodatin `iteration:@current`
+7. [ ] Näkymä **Product Backlog**: Table, suodatin `-status:Done no:iteration`
+8. [ ] Näkymä **Current sprint**: Board, `iteration:@current`
+8b. [ ] Näkymät **Sprint 1–6**: Board, `iteration:"Sprint n"`
 9. [ ] Molemmat näkymät **Save changes**
 10. [ ] Workflow: Auto-add `is:issue` tiimin reposta
 11. [ ] Käyttäjätarinat Issueina (`user-story`), ei pelkkinä draft-kortteina
