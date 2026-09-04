@@ -1,6 +1,6 @@
 # TicketGuru-dokumentaatio
 
-Haaga-Helia Ohjelmistoprojekti 1 · Sprint 1 (alustava)
+Haaga-Helia Ohjelmistoprojekti 1 · Sprint 2 (täydennetään)
 
 Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely** ja **Käyttöliittymä**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
 
@@ -8,17 +8,42 @@ Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely*
 
 ## 1. Johdanto
 
-TicketGuru on lipputoimistolle toteutettava **myyntipisteen lipunmyyntijärjestelmä**. Asiakas myy lippuja tapahtumiin kivijalkamyynnissä: asiakas ei osta lippua itse verkosta, vaan myyjä hoitaa kaupan kassalla.
+### 1.0 Tilaajan kuvaus (ennen sprinttiä 1)
+
+Tuoteomistajan terveiset. **Asiakas** tarkoittaa tässä ensin **lipputoimistoa**, joka on tilannut järjestelmän — ei kassalla seisovaa ostajaa.
+
+> Asiakkaamme on lipputoimisto, joka on tilannut lipunmyyntijärjestelmän lippujen myymiseen myyntipisteessään. Toimisto voi määritellä järjestelmään tapahtumat, joihin lippuja myydään. Järjestelmän alustava nimi on TicketGuru.
+>
+> Lipunmyyntipisteessä lipunmyyjä myy ja tulostaa asiakkaalle liput. Ennakkomyynnin loputtua loput liput tulostetaan ovella myytäviksi. Lipuissa on ovella helposti tarkastettava koodi, jolla lippu voidaan ovella merkitä käytetyksi.
+>
+> Jatkokehityksessä järjestelmään aiotaan lisätä verkkokauppa, jolla asiakkaat voivat itse ostaa lippuja.
+>
+> Asiakkaan veljenpoika opiskelee Haaga-Helia ammattikorkeakoulussa tietojenkäsittelyä, ja asiakas on pyytänyt poikaa laatimaan järjestelmän tärkeimmistä käyttöliittymistä alustavat wireframe-mallit. Saamme ne käyttöömme, mutta niitä kannattaa pitää vain suuntaa-antavina. Niistä kuitenkin saa selville monia asioita siitä, miten tilaaja on ajatellut järjestelmää käytettävän ja mitä siltä odotetaan.
+
+Wireframet: `docs/ui/TicketGuru-UI.pdf` (suuntaa-antavat).
+
+Samassa tekstissä sana **asiakas** esiintyy kolmessa merkityksessä. Ne eivät ole sama tietokantataulu.
+
+| Tekstissä | Kuka | Järjestelmässä |
+| --- | --- | --- |
+| “Asiakkaamme on lipputoimisto” | Tilaaja (software-projektin asiakas) | ei taulu |
+| “tulostaa asiakkaalle liput” | Kassalla ostava henkilö | ei taulua tässä versiossa; myynti + lipun koodi riittävät |
+| “verkkokauppa, jolla asiakkaat voivat itse ostaa” | Tuleva itsepalveluostaja | myöhemmin käyttäjärooli / mahdollinen `Asiakas`-taulu |
+
+Kuitti-luonnoksessa ei ole ostajan nimeä, sähköpostia eikä asiakashakua. Rivit ovat: tapahtuma, lipputyyppi, hinta, koodi, myyntinumero, maksettu-aika, summa.
+
+TicketGuru on **myyntipisteen lipunmyyntijärjestelmä**. Ostaja ei käytä järjestelmää: myyjä myy ja tulostaa liput kassalla.
 
 Järjestelmän avulla lipputoimisto voi
 
 - hallita tapahtumia (nimi, aika, paikka, kaupunki, lippujen enimmäismäärä)
 - määritellä tapahtumakohtaiset lipputyypit ja hinnat (esim. aikuinen, lapsi, eläkeläinen)
 - myydä yhden tai useamman lipun samassa myyntitapahtumassa
-- tulostaa myydyt liput, joista jokaisella on yksilöllinen koodi tarkastusta varten
+- tulostaa myydyt liput, joista jokaisella on yksilöllinen koodi; ovella koodilla lippu merkitään käytetyksi
+- tulostaa ennakkomyynnin jälkeen jäljellä olevat liput ovimyyntiä varten
 - tarkastella tapahtuman myyntiraporttia ja yksittäisiä myyntitapahtumia
 
-Järjestelmää voidaan myöhemmin laajentaa verkkokaupaksi. Tämän kurssin aikana rakennetaan myyntipisteen tarvitsema ydin: Spring Boot -backend, tietokanta ja käyttöliittymä annettujen UI-luonnosten pohjalta.
+Tämän kurssin aikana rakennetaan myyntipisteen ydin: Spring Boot -backend, tietokanta ja käyttöliittymä. Verkkokauppa on rajattu pois.
 
 ### 1.1 Tavoite ja rajaus
 
@@ -26,7 +51,8 @@ Järjestelmää voidaan myöhemmin laajentaa verkkokaupaksi. Tämän kurssin aik
 
 **Rajaus (tämä kurssi):**
 
-- Ei asiakkaan itsepalveluostosta (verkkokauppa on tulevaisuuden laajennus).
+- Ei ostajan itsepalveluostosta (verkkokauppa on jatkokehitys tilaajan tekstissä).
+- Ei ostajarekisteriä (nimi, sähköposti, tili). Tilaajan “asiakas” kassalla saa tulostetun lipun; häntä ei tallenneta tauluun.
 - Ei maksuliikennettä pankki- tai korttiterminaaliin; myynti kuitataan maksetuksi järjestelmässä.
 - Paikkakarttaa tai istumapaikkakohtaista varausta ei toteuteta; liput ovat tyyppi- ja tapahtumakohtaisia.
 
@@ -51,9 +77,16 @@ Määrittely perustuu asiakkaan käyttöliittymäluonnoksiin (`docs/ui/TicketGur
 
 ### 2.1 Käyttäjäroolit
 
-Järjestelmällä on kolme varsinaista käyttäjäroolia. Lipun ostava **asiakas** ei kirjaudu järjestelmään.
+**Käyttäjärooli** = kuka kirjautuu ja käyttää TicketGurua.  
+Tilaajan tekstissä “asiakas” tarkoittaa yleensä **lipputoimistoa**. Kassalla ostava henkilö on eri asia, eikä hän ole käyttäjärooli eikä taulu.
 
-#### Myyjä
+#### Ostaja kassalla — ei käyttäjä, ei taulu
+
+Myyjä “myy ja tulostaa asiakkaalle liput”. Ostaja ei kirjaudu. Wireframessa ei ole ostajan nimeä eikä hakua.
+
+`Asiakas`-taulu tulisi mukaan vasta verkkokaupassa (“asiakkaat voivat itse ostaa lippuja”). Silloin ostaja on järjestelmän käyttäjä.
+
+#### Myyjä (lipunmyyjä)
 
 Toimii kassalla asiakasrajapinnassa.
 
@@ -100,10 +133,11 @@ Tunnisteet vastaavat GitHub-issuen otsikoita tuotteen työjonossa.
 | M4 | Myyjänä haluan valita yhteen myyntiin useita lippuja (eri tyyppejä), jotta asiakas voi ostaa kerralla esim. kaksi aikuista ja yhden lapsen. | Korkea |
 | M5 | Myyjänä haluan nähdä myynnin summan ennen vahvistusta, jotta voin kertoa hinnan asiakkaalle. | Korkea |
 | M6 | Myyjänä haluan vahvistaa myynnin maksetuksi, jotta liput kirjautuvat myydyiksi. | Korkea |
-| M7 | Myyjänä haluan, että jokainen lippu saa yksilöllisen koodin, jotta lippu voidaan tarkastaa ovella. | Korkea |
-| M8 | Myyjänä haluan tulostaa myydyt liput, jotta voin antaa ne asiakkaalle. | Korkea |
+| M7 | Myyjänä haluan, että jokainen lippu saa yksilöllisen koodin, jotta lippu voidaan tarkastaa ovella ja merkitä käytetyksi. | Korkea |
+| M8 | Myyjänä haluan tulostaa myydyt liput, jotta voin antaa ne ostajalle. | Korkea |
 | M9 | Myyjänä haluan nähdä, paljonko lippuja on vielä jäljellä, jotta en myy yli kapasiteetin. | Korkea |
 | M10 | Myyjänä haluan avata aiemman myyntitapahtuman numerolla, jotta voin tulostaa liput uudelleen. | Keskitaso |
+| M11 | Myyjänä haluan ennakkomyynnin päätyttyä tulostaa jäljellä olevat liput, jotta niitä voidaan myydä ovella. | Keskitaso |
 
 #### Tapahtumakoordinaattori (TK)
 
@@ -127,6 +161,7 @@ Tunnisteet vastaavat GitHub-issuen otsikoita tuotteen työjonossa.
 | P1 | Pääkäyttäjänä haluan luoda käyttäjätilejä ja liittää niihin roolin, jotta myyjät ja koordinaattorit pääsevät järjestelmään. | Keskitaso |
 | J1 | Järjestelmänä en salli myyntiä, jos tapahtuman kapasiteetti ylittyisi, jotta ylipaikkoja ei synny. | Korkea |
 | J2 | Järjestelmänä tallennan myyntitapahtumalle ajan, tunnisteen ja summan, jotta raportointi on luotettavaa. | Korkea |
+| J3 | Järjestelmänä voin merkitä lipun käytetyksi koodilla, jotta samaa lippua ei käytetä ovella kahdesti. | Korkea |
 
 ### 2.3 Keskeiset käsitteet
 
@@ -134,7 +169,7 @@ Tunnisteet vastaavat GitHub-issuen otsikoita tuotteen työjonossa.
 | --- | --- |
 | Tapahtuma | Tilaisuus, johon myydään lippuja (aika, paikka, kapasiteetti). |
 | Lipputyyppi | Hinnoiteltu lippulaji, esim. Aikuinen 15,00 €. |
-| Lippu | Yksittäinen myyty kappale, jolla on yksilöllinen koodi. |
+| Lippu | Yksittäinen myyty kappale; yksilöllinen koodi; ovella voidaan merkitä käytetyksi. |
 | Myyntitapahtuma | Yksi kassakauppa: yksi tai useampi lippu, summa, aikaleima, juokseva numero. |
 | Myyntiraportti | Kooste myydyistä lipuista lipputyypeittäin valitulle tapahtumalle. |
 
