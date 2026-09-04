@@ -6,18 +6,28 @@ Tämä ohje on tarkoitettu kaikille tiimin jäsenille. Kun nämä askeleet on te
 
 | Työkalu | Versio | Huomio |
 | --- | --- | --- |
-| JDK | **17** (LTS) | Temurin, Zulu tai Oracle. Tarkista: `java -version` |
+| JDK | **25** (LTS) | Temurin, Zulu tai Oracle. Tarkista: `java -version`. Spring Boot 4.1 tukee Java 17–26. |
 | Git | uusin | `git --version` |
 | GitHub-tili | — | Pyydä kutsu repositorion Collaborators-listalle |
 | IDE | IntelliJ IDEA / VS Code / Cursor / Eclipse | Spring Boot -tuki suositeltava |
 
 Mavenia **ei tarvitse asentaa**: projektissa on Maven Wrapper (`backend/mvnw`).
 
-macOS (Homebrew) -esimerkki:
+macOS, SDKMAN (suositus tälle tiimille):
 
 ```bash
-brew install git openjdk@17
+sdk install java 25.0.4-tem
+sdk use java 25.0.4-tem
+java -version
 ```
+
+macOS, Homebrew:
+
+```bash
+brew install git openjdk@25
+```
+
+Aseta sitten `JAVA_HOME` osoittamaan JDK 25:een (Homebrew ei vaihda oletus-Javaa automaattisesti).
 
 VS Code / Cursor -laajennukset: Extension Pack for Java (Language Support, Debugger, Maven, Test Runner).
 
@@ -96,13 +106,13 @@ Avaa sen jälkeen GitHubissa Pull request.
 
 **IntelliJ:** File → Open → valitse `backend`-kansio (tai koko repo). Odota, että Maven importoi `pom.xml`. Run → `TicketGuruApplication`.
 
-**VS Code / Cursor:** avaa repo. Kun Java-laajennus kysyy, valitse JDK 17. Käynnistä `TicketGuruApplication` tai käytä terminaalia (`./mvnw spring-boot:run`).
+**VS Code / Cursor:** avaa repo. Kun Java-laajennus kysyy, valitse JDK 25. Käynnistä `TicketGuruApplication` tai käytä terminaalia (`./mvnw spring-boot:run`).
 
 ## 7. Yleisiä ongelmia
 
 | Oire | Ratkaisu |
 | --- | --- |
-| `Unsupported class file major version` | Käytössä on väärä JDK. Aseta JDK 17. |
+| `Unsupported class file major version` | Käytössä on väärä JDK. Aseta JDK 25 (`java -version`). |
 | Portti 8080 varattu | Sammuta toinen Spring-sovellus tai vaihda `server.port` tilapäisesti. |
 | `mvnw: Permission denied` (macOS/Linux) | `chmod +x backend/mvnw` |
 | H2-konsoli ei avaudu | Varmista, että sovellus on käynnissä ja URL on `/h2-console`. |

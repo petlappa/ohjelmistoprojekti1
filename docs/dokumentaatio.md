@@ -34,7 +34,7 @@ Järjestelmää voidaan myöhemmin laajentaa verkkokaupaksi. Tämän kurssin aik
 
 | Osa | Valinta Sprint 1:ssä |
 | --- | --- |
-| Backend | Java 17, Spring Boot 3.5, REST |
+| Backend | Java 25 (LTS), Spring Boot 4.1, REST |
 | Tietokanta kehityksessä | H2 (muistissa) |
 | Tietokanta myöhemmin | PostgreSQL tai MariaDB (päätetään tiimissä) |
 | Käyttöliittymä | Alustavat näkymät dokumentoitu; toteutus myöhemmässä sprintissä |
