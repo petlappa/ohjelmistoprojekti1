@@ -6,6 +6,7 @@ Tiimin roolit ja Definition of Done. **Taulun rakentaminen klikki kerrallaan:** 
 | --- | --- |
 | Product Backlog | https://github.com/users/petlappa/projects/1/views/1 |
 | Current sprint | https://github.com/users/petlappa/projects/1/views/9 |
+| Sprint 2 | https://github.com/users/petlappa/projects/1/views/4 |
 | Sprint 1 | https://github.com/users/petlappa/projects/1/views/3 |
 
 GitHubissa:
@@ -19,8 +20,8 @@ GitHubissa:
 | Scrum-rooli | Kuka |
 | --- | --- |
 | Product Owner | Opettaja / asiakas: priorisoi työjonon |
-| Scrum Master (sprintit 1–2) | *Sovitaan tiimissä Sprint Planningissa* |
-| Developers | Koko viisihenkinen tiimi |
+| Scrum Master (sprintit 1–2) | Petteri Lappalainen |
+| Developers | Koko tiimi (toistaiseksi yksi GitHub-käyttäjä; työpaketit #13–#17 on silti jaettu) |
 
 Scrum Master ei ole pomo. Hän huolehtii, että Daily Scrum pidetään, taulu vastaa totuutta ja esteet nousevat esiin.
 
@@ -80,3 +81,17 @@ Klikkausohjeet opiskelijoille: **[github-projects-scrum-ohje.md](github-projects
 ```
 
 Sprint merkitään Projectin **Sprint**-kenttään Planningissa, ei Issuen milestonena.
+
+## Sprint 2 — työnjako (versionhallintaharjoitus)
+
+Kurssin vaatimus: jokainen tiimiläinen ohjelmoi ja tekee committeja. Sprint 2 on siksi jaettu viiteen issueen:
+
+| Paketti | Issue | Sisältö |
+| --- | --- | --- |
+| 1/5 | #13 | Tietokantakaavio + dokumentaation luku Tietokanta |
+| 2/5 | #14 | Entityt ja repositoryt: Rooli, Kayttaja |
+| 3/5 | #15 | Entityt ja repositoryt: Tapahtuma, Lipputyyppi |
+| 4/5 | #16 | Entityt ja repositoryt: Myyntitapahtuma, Lippu |
+| 5/5 | #17 | Testdata H2:een + repository-testit |
+
+Kun tiimiin tulee lisää GitHub-käyttäjiä, seuraavat vastaavat paketit assigneeitaan heille. Tässä sprintissä commitit on tehty paketeittain, jotta historia näyttää jaon.

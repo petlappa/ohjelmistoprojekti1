@@ -1,8 +1,8 @@
 # TicketGuru-dokumentaatio
 
-Haaga-Helia Ohjelmistoprojekti 1 · Sprint 2 (täydennetään)
+Haaga-Helia Ohjelmistoprojekti 1 · Sprint 2
 
-Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely** ja **Käyttöliittymä**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
+Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely**, **Käyttöliittymä** ja **Tietokanta**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
 
 ---
 
@@ -58,10 +58,11 @@ Tämän kurssin aikana rakennetaan myyntipisteen ydin: Spring Boot -backend, tie
 
 ### 1.2 Tekninen lähtökohta
 
-| Osa | Valinta Sprint 1:ssä |
+| Osa | Valinta Sprint 2:ssa |
 | --- | --- |
-| Backend | Java 25 (LTS), Spring Boot 4.1, REST |
-| Tietokanta kehityksessä | H2 (muistissa) |
+| Backend | Java 25 (LTS), Spring Boot 4.1, REST (toistaiseksi `/api/health`) |
+| Persistenssi | JPA/Hibernate, entityt ja repositoryt |
+| Tietokanta kehityksessä | H2 (muistissa) + esimerkkidata |
 | Tietokanta myöhemmin | PostgreSQL tai MariaDB (päätetään tiimissä) |
 | Käyttöliittymä | Alustavat näkymät dokumentoitu; toteutus myöhemmässä sprintissä |
 | Versionhallinta | Git + GitHub |
@@ -182,7 +183,7 @@ Tunnisteet vastaavat GitHub-issuen otsikoita tuotteen työjonossa.
 - Lähdekoodi on GitHubissa; muutokset tehdään haaroissa ja yhdistetään pull requesteilla.
 - Kehitysvaiheessa tietokanta voi olla H2; tuotantokäytössä relaatietokanta.
 
-Alustava tietomalli (luokkakaavio) piirretään, kun ensimmäiset entiteetit toteutetaan.
+Tietomalli on kuvattu luvussa [4. Tietokanta](#4-tietokanta).
 
 ---
 
@@ -255,4 +256,207 @@ Kirjautumisnäkymää ei ole luonnoksessa; se lisätään, kun autentikointi tot
 - Mobiili vs. kassan työpöytänäkymä
 - Tulostusasettelu (lipun koko, viivakoodi/QR)
 - Virhe- ja tyhjien tilojen tekstit
-- Tapahtumakohtaiset vs. globaalit lipputyypit (luonnos jättää tämän auki; tiimi päättää mallin sprintissä 2)
+- Lipputyypit ovat **tapahtumakohtaisia** (päätös Sprint 2, ks. luku 4.2). UI-luonnoksen globaali Lipputyypit-näkymä tulkitaan tapahtuman kautta suodatettavaksi listaksi.
+
+---
+
+## 4. Tietokanta
+
+Sprint 2 mallintaa lipunmyynnin tietosisällön ennen REST-rajapintaa. Järjestys noudattaa luennon kolmea vaihetta: käsiteanalyysi → taulukaavio → JPA-entityt ja repositoryt.
+
+Ostajaa kassalla ei tallenneta tauluun (ks. luku 1.0). Myynti ja lipun koodi riittävät.
+
+### 4.1 Käsiteanalyysi
+
+Vaatimustekstin substantiiveista käsitteiksi nousevat ne, joilla on identiteetti ilman muita tietoja.
+
+| Kandidaatti | Ratkaisu | Perustelu |
+| --- | --- | --- |
+| Tapahtuma | käsite | tilaisuus, jolla on aika, paikka ja kapasiteetti |
+| Lipputyyppi | käsite | hinnoiteltu laji yhdelle tapahtumalle (Aikuinen, Lapsi) |
+| Lippu | käsite | yksi myyty kappale; yksilöllinen koodi |
+| Myyntitapahtuma | käsite | yksi kassakauppa; summa ja aikaleima |
+| Käyttäjä | käsite | järjestelmään kirjautuva myyjä tai koordinaattori |
+| Rooli | käsite | käyttäjän valtuus (myyjä, koordinaattori, pääkäyttäjä) |
+| Hinta | attribuutti | kuuluu lipputyyppiin; myyntihetkellä kopioidaan lipulle |
+| Koodi | attribuutti | kuuluu lippuun, ei ole itsenäinen olio |
+| Kaupunki, paikka | attribuutteja | kuuluvat tapahtumaan |
+| Asiakas (kassalla) | ei taulua | ostajaa ei rekisteröidä tässä versiossa |
+
+Verbit yhteyksiksi:
+
+| Lause | Mallinnus |
+| --- | --- |
+| Tapahtumalla on useita lipputyyppejä | 1:N Tapahtuma → Lipputyyppi |
+| Myyjä tekee useita myyntejä; myynti on yhdelle tapahtumalle | 1:N Kayttaja → Myyntitapahtuma, 1:N Tapahtuma → Myyntitapahtuma |
+| Myyntiin kuuluu useita lippuja | 1:N Myyntitapahtuma → Lippu |
+| Lippu on aina yhtä tyyppiä | 1:N Lipputyyppi → Lippu |
+| Käyttäjä kuuluu yhteen rooliin | 1:N Rooli → Kayttaja |
+
+Lippu on luennon *välikäsite*: myynnin ja lipputyypin N:M puretaan kahdeksi 1:N-suhteeksi, koska yhteydellä on omaa dataa (koodi, käytetty, hinta myyntihetkellä). `@ManyToMany` ei sovi.
+
+### 4.2 Päätös: tapahtumakohtaiset lipputyypit
+
+UI-luonnos näyttää Lipputyypit-taulukon ilman tapahtumasaraketta. Sama luonnos kuitenkin myy lippuja *valitulle tapahtumalle*, ja tilaaja puhuu **tapahtumakohtaisista** hinnoista.
+
+Sprint 2:ssa lipputyyppi kuuluu aina yhdelle tapahtumalle. Silloin “Aikuinen 15 €” Tapahtuma A:ssa ja “Aikuinen 22 €” Tapahtuma B:ssä ovat eri rivejä. Hinta ei tarvitse erillistä liitostaulua.
+
+Globaali tyyppikatalogi (N:M + hintarivi) voidaan lisätä myöhemmin, jos sama kuvaus halutaan jakaa tapahtumien kesken ilman kopiointia.
+
+### 4.3 Tietokantakaavio
+
+Crow’s foot: `||` = yksi, `o{` = nolla tai useita. Vierasavain on N-puolella.
+
+```mermaid
+erDiagram
+  ROOLI ||--o{ KAYTTAJA : "kuuluu"
+  KAYTTAJA ||--o{ MYYNTITAPAHTUMA : "myy"
+  TAPAHTUMA ||--o{ LIPPUTYYPPI : "hinnoittelee"
+  TAPAHTUMA ||--o{ MYYNTITAPAHTUMA : "koskee"
+  MYYNTITAPAHTUMA ||--o{ LIPPU : "sisaltaa"
+  LIPPUTYYPPI ||--o{ LIPPU : "on tyyppia"
+
+  ROOLI {
+    long id PK
+    string nimi UK
+  }
+  KAYTTAJA {
+    long id PK
+    string kayttajanimi UK
+    string salasana
+    string etunimi
+    string sukunimi
+    long rooli_id FK
+  }
+  TAPAHTUMA {
+    long id PK
+    string nimi
+    datetime aika
+    string kaupunki
+    string paikka
+    int lippuja_kpl
+  }
+  LIPPUTYYPPI {
+    long id PK
+    string kuvaus
+    decimal hinta
+    long tapahtuma_id FK
+  }
+  MYYNTITAPAHTUMA {
+    long id PK
+    datetime myyntiaika
+    decimal summa
+    long tapahtuma_id FK
+    long myyja_id FK
+  }
+  LIPPU {
+    long id PK
+    string koodi UK
+    boolean kaytetty
+    decimal hinta
+    long myyntitapahtuma_id FK
+    long lipputyyppi_id FK
+  }
+```
+
+Myyntitapahtuman `tapahtuma_id` on tietoinen denormalisointi: kassalla myydään aina yhden tapahtuman lippuja. Sama tapahtuma on pääteltävissä myös `Lippu → Lipputyyppi`, mutta listaus ja raportti (TK8, TK7) yksinkertaistuvat suoralla viittauksella.
+
+### 4.4 Taulujen sarakkeet
+
+#### Rooli
+
+| Sarake | Tyyppi | Rajoitus | Kuvaus |
+| --- | --- | --- | --- |
+| id | BIGINT | PK, generoitu | |
+| nimi | VARCHAR(50) | UNIQUE, NOT NULL | `MYYJA`, `TAPAHTUMAKOORDINAATTORI`, `PAAKAYTTAJA` |
+
+#### Kayttaja
+
+| Sarake | Tyyppi | Rajoitus | Kuvaus |
+| --- | --- | --- | --- |
+| id | BIGINT | PK, generoitu | |
+| kayttajanimi | VARCHAR(50) | UNIQUE, NOT NULL | kirjautumistunnus |
+| salasana | VARCHAR | NOT NULL | toistaiseksi selväkielinen; hash kun Spring Security lisätään |
+| etunimi | VARCHAR(80) | NOT NULL | |
+| sukunimi | VARCHAR(80) | NOT NULL | |
+| rooli_id | BIGINT | FK, NOT NULL | viittaa `Rooli` |
+
+#### Tapahtuma
+
+| Sarake | Tyyppi | Rajoitus | Kuvaus |
+| --- | --- | --- | --- |
+| id | BIGINT | PK, generoitu | |
+| nimi | VARCHAR(120) | NOT NULL | esim. Tapahtuma A |
+| aika | TIMESTAMP | NOT NULL | esitysaika |
+| kaupunki | VARCHAR(80) | NOT NULL | |
+| paikka | VARCHAR(120) | NOT NULL | sali / areena |
+| lippuja_kpl | INTEGER | NOT NULL | kapasiteetti; yläraja myytäville lipuille (J1) |
+
+#### Lipputyyppi
+
+| Sarake | Tyyppi | Rajoitus | Kuvaus |
+| --- | --- | --- | --- |
+| id | BIGINT | PK, generoitu | |
+| kuvaus | VARCHAR(80) | NOT NULL | Aikuinen, Lapsi, Eläkeläinen |
+| hinta | DECIMAL(10,2) | NOT NULL | tapahtuman hinta tälle tyypille |
+| tapahtuma_id | BIGINT | FK, NOT NULL | |
+
+Rahalle ei käytetä `double`-tyyppiä.
+
+#### Myyntitapahtuma
+
+| Sarake | Tyyppi | Rajoitus | Kuvaus |
+| --- | --- | --- | --- |
+| id | BIGINT | PK, generoitu | myyntinumero (kuitin tunniste) |
+| myyntiaika | TIMESTAMP | NOT NULL | maksettu-aika |
+| summa | DECIMAL(10,2) | NOT NULL | rivien hintojen summa |
+| tapahtuma_id | BIGINT | FK, NOT NULL | |
+| myyja_id | BIGINT | FK, NOT NULL | kassalla ollut käyttäjä |
+
+Ostajan nimeä tai sähköpostia ei ole: kuitti-luonnos ei niitä näytä.
+
+#### Lippu
+
+| Sarake | Tyyppi | Rajoitus | Kuvaus |
+| --- | --- | --- | --- |
+| id | BIGINT | PK, generoitu | |
+| koodi | VARCHAR(32) | UNIQUE, NOT NULL | ovella tarkastettava tunniste |
+| kaytetty | BOOLEAN | NOT NULL, oletus false | merkitään ovella (J3) |
+| hinta | DECIMAL(10,2) | NOT NULL | hinta myyntihetkellä |
+| myyntitapahtuma_id | BIGINT | FK, NOT NULL | |
+| lipputyyppi_id | BIGINT | FK, NOT NULL | |
+
+### 4.5 JPA-luokat ja repositoryt
+
+Entityt: `backend/src/main/java/fi/haagahelia/ticketguru/domain/`.  
+Repositoryt: `backend/src/main/java/fi/haagahelia/ticketguru/repository/`.
+
+Hibernate luo taulut Entity-luokista (`spring.jpa.hibernate.ddl-auto=update`). SQL `CREATE TABLE` -tiedostoja ei kirjoiteta käsin.
+
+| Entity | Repository | Esimerkki query methodeista |
+| --- | --- | --- |
+| Rooli | RooliRepository | `findByNimi` |
+| Kayttaja | KayttajaRepository | `findByKayttajanimi`, `findByRooli` |
+| Tapahtuma | TapahtumaRepository | `findByKaupunki`, `findByAikaAfterOrderByAikaAsc` |
+| Lipputyyppi | LipputyyppiRepository | `findByTapahtuma`, `findByTapahtumaId` |
+| Myyntitapahtuma | MyyntitapahtumaRepository | `findByTapahtuma`, `findByMyyja` |
+| Lippu | LippuRepository | `findByKoodi`, `findByMyyntitapahtuma`, `countByLipputyyppiTapahtumaId` |
+
+Suhteet annotaatioin: `@ManyToOne` + `@JoinColumn` N-puolella, `@OneToMany(mappedBy = …)` yhdelle-puolella.
+
+### 4.6 Miten kokeilla ensimmäistä versiota
+
+1. Käynnistä backend: `cd backend && ./mvnw spring-boot:run`
+2. `DemoDataLoader` lisää esimerkkirivit (Tapahtuma A/B, myyjä, yksi myynti kolmella lipulla).
+3. Avaa H2-konsoli: http://localhost:8080/h2-console  
+   JDBC URL `jdbc:h2:mem:ticketguru`, käyttäjä `sa`, salasana tyhjä.
+4. Kokeile esim. `SELECT * FROM LIPPU;` ja `SELECT * FROM MYYNTITAPAHTUMA;`
+
+Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. REST-myyntirajapinta tulee myöhemmässä sprintissä; Sprint 2:n kokeiltava increment on taulut, suhteet ja testdata H2:ssa.
+
+### 4.7 Mitä ei ole vielä kannassa
+
+- Ennakkomyynnin päättymisaika (M11) — tarkennetaan, kun ovimyynti toteutetaan.
+- Salasanan hash ja Spring Security.
+- Ostajataulu (verkkokauppa).
+- Paikkakartta / istumapaikka.
