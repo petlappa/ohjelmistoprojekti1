@@ -71,7 +71,7 @@ Odotettu vastaus: `{"status":"UP","application":"TicketGuru"}`.
 4. Password: (tyhjä)
 5. Connect
 
-H2 on muistissa: tiedot katoavat, kun sovellus sammutetaan. Tämä on tarkoituksellista Sprint 1:ssä.
+H2 on muistissa: tiedot katoavat, kun sovellus sammutetaan. Käynnistyksessä `DemoDataLoader` lisää esimerkkirivit (Sprint 2). Taulut: `ROOLI`, `KAYTTAJA`, `TAPAHTUMA`, `LIPPUTYYPPI`, `MYYNTITAPAHTUMA`, `LIPPU`.
 
 ## 4. Testit
 
