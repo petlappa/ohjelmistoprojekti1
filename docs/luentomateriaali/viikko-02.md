@@ -30,9 +30,9 @@ Tämä tiedosto on tiimin viikkotarkennus. TicketGurun tuotevaatimukset: [dokume
 
 ## Mitä otetaan käyttöön tällä viikolla
 
-- [ ] Käsitekaavio TicketGurulle (luennon kaavalla)
-- [ ] Entityt ja repositoryt Spring Bootissa ohjeen kolmen vaiheen mukaan
-- [ ] H2-konsolilla tarkistus, että taulut syntyvät
+- [x] Käsitekaavio TicketGurulle (luennon kaavalla) — [dokumentaatio 4.3](../dokumentaatio.md#43-tietokantakaavio)
+- [x] Entityt ja repositoryt Spring Bootissa ohjeen kolmen vaiheen mukaan
+- [x] H2-konsolilla tarkistus, että taulut syntyvät (`DemoDataLoader` + testit)
 
 ## Mitä ei tehdä vielä
 
@@ -41,8 +41,8 @@ Tämä tiedosto on tiimin viikkotarkennus. TicketGurun tuotevaatimukset: [dokume
 
 ## Avoimet kysymykset
 
-- [ ] Tapahtumakohtaiset vai globaalit lipputyypit (dokumentaatio 3.8)
-- [ ]
+- [x] Tapahtumakohtaiset vai globaalit lipputyypit → **tapahtumakohtaiset** (dokumentaatio 4.2)
+- [ ] Ennakkomyynnin päättymisaika (M11) — ei vielä saraketta
 
 ## Lähteet
 
