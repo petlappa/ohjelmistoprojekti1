@@ -6,6 +6,7 @@ Tiimin roolit ja Definition of Done. **Taulun rakentaminen klikki kerrallaan:** 
 | --- | --- |
 | Product Backlog | https://github.com/users/petlappa/projects/1/views/1 |
 | Current sprint | https://github.com/users/petlappa/projects/1/views/9 |
+| Sprint 3 | https://github.com/users/petlappa/projects/1/views/5 |
 | Sprint 2 | https://github.com/users/petlappa/projects/1/views/4 |
 | Sprint 1 | https://github.com/users/petlappa/projects/1/views/3 |
 
@@ -20,7 +21,7 @@ GitHubissa:
 | Scrum-rooli | Kuka |
 | --- | --- |
 | Product Owner | Opettaja / asiakas: priorisoi työjonon |
-| Scrum Master (sprintit 1–2) | Petteri Lappalainen |
+| Scrum Master (sprintit 1–3) | Petteri Lappalainen |
 | Developers | Koko tiimi (toistaiseksi yksi GitHub-käyttäjä; työpaketit #13–#17 on silti jaettu) |
 
 Scrum Master ei ole pomo. Hän huolehtii, että Daily Scrum pidetään, taulu vastaa totuutta ja esteet nousevat esiin.
@@ -95,3 +96,16 @@ Kurssin vaatimus: jokainen tiimiläinen ohjelmoi ja tekee committeja. Sprint 2 o
 | 5/5 | #17 | Testdata H2:een + repository-testit |
 
 Kun tiimiin tulee lisää GitHub-käyttäjiä, seuraavat vastaavat paketit assigneeitaan heille. Tässä sprintissä commitit on tehty paketeittain, jotta historia näyttää jaon.
+
+## Sprint 3 — events-API client-tiimille
+
+| Issue | Sisältö |
+| --- | --- |
+| #29 TK2 | Lisää tapahtuma (`POST /api/events`) |
+| #30 TK3 | Muokkaa tapahtumaa (`PUT /api/events/{id}`) |
+| #31 TK4 | Listaa tapahtumat (`GET /api/events`) |
+| #37 TK11 | Hae tapahtuma id:llä (`GET /api/events/{id}`) |
+| #38 TK12 | Poista tapahtuma (`DELETE /api/events/{id}`) |
+| #39 | API-dokumentaatio client-tiimille |
+| #40 | Spring Boot -toteutus |
+| #41 | Postman-kokoelma katselmukseen |

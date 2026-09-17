@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "TicketGuru Events API",
+    "description": "Sprint 3: tapahtumien CRUD client-tiimille ja Sprint Review -demolle.\nBase-URL: http://localhost:8080/api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api"
+    },
+    {
+      "key": "eventId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "List events",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/events",
+        "description": "Listaa kaikki tapahtumat."
+      }
+    },
+    {
+      "name": "List events by kaupunki",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/events?kaupunki=Helsinki",
+          "host": ["{{baseUrl}}"],
+          "path": ["events"],
+          "query": [{ "key": "kaupunki", "value": "Helsinki" }]
+        }
+      }
+    },
+    {
+      "name": "Get event",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/events/1",
+        "description": "Hakee testdatan Tapahtuma A:n. Vaihda id, jos sequence on eri."
+      }
+    },
+    {
+      "name": "Create event",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const body = pm.response.json();",
+              "  pm.collectionVariables.set('eventId', String(body.id));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nimi\": \"Sprint 3 demo\",\n  \"aika\": \"2026-12-01T18:00:00\",\n  \"kaupunki\": \"Espoo\",\n  \"paikka\": \"Sellosali\",\n  \"lippujaKpl\": 80\n}"
+        },
+        "url": "{{baseUrl}}/events"
+      }
+    },
+    {
+      "name": "Update created event",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nimi\": \"Sprint 3 demo muokattu\",\n  \"aika\": \"2026-12-01T19:30:00\",\n  \"kaupunki\": \"Vantaa\",\n  \"paikka\": \"Flamingo\",\n  \"lippujaKpl\": 90\n}"
+        },
+        "url": "{{baseUrl}}/events/{{eventId}}"
+      }
+    },
+    {
+      "name": "Get created event",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/events/{{eventId}}"
+      }
+    },
+    {
+      "name": "Delete created event",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/events/{{eventId}}"
+      }
+    },
+    {
+      "name": "Delete testdata event (expect 409)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/events/1",
+        "description": "Tapahtuma A:lla on lipputyyppejä ja myynti → 409 Conflict."
+      }
+    },
+    {
+      "name": "Get missing event (expect 404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/events/99999"
+      }
+    }
+  ]
+}
