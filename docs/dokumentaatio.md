@@ -467,6 +467,8 @@ Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. Sprint 3:n kokeilta
 
 Sprint 3 tarjoaa client-tiimille tapahtumien käsittelyn. **Client-tiimille tarkoitettu kuvaus** (base-URL, endpointit, parametrit, paluukoodit): [api/events.md](api/events.md). Pohjana [restapidocs](https://github.com/jamescooke/restapidocs).
 
+**Miten pyyntö etenee koodissa** (JS-vertailu, kerrokset, POST-esimerkki tiedostoittain): [arkkitehtuuri-tapahtuma.md](arkkitehtuuri-tapahtuma.md).
+
 Tuoteomistajan rajaus tälle sprintille: lisäys, muokkaus, haku ja poisto. Lipputyypit, myynti ja liput eivät ole vielä REST-resursseja.
 
 ### 5.1 Yhteenveto

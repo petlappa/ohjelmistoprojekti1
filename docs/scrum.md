@@ -109,3 +109,4 @@ Kun tiimiin tulee lisää GitHub-käyttäjiä, seuraavat vastaavat paketit assig
 | #39 | API-dokumentaatio client-tiimille |
 | #40 | Spring Boot -toteutus |
 | #41 | Postman-kokoelma katselmukseen |
+| #43 | Arkkitehtuuridokumentti: pyynnön kulku controller → H2 |
