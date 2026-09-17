@@ -27,3 +27,4 @@ Täydennä luennon jälkeen: mitä painotettiin, mitä tiimi päätti TicketGuru
 | --- | --- |
 | 1 | [viikko-01.md](viikko-01.md) |
 | 2 | [viikko-02.md](viikko-02.md) |
+| 3 | [viikko-03.md](viikko-03.md) |

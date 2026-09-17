@@ -1,8 +1,8 @@
 # TicketGuru-dokumentaatio
 
-Haaga-Helia Ohjelmistoprojekti 1 · Sprint 2
+Haaga-Helia Ohjelmistoprojekti 1 · Sprint 3
 
-Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely**, **Käyttöliittymä** ja **Tietokanta**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
+Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely**, **Käyttöliittymä**, **Tietokanta** ja **REST-rajapinta**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
 
 ---
 
@@ -58,13 +58,13 @@ Tämän kurssin aikana rakennetaan myyntipisteen ydin: Spring Boot -backend, tie
 
 ### 1.2 Tekninen lähtökohta
 
-| Osa | Valinta Sprint 2:ssa |
+| Osa | Valinta Sprint 3:ssa |
 | --- | --- |
-| Backend | Java 25 (LTS), Spring Boot 4.1, REST (toistaiseksi `/api/health`) |
+| Backend | Java 25 (LTS), Spring Boot 4.1, REST `/api/events` |
 | Persistenssi | JPA/Hibernate, entityt ja repositoryt |
-| Tietokanta kehityksessä | H2 (muistissa) + esimerkkidata |
+| Tietokanta kehityksessä | H2 (muistissa) + esimerkkidata, ei persistentti |
 | Tietokanta myöhemmin | PostgreSQL tai MariaDB (päätetään tiimissä) |
-| Käyttöliittymä | Alustavat näkymät dokumentoitu; toteutus myöhemmässä sprintissä |
+| Käyttöliittymä | Toisen firman client-tiimi; meidän osuus on API |
 | Versionhallinta | Git + GitHub |
 | Prosessi | Scrum, yhden viikon sprintit |
 
@@ -452,7 +452,7 @@ Suhteet annotaatioin: `@ManyToOne` + `@JoinColumn` N-puolella, `@OneToMany(mappe
    JDBC URL `jdbc:h2:mem:ticketguru`, käyttäjä `sa`, salasana tyhjä.
 4. Kokeile esim. `SELECT * FROM LIPPU;` ja `SELECT * FROM MYYNTITAPAHTUMA;`
 
-Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. REST-myyntirajapinta tulee myöhemmässä sprintissä; Sprint 2:n kokeiltava increment on taulut, suhteet ja testdata H2:ssa.
+Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. Sprint 3:n kokeiltava increment on tapahtumien REST-rajapinta; ks. luku 5.
 
 ### 4.7 Mitä ei ole vielä kannassa
 
@@ -460,3 +460,31 @@ Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. REST-myyntirajapint
 - Salasanan hash ja Spring Security.
 - Ostajataulu (verkkokauppa).
 - Paikkakartta / istumapaikka.
+
+---
+
+## 5. REST-rajapinta
+
+Sprint 3 tarjoaa client-tiimille tapahtumien käsittelyn. **Client-tiimille tarkoitettu kuvaus** (base-URL, endpointit, parametrit, paluukoodit): [api/events.md](api/events.md). Pohjana [restapidocs](https://github.com/jamescooke/restapidocs).
+
+Tuoteomistajan rajaus tälle sprintille: lisäys, muokkaus, haku ja poisto. Lipputyypit, myynti ja liput eivät ole vielä REST-resursseja.
+
+### 5.1 Yhteenveto
+
+| Metodi | Polku | Onnistunut koodi | Kuvaus |
+| --- | --- | --- | --- |
+| GET | `/api/events` | 200 | Lista; query `kaupunki` valinnainen |
+| GET | `/api/events/{id}` | 200 | Yksi tapahtuma |
+| POST | `/api/events` | 201 | Uusi tapahtuma, `Location`-otsake |
+| PUT | `/api/events/{id}` | 200 | Korvaa tiedot |
+| DELETE | `/api/events/{id}` | 204 | Poisto, jos ei lapsitietoja |
+
+Virheet: `400` validointi, `404` tuntematon id, `409` poisto estetty (lipputyyppejä tai myyntejä).
+
+### 5.2 Demo katselmuksessa
+
+1. `cd backend && ./mvnw spring-boot:run`
+2. Avaa [api/events.md](api/events.md) tai tuo Postman-kokoelma [api/TicketGuru-events.postman_collection.json](api/TicketGuru-events.postman_collection.json)
+3. GET lista → POST uusi → PUT muokkaus → DELETE luotu → DELETE testdatan Tapahtuma A (409)
+
+Tietokanta on H2 muistissa; restart tyhjentää clientin luomat rivit ja lataa testdatan uudelleen.
