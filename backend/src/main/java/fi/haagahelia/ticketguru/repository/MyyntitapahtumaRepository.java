@@ -15,4 +15,6 @@ public interface MyyntitapahtumaRepository extends JpaRepository<Myyntitapahtuma
     List<Myyntitapahtuma> findByMyyja(Kayttaja myyja);
 
     List<Myyntitapahtuma> findByTapahtumaIdOrderByMyyntiaikaDesc(Long tapahtumaId);
+
+    boolean existsByTapahtumaId(Long tapahtumaId);
 }

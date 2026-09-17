@@ -12,4 +12,6 @@ public interface LipputyyppiRepository extends JpaRepository<Lipputyyppi, Long> 
     List<Lipputyyppi> findByTapahtuma(Tapahtuma tapahtuma);
 
     List<Lipputyyppi> findByTapahtumaId(Long tapahtumaId);
+
+    boolean existsByTapahtumaId(Long tapahtumaId);
 }
