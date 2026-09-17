@@ -63,6 +63,12 @@ curl http://localhost:8080/api/health
 
 Odotettu vastaus: `{"status":"UP","application":"TicketGuru"}`.
 
+Tapahtumalista (Sprint 3):
+
+```bash
+curl http://localhost:8080/api/events
+```
+
 ### H2-konsoli
 
 1. Avaa http://localhost:8080/h2-console
