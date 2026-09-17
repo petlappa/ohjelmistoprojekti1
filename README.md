@@ -34,7 +34,7 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 
 **Product Owner:** kurssin opettaja / asiakkaan edustaja.
 
-Sprint 2:n toteutus on jaettu viiteen työpakettiin ([#13](https://github.com/petlappa/ohjelmistoprojekti1/issues/13)–[#17](https://github.com/petlappa/ohjelmistoprojekti1/issues/17)). Sprint 3: events-API client-tiimille ([#29](https://github.com/petlappa/ohjelmistoprojekti1/issues/29), [#30](https://github.com/petlappa/ohjelmistoprojekti1/issues/30), [#31](https://github.com/petlappa/ohjelmistoprojekti1/issues/31), [#37](https://github.com/petlappa/ohjelmistoprojekti1/issues/37)–[#41](https://github.com/petlappa/ohjelmistoprojekti1/issues/41)).
+Sprint 2:n toteutus on jaettu viiteen työpakettiin ([#13](https://github.com/petlappa/ohjelmistoprojekti1/issues/13)–[#17](https://github.com/petlappa/ohjelmistoprojekti1/issues/17)). Sprint 3: events-API client-tiimille ([#29](https://github.com/petlappa/ohjelmistoprojekti1/issues/29), [#30](https://github.com/petlappa/ohjelmistoprojekti1/issues/30), [#31](https://github.com/petlappa/ohjelmistoprojekti1/issues/31), [#37](https://github.com/petlappa/ohjelmistoprojekti1/issues/37)–[#41](https://github.com/petlappa/ohjelmistoprojekti1/issues/41), [#43](https://github.com/petlappa/ohjelmistoprojekti1/issues/43)).
 
 ## Pika-aloitus
 
