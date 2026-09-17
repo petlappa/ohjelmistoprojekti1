@@ -1,10 +1,27 @@
 # Miten pyyntö kulkee Spring Bootissa (tapahtuma)
 
-Tämä on korkean tason kartta sille, joka tuntee fullstack JavaScriptin: client → Node/Deno → URL → controller → service → tietokanta.
+`docs/api/events.md` on **API-sopimus** (URL:t, JSON, paluukoodit). Tämä tiedosto on **kuva ketjusta**: sama kuin Expressissä `route → controller → service → db`, mutta Spring-tiedostot.
 
-Ketju on **sama**. Ero on siinä, että reititystä ei kirjoiteta `if (req.url === …)`-haarana, vaan annotaatioina, ja SQL:ää ei kirjoiteta serviceen — Spring Data JPA toteuttaa repository-rajapinnan.
+## Kuva: POST /api/events
 
-Client-API: [events.md](api/events.md).
+![POST /api/events — client → controller → service → H2](kuvat/pyynto-kulku-tapahtuma.png)
+
+Polku repossa (vasemmalta oikealle):
+
+```text
+Postman / client
+  → TicketGuruApplication.java          (server.js — Tomcat :8080)
+  → web/TapahtumaController.java        (router.post("/api/events", …))
+  → web/dto/TapahtumaRequest.java       (req.body, validoitu)
+  → service/TapahtumaService.java       (create — säännöt, ei SQL:ää)
+  → repository/TapahtumaRepository.java (prisma.tapahtuma.create)
+  → domain/Tapahtuma.java + H2          (taulu TAPAHTUMA, INSERT)
+  ← web/dto/TapahtumaResponse.java      (res.status(201).json(…))
+```
+
+Kansio: `backend/src/main/java/fi/haagahelia/ticketguru/`.
+
+Client-API: [api/events.md](api/events.md).
 
 ---
 

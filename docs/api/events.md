@@ -1,6 +1,10 @@
 # TicketGuru REST API — Events
 
-Client-tiimille. Pohja: [REST API Documentation Templates](https://github.com/jamescooke/restapidocs) (James Cooke).
+Client-tiimille: **mitä** kutsutaan (URL, JSON, paluukoodit).
+
+**Miten pyyntö kulkee koodissa** (kuva: controller → service → H2, JS-vertailu): [../arkkitehtuuri-tapahtuma.md](../arkkitehtuuri-tapahtuma.md).
+
+Pohja: [REST API Documentation Templates](https://github.com/jamescooke/restapidocs) (James Cooke).
 
 Sprint 3 toteuttaa **tapahtumien** CRUD:n. Kirjautumista ei vielä ole: rajapinta on avoin kehityskäytössä.
 
