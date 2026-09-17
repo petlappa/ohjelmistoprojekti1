@@ -9,6 +9,7 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 | GitHub-repositorio | https://github.com/petlappa/ohjelmistoprojekti1 |
 | Dokumentaatio | [docs/dokumentaatio.md](docs/dokumentaatio.md) |
 | API-dokumentaatio (events, client-tiimille) | [docs/api/events.md](docs/api/events.md) |
+| Pyynnön kulku Springissä (arkkitehtuuri) | [docs/arkkitehtuuri-tapahtuma.md](docs/arkkitehtuuri-tapahtuma.md) |
 | Postman-kokoelma | [docs/api/TicketGuru-events.postman_collection.json](docs/api/TicketGuru-events.postman_collection.json) |
 | Tietokantakaavio | [docs/dokumentaatio.md#43-tietokantakaavio](docs/dokumentaatio.md#43-tietokantakaavio) |
 | Tuotteen työjono (Product Backlog) | https://github.com/users/petlappa/projects/1/views/1 |
