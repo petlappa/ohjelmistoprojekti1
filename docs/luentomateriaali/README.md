@@ -16,7 +16,7 @@ Nämä ovat opiskelijoille jaettuja ohjeita. Esimerkit noudattavat luentojen aih
 | Aihe | Tiedosto |
 | --- | --- |
 | Käsiteanalyysi → tietokanta → Spring Boot (Entity, DAO/Repository, JPA Query Methods) | [tietokanta-spring-bootissa.md](tietokanta-spring-bootissa.md) |
-| REST: suhteen merkintä GET/POST, Jackson, DTO; tapoja saa sekoittaa, DTO on päälinja | [api-suhteet-ja-dto.md](api-suhteet-ja-dto.md) |
+| REST: suhteen merkintä GET/POST, Jackson, DTO; tiimi valitsee ensin, mallipohdinta dioissa 14– | [api-suhteet-ja-dto.md](api-suhteet-ja-dto.md) |
 
 Jos et ole käynyt backend-kurssia, aloita ohjeesta kohdasta **Mitä syntyy automaattisesti** (*Tiedosto vai käynnistys?*): Entity- ja Repository-`.java`-tiedostot kirjoitetaan itse; Hibernate ja Spring täyttävät taulut ja `save`/`findAll` vasta kun sovellus käynnistyy.
 

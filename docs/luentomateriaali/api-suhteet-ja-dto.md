@@ -6,6 +6,8 @@ Opettajan PDF (`linkitetyt_resurssit`) käyttää nimiä `User` ja `Transaction`
 
 Sprint 3: tapahtumilla (`/api/events`) ei vielä ole suhdetta JSON:ssa. Tämä luento on seuraavaa sprinttiä varten (lipputyyppi, lippu, myynti).
 
+**Opetusjärjestys:** diat 1–13 antavat työkalut. Tiimi valitsee itse, miten merkitsee suhteen lipputyypille, myynnille ja lipulle. Mallipohdinta (“miksi myynti on se kohta”) on **dioissa 14–** — älä näytä niitä ennen kuin tiimi on ensin yrittänyt. Väärä valinta saa jäädä; sen korjaa myöhemmin, kun kassa ei mahdu URL:ään.
+
 ---
 
 ## Dia 1 — Kaksi eri kysymystä
@@ -221,14 +223,14 @@ Kolmea POST-tapaa **saa** käyttää samassa TicketGurussa. REST ei pakota yhtä
 | Tapa | Esimerkki TicketGurussa | Milloin |
 | --- | --- | --- |
 | 1 — id URL:ssa | `POST /api/events/{id}/ticket-types` | Front on jo tapahtuman sivulla; lapsi kuuluu yhdelle isännälle |
-| 2 — Request DTO | `POST /api/sales` body `{ tapahtumaId, myyjaId, rivit }` | Useita viitteitä kerralla, validointi, vakaa sopimus clientille |
+| 2 — Request DTO | `POST /api/ticket-types` body `{ nimi, hinta, tapahtumaId }` | Useita kenttiä / viite bodyssa, validointi, vakaa sopimus clientille |
 | 3 — Entity Trick | `{ "tapahtuma": { "id": 5 } }` suoraan entiteettiin | Vain pika-demo / sisäinen kokeilu; ei TicketGurun julkiseen API:in |
 
 **Johdonmukaisuus** tekee rajapinnasta käyttökelpoisen. Jos jokainen endpoint noudattaa eri periaatetta, React-tiimin on vaikea arvata, onko id polussa vai bodyssa.
 
 Hyvä linja: **pääarkkitehtuuri on DTO** (kuten Sprint 3:n `TapahtumaRequest` / `TapahtumaResponse`). Tapa 1 täydentää, kun hierarkia on ilmeinen. Tapa 3 ei ole tuotantolinja.
 
-Päätössääntö endpointeittain: dia 12.
+Päätössääntö (työkalu, ei valmista TicketGuru-karttaa): dia 12. Tiimin oma valinta ensin; mallipohdinta dioissa 14–.
 
 ---
 
@@ -239,20 +241,7 @@ Päätössääntö endpointeittain: dia 12.
 | Sisään (POST/PUT) | `TapahtumaRequest` / myöhemmin `LipputyyppiRequest` | vain syöte + id-viitteet, `@NotBlank` |
 | Ulos (GET/201) | `TapahtumaResponse` / `LipputyyppiResponse` | ei salasanaa, ei kehää, vakaat kenttänimet |
 
-Sama malli myynnille:
-
-```java
-public record MyyntiRequest(Long tapahtumaId, Long myyjaId, List<Rivi> rivit) {}
-
-public record MyyntiResponse(
-        Long id,
-        LocalDateTime myyntiaika,
-        BigDecimal summa,
-        String myyjanNimi,
-        String tapahtumanNimi) {}
-```
-
-Pyynnössä id:t. Vastauksessa nimet. Taulussa oliot.
+Sama jako myöhemmin muille resursseille: pyynnössä id:t, vastauksessa nimet, taulussa oliot. Esimerkki myynnistä on mallidioissa 14– — älä kopioi sitä ennen tiimin omaa luonnosta.
 
 Miksi: API ei rikkoudu jos sarake nimetään uudelleen; hash ei vuoda; Jackson ei kierrä.
 
@@ -285,17 +274,17 @@ Onko kyseessä HAKU (GET)?
   └── Halutaan mahdollisimman kevyt?       → URI / pelkkä id
 ```
 
-TicketGuru-ehdotus:
+TicketGuru — **tiimin tehtävä** (älä avaa vielä dioja 14–):
 
-| Endpoint | POST | GET |
-| --- | --- | --- |
-| Lipputyyppi | Tapa 1 tai 2 (`tapahtumaId`) | Response DTO (`tapahtumaNimi`) |
-| Myynti | Tapa 2 (`tapahtumaId`, `myyjaId`, rivit) | Response DTO (`myyjanNimi`) |
-| Lippu myyntiin | Tapa 1 `POST /api/sales/{id}/tickets` tai rivit myynnin bodyssa | DTO, ei koko `Kayttaja`-puuta |
+| Endpoint | POST-tapamme | GET-tapamme | Miksi |
+| --- | --- | --- | --- |
+| Lipputyyppi | | | |
+| Myynti | | | |
+| Lippu (kassalla / tarkastus) | | | |
 
 Älä palauta `@Entity` suoraan JSON:na kun relaatiot ovat kaksisuuntaisia.
 
-Tämä taulukko on **rinnakkaiskäyttöä**: lipputyyppi voi olla tapa 1, myynti tapa 2. Sama DTO-päälinja, eri POST-osoite kun se selkeyttää. Perustelu: dia 9.
+Tapoja **saa** sekoittaa (dia 9). Johdonmukaisuus: React-tiimin pitää arvata, onko id polussa vai bodyssa. Mallipohdinta vasta dioissa 14–.
 
 ---
 
@@ -345,6 +334,107 @@ public Lipputyyppi luo(@RequestBody Lipputyyppi lipputyyppi) {
     return repo.save(lipputyyppi); // body: { "tapahtuma": { "id": 5 } }
 }
 ```
+
+---
+
+## Diat 14– — mallipohdinta (näytä vasta kun tiimi on valinnut)
+
+Nämä diat eivät ole “oikea vastaus tentissä”. Ne ovat yksi perusteltu linja. Jos tiimi valitsi toisin ja kassa alkaa kipeästi, palataan tähän ja korjataan.
+
+---
+
+## Dia 14 — Puu mahtuu URL:ään, tähti ei
+
+Lipputyypillä on **yksi isäntä**. Myynnillä on **monta liitosta yhdessä kassatapahtumassa**.
+
+```text
+Puu (helppo URL):
+  Tapahtuma 5  →  Lipputyyppi “Normaali”
+
+Tähti (URL loppuu kesken):
+                    Tapahtuma 5
+                         ↘
+  Kayttaja 27 (myyjä) →  Myyntitapahtuma  →  Lippu, Lippu, Lippu
+                                              ↘ lipputyyppi 3, 3, 8
+```
+
+URI-id (`POST /api/events/5/ticket-types`) toimii puussa. Tähti tarvitsee bodyn, jossa on useita id:itä ja lista.
+
+---
+
+## Dia 15 — Lipputyyppi: sama kuvio kuin JS-sovelluksissa
+
+Vierasavain on vain `tapahtuma_id`. Front on jo tapahtumasivulla.
+
+```
+POST /api/events/5/ticket-types
+
+{ "nimi": "Normaali", "hinta": 25.00 }
+```
+
+Selkeä isäntä–lapsi. Bodyyn ei tarvita `tapahtumaId`:tä. Tämä ei ole “väärä JavaScript-tapa” — se riittää, kun suhde on puu.
+
+---
+
+## Dia 16 — Myynti: kaksi vanhempaa ja lista lippuja
+
+Yksi `Myyntitapahtuma` sitoo kerralla:
+
+- **mihin tapahtumaan** (`tapahtuma_id`)
+- **kuka myi** (`myyja_id`)
+- **mitä lippuja** (2 × Normaali, 1 × VIP → jokainen `Lippu` viittaa `lipputyyppi_id`:hen)
+
+URL:ään ei mahdu siististi kahta vanhempaa ja listaa:
+
+```text
+POST /api/events/5/users/27/tickets
+```
+
+Kuka on isäntä, tapahtuma vai myyjä? Mihin laitetaan määrät per lipputyyppi?
+
+---
+
+## Dia 17 — Yksi kuitti, ei kolmea POST:ia
+
+Asiakas ostaa **yhden myynnin** ja yhden summan. Kolme erillistä `POST …/tickets` -kutsua rikkoo kuitin (kolme myyntinumeroa, kolme aikaa).
+
+Siksi yksi pyyntö, DTO bodyssa:
+
+```json
+{
+  "tapahtumaId": 5,
+  "myyjaId": 27,
+  "rivit": [
+    { "lipputyyppiId": 3, "kpl": 2 },
+    { "lipputyyppiId": 8, "kpl": 1 }
+  ]
+}
+```
+
+Myyjän voi myöhemmin ottaa tokenista; tapahtuma + rivit jäävät silti bodyyn. Tämä on DTO, koska pyynnössä on useita id:itä ja lista — ei siksi että myynti olisi “erityisen Spring-juttu”.
+
+---
+
+## Dia 18 — Yksi linja, jos palataan korjaamaan
+
+| Endpoint | POST | GET |
+| --- | --- | --- |
+| Lipputyyppi | Tapa 1 tai 2 (`tapahtumaId`) | Response DTO (`tapahtumaNimi`) |
+| Myynti | Tapa 2 (`tapahtumaId`, `myyjaId`, rivit) | Response DTO (`myyjanNimi`) |
+| Lippu myyntiin | Rivit myynnin bodyssa (tai Tapa 1 vasta kun myynti on jo olemassa) | DTO, ei koko `Kayttaja`-puuta |
+
+```java
+public record MyyntiRequest(Long tapahtumaId, Long myyjaId, List<Rivi> rivit) {}
+
+public record MyyntiResponse(
+        Long id,
+        LocalDateTime myyntiaika,
+        BigDecimal summa,
+        String myyjanNimi,
+        String tapahtumanNimi) {}
+```
+
+Jos tiimi teki myynnin pelkällä URL:llä ja se alkaa kipeästi: tämä on se korjaus, ei häpeä.
 
 ---
 
