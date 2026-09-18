@@ -19,6 +19,8 @@ Sprint 3: tapahtumilla (`/api/events`) ei vielä ole suhdetta JSON:ssa. Tämä l
 
 URL:n hierarkia (`/events/5/ticket-types`) on **osoite**. JSON:n sisäkkäisyys (`"tapahtuma": { ... }`) on **vastauksen muoto**. Ne ovat eri valintoja.
 
+REST ei vaadi samaa kaavaa joka endpointille. Sama sovellus voi käyttää eri tapoja rinnakkain; valinta on per endpoint (dia 9).
+
 JavaScriptissä (Express) laitat usein kaiken URL:ään ja palautat SQL-rivin sellaisenaan. Spring Bootissa JPA-entiteetti on tietokantarivi olioksi — sen palauttaminen suoraan JSON:na on eri asia kuin API-sopimus.
 
 ---
@@ -212,7 +214,25 @@ Ei erillistä DTO-luokkaa. Kevyt demossa. Vaara: `lipputyyppi.getTapahtuma().get
 
 ---
 
-## Dia 9 — DTO ei ole vain GET
+## Dia 9 — Sama API, eri tavat rinnakkain
+
+Kolmea POST-tapaa **saa** käyttää samassa TicketGurussa. REST ei pakota yhtä kaavaa kaikille endpointeille. Suunnittelija valitsee sen, mikä on kyseiselle toiminnolle selkein.
+
+| Tapa | Esimerkki TicketGurussa | Milloin |
+| --- | --- | --- |
+| 1 — id URL:ssa | `POST /api/events/{id}/ticket-types` | Front on jo tapahtuman sivulla; lapsi kuuluu yhdelle isännälle |
+| 2 — Request DTO | `POST /api/sales` body `{ tapahtumaId, myyjaId, rivit }` | Useita viitteitä kerralla, validointi, vakaa sopimus clientille |
+| 3 — Entity Trick | `{ "tapahtuma": { "id": 5 } }` suoraan entiteettiin | Vain pika-demo / sisäinen kokeilu; ei TicketGurun julkiseen API:in |
+
+**Johdonmukaisuus** tekee rajapinnasta käyttökelpoisen. Jos jokainen endpoint noudattaa eri periaatetta, React-tiimin on vaikea arvata, onko id polussa vai bodyssa.
+
+Hyvä linja: **pääarkkitehtuuri on DTO** (kuten Sprint 3:n `TapahtumaRequest` / `TapahtumaResponse`). Tapa 1 täydentää, kun hierarkia on ilmeinen. Tapa 3 ei ole tuotantolinja.
+
+Päätössääntö endpointeittain: dia 12.
+
+---
+
+## Dia 10 — DTO ei ole vain GET
 
 | Suunta | Luokka TicketGurussa | Tehtävä |
 | --- | --- | --- |
@@ -238,7 +258,7 @@ Miksi: API ei rikkoudu jos sarake nimetään uudelleen; hash ei vuoda; Jackson e
 
 ---
 
-## Dia 10 — Miksi tämä tuntuu raskaammalta kuin Express
+## Dia 11 — Miksi tämä tuntuu raskaammalta kuin Express
 
 | Express | Spring + JPA |
 | --- | --- |
@@ -251,7 +271,7 @@ Kurinalaisuus on tarkoituksellista (tyypit, kerrokset, vuodot). TicketGuru Sprin
 
 ---
 
-## Dia 11 — Päätössääntö tiimille
+## Dia 12 — Päätössääntö tiimille
 
 ```text
 Onko kyseessä LUONTI (POST)?
@@ -275,9 +295,11 @@ TicketGuru-ehdotus:
 
 Älä palauta `@Entity` suoraan JSON:na kun relaatiot ovat kaksisuuntaisia.
 
+Tämä taulukko on **rinnakkaiskäyttöä**: lipputyyppi voi olla tapa 1, myynti tapa 2. Sama DTO-päälinja, eri POST-osoite kun se selkeyttää. Perustelu: dia 9.
+
 ---
 
-## Dia 12 — Mitä koodissa jo on vs. luennon PDF
+## Dia 13 — Mitä koodissa jo on vs. luennon PDF
 
 | | Nyt repossa | Luennon idea |
 | --- | --- | --- |
