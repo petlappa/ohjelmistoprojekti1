@@ -170,22 +170,23 @@ Tämä on se mitä TicketGuru jo tekee tapahtumille: `Tapahtuma` (taulu) ≠ `Ta
 
 ## Dia 8 — POST: kolme tapaa merkitä “kuuluu tähän”
 
-Uusi **lipputyyppi** kuuluu jo olemassa olevaan **tapahtumaan**. Tapahtumaa ei luoda uudelleen.
+Vertaa **samaa operaatiota**: uusi lipputyyppi tapahtumalle 5. Tapahtumaa ei luoda uudelleen. Ero on vain siinä, **missä id 5 on**.
+
+Opettajan PDF sekoittaa kaksi eri POST:ia (lippu myyntiin 56 vs. uusi myynti + `userId`). Se ei ole Tapa 1 vs Tapa 2. Alla molemmat tavat samalle TicketGuru-resurssille.
 
 ### Tapa 1 — id URL:ssa (hierarkia)
 
 ```
 POST /api/events/5/ticket-types
-Content-Type: application/json
 
 { "nimi": "Normaali", "hinta": 25.00 }
 ```
 
 Controller lukee `5` polusta, hakee `Tapahtuma`, asettaa `lipputyyppi.setTapahtuma(...)`. Bodyyn ei tarvita `tapahtumaId`:tä.
 
-Luonteva kun aliresurssi **aina** kuuluu yhdelle isännälle (lipputyyppi tapahtumalle, lippu myynnille).
+Luonteva kun aliresurssi **aina** kuuluu yhdelle isännälle.
 
-### Tapa 2 — id bodyssa, Request DTO (suositus)
+### Tapa 2 — id bodyssa, Request DTO
 
 ```
 POST /api/ticket-types
@@ -201,6 +202,16 @@ public record LipputyyppiRequest(
 ```
 
 Controller: `findById(dto.tapahtumaId())` → 400 jos puuttuu → tallenna. Tämä **on DTO**. Julkinen kenttä `tapahtumaId`, tietokannassa `Tapahtuma`-olio.
+
+Sama rivi tietokantaan. Eri osoite, eri JSON.
+
+| | Tapa 1 | Tapa 2 |
+| --- | --- | --- |
+| Mitä luodaan | Lipputyyppi tapahtumalle 5 | Lipputyyppi tapahtumalle 5 |
+| Missä id 5 | polussa `/events/5/...` | bodyssa `tapahtumaId` |
+| Body | vain lipputyypin omat kentät | omat kentät + viite |
+
+Opettajan dia: `POST /transactions/56/ticket` luo **lipun**, `POST /transactions` + `userId` luo **myynnin**. Eri resurssi, eri suhde — siksi siellä näkyy `Ticket` vs `userId`. Älä opi “kahta API:a”; opi **mihin id kirjoitetaan**.
 
 ### Tapa 3 — Entity Trick (ei DTO)
 
