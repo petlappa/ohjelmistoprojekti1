@@ -69,6 +69,13 @@ Tapahtumalista (Sprint 3):
 curl http://localhost:8080/api/events
 ```
 
+Lipputyypit ja kuitti (Sprint 4). Korvaa id:t listan vastauksesta:
+
+```bash
+curl http://localhost:8080/api/events/1/ticket-types
+curl http://localhost:8080/api/sales/1
+```
+
 ### H2-konsoli
 
 1. Avaa http://localhost:8080/h2-console

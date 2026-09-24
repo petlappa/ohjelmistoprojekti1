@@ -2,18 +2,23 @@
 
 Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoimiston myyntipisteeseen tarkoitettu lipunmyyntijärjestelmä.
 
-## Palautuslinkit (Sprint 3)
+## Palautuslinkit (Sprint 4)
 
 | Artefakti | Linkki |
 | --- | --- |
 | GitHub-repositorio | https://github.com/petlappa/ohjelmistoprojekti1 |
 | Dokumentaatio | [docs/dokumentaatio.md](docs/dokumentaatio.md) |
-| API-dokumentaatio (events, client-tiimille) | [docs/api/events.md](docs/api/events.md) |
-| Pyynnön kulku Springissä (arkkitehtuuri) | [docs/arkkitehtuuri-tapahtuma.md](docs/arkkitehtuuri-tapahtuma.md) |
-| Postman-kokoelma | [docs/api/TicketGuru-events.postman_collection.json](docs/api/TicketGuru-events.postman_collection.json) |
+| API-dokumentaatio (events, Sprint 3) | [docs/api/events.md](docs/api/events.md) |
+| API-dokumentaatio (lipputyypit) | [docs/api/ticket-types.md](docs/api/ticket-types.md) |
+| API-dokumentaatio (myynti) | [docs/api/sales.md](docs/api/sales.md) |
+| Sprint 4 arkkitehtuurivalinnat | [docs/arkkitehtuuri-sprint-4.md](docs/arkkitehtuuri-sprint-4.md) |
+| Pyynnön kulku Springissä (tapahtuma, Sprint 3) | [docs/arkkitehtuuri-tapahtuma.md](docs/arkkitehtuuri-tapahtuma.md) |
+| Postman, tapahtumat | [docs/api/TicketGuru-events.postman_collection.json](docs/api/TicketGuru-events.postman_collection.json) |
+| Postman, myynti | [docs/api/TicketGuru-sales.postman_collection.json](docs/api/TicketGuru-sales.postman_collection.json) |
 | Tietokantakaavio | [docs/dokumentaatio.md#43-tietokantakaavio](docs/dokumentaatio.md#43-tietokantakaavio) |
 | Tuotteen työjono (Product Backlog) | https://github.com/users/petlappa/projects/1/views/1 |
 | Scrum-taulu (nykyinen sprintti) | https://github.com/users/petlappa/projects/1/views/9 |
+| Sprint 4 | https://github.com/users/petlappa/projects/1/views/6 |
 | Sprint 3 | https://github.com/users/petlappa/projects/1/views/5 |
 | Sprint 2 | https://github.com/users/petlappa/projects/1/views/4 |
 | Sprint 1 | https://github.com/users/petlappa/projects/1/views/3 |
@@ -26,7 +31,7 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 
 | Nimi | Scrum-rooli |
 | --- | --- |
-| Petteri Lappalainen | Developer, Scrum Master (sprintit 1–3) |
+| Petteri Lappalainen | Developer, Scrum Master (sprintit 1–4) |
 | *tiimin jäsen 2* | Developer |
 | *tiimin jäsen 3* | Developer |
 | *tiimin jäsen 4* | Developer |
@@ -34,7 +39,7 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 
 **Product Owner:** kurssin opettaja / asiakkaan edustaja.
 
-Sprint 2:n toteutus on jaettu viiteen työpakettiin ([#13](https://github.com/petlappa/ohjelmistoprojekti1/issues/13)–[#17](https://github.com/petlappa/ohjelmistoprojekti1/issues/17)). Sprint 3: events-API client-tiimille ([#29](https://github.com/petlappa/ohjelmistoprojekti1/issues/29), [#30](https://github.com/petlappa/ohjelmistoprojekti1/issues/30), [#31](https://github.com/petlappa/ohjelmistoprojekti1/issues/31), [#37](https://github.com/petlappa/ohjelmistoprojekti1/issues/37)–[#41](https://github.com/petlappa/ohjelmistoprojekti1/issues/41), [#43](https://github.com/petlappa/ohjelmistoprojekti1/issues/43)).
+Sprint 2:n toteutus on jaettu viiteen työpakettiin ([#13](https://github.com/petlappa/ohjelmistoprojekti1/issues/13)–[#17](https://github.com/petlappa/ohjelmistoprojekti1/issues/17)). Sprint 3: events-API ([#29](https://github.com/petlappa/ohjelmistoprojekti1/issues/29)–[#31](https://github.com/petlappa/ohjelmistoprojekti1/issues/31), [#37](https://github.com/petlappa/ohjelmistoprojekti1/issues/37)–[#41](https://github.com/petlappa/ohjelmistoprojekti1/issues/41), [#43](https://github.com/petlappa/ohjelmistoprojekti1/issues/43)). Sprint 4: lipputyypit ja myynti ([#20](https://github.com/petlappa/ohjelmistoprojekti1/issues/20), [#21](https://github.com/petlappa/ohjelmistoprojekti1/issues/21), [#23](https://github.com/petlappa/ohjelmistoprojekti1/issues/23), [#24](https://github.com/petlappa/ohjelmistoprojekti1/issues/24), [#27](https://github.com/petlappa/ohjelmistoprojekti1/issues/27), [#32](https://github.com/petlappa/ohjelmistoprojekti1/issues/32), [#34](https://github.com/petlappa/ohjelmistoprojekti1/issues/34), [#47](https://github.com/petlappa/ohjelmistoprojekti1/issues/47)).
 
 ## Pika-aloitus
 
@@ -55,7 +60,7 @@ Sovellus vastaa osoitteessa:
 - H2-konsoli: http://localhost:8080/h2-console  
   JDBC URL: `jdbc:h2:mem:ticketguru` · käyttäjä: `sa` · salasana tyhjä
 
-Käynnistyksessä `DemoDataLoader` lisää esimerkkirivit. Sprint 3:n kokeiltava versio on **events-API**. Client-kuvaus: [docs/api/events.md](docs/api/events.md). Postman: [docs/api/TicketGuru-events.postman_collection.json](docs/api/TicketGuru-events.postman_collection.json) (Import Postmanissa).
+Käynnistyksessä `DemoDataLoader` lisää esimerkkirivit. Sprint 4:n kokeiltava versio on **lipputyypit ja myynti**. Client-kuvaus: [docs/api/ticket-types.md](docs/api/ticket-types.md), [docs/api/sales.md](docs/api/sales.md). Postman: [docs/api/TicketGuru-sales.postman_collection.json](docs/api/TicketGuru-sales.postman_collection.json).
 
 Testit:
 
@@ -75,8 +80,8 @@ docs/        Projektidokumentaatio (tuote) ja luentomuistiinpanot
 backend/src/main/java/fi/haagahelia/ticketguru/
   domain/        JPA-entityt ja suhteet
   repository/    Spring Data JPA -rajapinnat
-  web/           REST (`/api/health`, `/api/events`)
-  service/       Tapahtumien käyttötapaukset
+  web/           REST (`/api/health`, `/api/events`, `/api/sales`)
+  service/       Tapahtumat, lipputyypit, myynti
 ```
 
-Käyttöliittymän toteuttaa toinen tiimi. Sprint 3:n tavoite on tapahtumien REST-CRUD, API-dokumentaatio ja Postman-demo.
+Käyttöliittymän toteuttaa toinen tiimi. Sprint 4 lisää lipputyypit tapahtuman alle ja yhden myyntikutsun, joka luo kuitin ja liput. Valinnat: [docs/arkkitehtuuri-sprint-4.md](docs/arkkitehtuuri-sprint-4.md).

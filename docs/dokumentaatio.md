@@ -1,6 +1,6 @@
 # TicketGuru-dokumentaatio
 
-Haaga-Helia Ohjelmistoprojekti 1 · Sprint 3
+Haaga-Helia Ohjelmistoprojekti 1 · Sprint 4
 
 Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely**, **Käyttöliittymä**, **Tietokanta** ja **REST-rajapinta**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
 
@@ -60,7 +60,7 @@ Tämän kurssin aikana rakennetaan myyntipisteen ydin: Spring Boot -backend, tie
 
 | Osa | Valinta Sprint 3:ssa |
 | --- | --- |
-| Backend | Java 25 (LTS), Spring Boot 4.1, REST `/api/events` |
+| Backend | Java 25 (LTS), Spring Boot 4.1, REST `/api/events`, `/api/sales` |
 | Persistenssi | JPA/Hibernate, entityt ja repositoryt |
 | Tietokanta kehityksessä | H2 (muistissa) + esimerkkidata, ei persistentti |
 | Tietokanta myöhemmin | PostgreSQL tai MariaDB (päätetään tiimissä) |
@@ -452,7 +452,7 @@ Suhteet annotaatioin: `@ManyToOne` + `@JoinColumn` N-puolella, `@OneToMany(mappe
    JDBC URL `jdbc:h2:mem:ticketguru`, käyttäjä `sa`, salasana tyhjä.
 4. Kokeile esim. `SELECT * FROM LIPPU;` ja `SELECT * FROM MYYNTITAPAHTUMA;`
 
-Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. Sprint 3:n kokeiltava increment on tapahtumien REST-rajapinta; ks. luku 5.
+Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. Sprint 4:n kokeiltava increment on lipputyypit ja myynti; ks. luku 5. Tapahtumien CRUD (Sprint 3) on edelleen käytössä.
 
 ### 4.7 Mitä ei ole vielä kannassa
 
@@ -465,11 +465,11 @@ Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. Sprint 3:n kokeilta
 
 ## 5. REST-rajapinta
 
-Sprint 3 tarjoaa client-tiimille tapahtumien käsittelyn. **Client-tiimille tarkoitettu kuvaus** (base-URL, endpointit, parametrit, paluukoodit): [api/events.md](api/events.md). Pohjana [restapidocs](https://github.com/jamescooke/restapidocs).
+Sprint 3 toi tapahtumien CRUD:n. Sprint 4 lisää lipputyypit ja myyntitapahtuman. **Client-kuvaukset:** [api/events.md](api/events.md), [api/ticket-types.md](api/ticket-types.md), [api/sales.md](api/sales.md). Pohjana [restapidocs](https://github.com/jamescooke/restapidocs).
 
-**Miten pyyntö etenee koodissa** (JS-vertailu, kerrokset, POST-esimerkki tiedostoittain): [arkkitehtuuri-tapahtuma.md](arkkitehtuuri-tapahtuma.md).
+**Miksi rajapinta on laadittu näin** (DTO, id polussa vs. bodyssa): [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md). Tapahtumapyynnön kulku koodissa: [arkkitehtuuri-tapahtuma.md](arkkitehtuuri-tapahtuma.md).
 
-Tuoteomistajan rajaus tälle sprintille: lisäys, muokkaus, haku ja poisto. Lipputyypit, myynti ja liput eivät ole vielä REST-resursseja.
+Tuoteomistajan rajaus Sprint 4:lle: lipputyypin luonti ja listaus sekä yhden myyntitapahtuman luonti ja haku. Raportti, ovitarkastus ja kirjautuminen eivät ole vielä REST-resursseja.
 
 ### 5.1 Yhteenveto
 
@@ -480,13 +480,17 @@ Tuoteomistajan rajaus tälle sprintille: lisäys, muokkaus, haku ja poisto. Lipp
 | POST | `/api/events` | 201 | Uusi tapahtuma, `Location`-otsake |
 | PUT | `/api/events/{id}` | 200 | Korvaa tiedot |
 | DELETE | `/api/events/{id}` | 204 | Poisto, jos ei lapsitietoja |
+| GET | `/api/events/{id}/ticket-types` | 200 | Tapahtuman lipputyypit |
+| POST | `/api/events/{id}/ticket-types` | 201 | Uusi lipputyyppi, tapahtuman id polussa |
+| POST | `/api/sales` | 201 | Myynti ja liput yhdellä kutsulla |
+| GET | `/api/sales/{id}` | 200 | Kuitti: nimet, summa, koodit |
 
-Virheet: `400` validointi, `404` tuntematon id, `409` poisto estetty (lipputyyppejä tai myyntejä).
+Virheet: `400` validointi tai myynnin bodyn tuntematon viite, `404` tuntematon polun id, `409` poisto estetty tai kapasiteetti ylittyisi.
 
 ### 5.2 Demo katselmuksessa
 
 1. `cd backend && ./mvnw spring-boot:run`
-2. Avaa [api/events.md](api/events.md) tai tuo Postman-kokoelma [api/TicketGuru-events.postman_collection.json](api/TicketGuru-events.postman_collection.json)
-3. GET lista → POST uusi → PUT muokkaus → DELETE luotu → DELETE testdatan Tapahtuma A (409)
+2. Tapahtumat: [api/events.md](api/events.md) tai [api/TicketGuru-events.postman_collection.json](api/TicketGuru-events.postman_collection.json)
+3. Myynti: [api/sales.md](api/sales.md) tai [api/TicketGuru-sales.postman_collection.json](api/TicketGuru-sales.postman_collection.json) — listaa lipputyypit, luo tyyppi, `POST /api/sales`, hae kuitti
 
 Tietokanta on H2 muistissa; restart tyhjentää clientin luomat rivit ja lataa testdatan uudelleen.
