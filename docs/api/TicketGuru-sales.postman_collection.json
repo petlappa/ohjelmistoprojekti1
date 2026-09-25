@@ -1,0 +1,116 @@
+{
+  "info": {
+    "name": "TicketGuru Sales API",
+    "description": "Sprint 4: lipputyypit ja myyntitapahtuma.\nBase-URL: http://localhost:8080/api\nAja järjestyksessä: List events → List ticket types → Create ticket type → Create sale → Get sale.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api" },
+    { "key": "eventId", "value": "1" },
+    { "key": "sellerId", "value": "1" },
+    { "key": "ticketTypeId", "value": "1" },
+    { "key": "saleId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "List events",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const rows = pm.response.json();",
+              "const helsinki = rows.find(r => r.kaupunki === 'Helsinki') || rows[0];",
+              "if (helsinki) pm.collectionVariables.set('eventId', String(helsinki.id));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/events"
+      }
+    },
+    {
+      "name": "List ticket types",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const rows = pm.response.json();",
+              "if (rows.length) pm.collectionVariables.set('ticketTypeId', String(rows[0].id));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/events/{{eventId}}/ticket-types"
+      }
+    },
+    {
+      "name": "Create ticket type",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('ticketTypeId', String(pm.response.json().id));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"kuvaus\": \"Opiskelija\",\n  \"hinta\": 10.00\n}"
+        },
+        "url": "{{baseUrl}}/events/{{eventId}}/ticket-types"
+      }
+    },
+    {
+      "name": "Create sale",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('saleId', String(pm.response.json().id));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tapahtumaId\": {{eventId}},\n  \"myyjaId\": {{sellerId}},\n  \"rivit\": [\n    { \"lipputyyppiId\": {{ticketTypeId}}, \"kpl\": 2 }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/sales",
+        "description": "sellerId on esimerkkidatan käyttäjä myyja. Jos 400, tarkista id H2-konsolista (KAYTTAJA)."
+      }
+    },
+    {
+      "name": "Get sale",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/sales/{{saleId}}"
+      }
+    }
+  ]
+}

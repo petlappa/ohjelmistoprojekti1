@@ -4,7 +4,7 @@ Luento: valitse **GET-vastauksen muoto** ja **POST-pyynnön muoto** erikseen. DT
 
 Opettajan PDF (`linkitetyt_resurssit`) käyttää nimiä `User` ja `Transaction`. TicketGurussa ne ovat **Kayttaja** (kassalla: **myyjä**) ja **Myyntitapahtuma**. Sama idea, meidän nimet.
 
-Sprint 3: tapahtumilla (`/api/events`) ei vielä ole suhdetta JSON:ssa. Tämä luento on seuraavaa sprinttiä varten (lipputyyppi, lippu, myynti).
+Sprint 3: tapahtumilla (`/api/events`) ei ole suhdetta JSON:ssa. Sprint 4 valitsi linjan, joka on kirjattu tiedostoon [../arkkitehtuuri-sprint-4.md](../arkkitehtuuri-sprint-4.md). Tämä luento kuvaa vaihtoehdot; valinta ei korvaa luentoa.
 
 **Opetusjärjestys:** diat 1–13 antavat työkalut. Tiimi valitsee itse, miten merkitsee suhteen lipputyypille, myynnille ja lipulle. Mallipohdinta (“miksi myynti on se kohta”) on **dioissa 14–** — älä näytä niitä ennen kuin tiimi on ensin yrittänyt. Väärä valinta saa jäädä; sen korjaa myöhemmin, kun kassa ei mahdu URL:ään.
 
@@ -170,22 +170,23 @@ Tämä on se mitä TicketGuru jo tekee tapahtumille: `Tapahtuma` (taulu) ≠ `Ta
 
 ## Dia 8 — POST: kolme tapaa merkitä “kuuluu tähän”
 
-Uusi **lipputyyppi** kuuluu jo olemassa olevaan **tapahtumaan**. Tapahtumaa ei luoda uudelleen.
+Vertaa **samaa operaatiota**: uusi lipputyyppi tapahtumalle 5. Tapahtumaa ei luoda uudelleen. Ero on vain siinä, **missä id 5 on**.
+
+Opettajan PDF sekoittaa kaksi eri POST:ia (lippu myyntiin 56 vs. uusi myynti + `userId`). Se ei ole Tapa 1 vs Tapa 2. Alla molemmat tavat samalle TicketGuru-resurssille.
 
 ### Tapa 1 — id URL:ssa (hierarkia)
 
 ```
 POST /api/events/5/ticket-types
-Content-Type: application/json
 
 { "nimi": "Normaali", "hinta": 25.00 }
 ```
 
 Controller lukee `5` polusta, hakee `Tapahtuma`, asettaa `lipputyyppi.setTapahtuma(...)`. Bodyyn ei tarvita `tapahtumaId`:tä.
 
-Luonteva kun aliresurssi **aina** kuuluu yhdelle isännälle (lipputyyppi tapahtumalle, lippu myynnille).
+Luonteva kun aliresurssi **aina** kuuluu yhdelle isännälle.
 
-### Tapa 2 — id bodyssa, Request DTO (suositus)
+### Tapa 2 — id bodyssa, Request DTO
 
 ```
 POST /api/ticket-types
@@ -202,17 +203,49 @@ public record LipputyyppiRequest(
 
 Controller: `findById(dto.tapahtumaId())` → 400 jos puuttuu → tallenna. Tämä **on DTO**. Julkinen kenttä `tapahtumaId`, tietokannassa `Tapahtuma`-olio.
 
-### Tapa 3 — Entity Trick (ei DTO)
+Sama rivi tietokantaan. Eri osoite, eri JSON.
+
+| | Tapa 1 | Tapa 2 | Tapa 3 |
+| --- | --- | --- | --- |
+| Mitä luodaan | Lipputyyppi tapahtumalle 5 | Lipputyyppi tapahtumalle 5 | Lipputyyppi tapahtumalle 5 |
+| Missä id 5 | polussa `/events/5/...` | bodyssa `"tapahtumaId": 5` | bodyssa `"tapahtuma": { "id": 5 }` |
+| JSON body | `{ "nimi": "Normaali", "hinta": 25.00 }` | `{ "nimi": "Normaali", "hinta": 25.00, "tapahtumaId": 5 }` | `{ "nimi": "Normaali", "hinta": 25.00, "tapahtuma": { "id": 5 } }` |
+| Luokka kontrollerissa | polun id + runko | `LipputyyppiRequest` (DTO) | suoraan `Lipputyyppi` (entity) |
+
+Tapahtuman **muita kenttiä ei ole missään näistä pyynnöistä** (`nimi`, `aika`, `kaupunki`…). Niitä ei luoda eikä päivitetä. Viite riittää:
+
+- Tapa 1: id on URL:ssa → JSON:ssa ei `tapahtuma`-kenttää ollenkaan
+- Tapa 2: vain numero `tapahtumaId: 5` → ei oliota, ei nimeä
+- Tapa 3: näyttää oliolta, mutta siinäkin on **vain** `id` (vajaa entity). `getTapahtuma().getNimi()` on silti `null`
+
+Opettajan diassa Tapa 1:n Ticket-laatikko ja Tapa 2:n tyhjä `{}` tarkoittavat samaa: **uuden rivin omat kentät**, ei vanhemman attribuutteja. `userId: 27` / `{ "id": 27 }` ei täytä Teijan sähköpostia pyyntöön.
+
+Opettajan dia: `POST /transactions/56/ticket` luo **lipun**, `POST /transactions` + `userId` luo **myynnin**. Eri resurssi, eri suhde — siksi siellä näkyy `Ticket` vs `userId`. Älä opi “kahta API:a”; opi **mihin id kirjoitetaan**. Sama PDF:n Entity Trick `{ "user": { "id": 27 } }` on Tapa 3 myynnille; alla se samalle lipputyypille kuin tavat 1 ja 2.
+
+### Tapa 3 — Entity Trick (Spring Boot -erikoisuus, ei DTO)
+
+Jackson upottaa id:n suoraan olioksi. Syntyy **vajaa entity**: `Tapahtuma` jossa on vain `id: 5`, muut kentät `null`.
 
 ```
 POST /api/ticket-types
 
-{ "nimi": "Normaali", "hinta": 25.00, "tapahtuma": { "id": 5 } }
+{
+  "nimi": "Normaali",
+  "hinta": 25.00,
+  "tapahtuma": { "id": 5 }
+}
 ```
 
-Controller ottaa suoraan `@RequestBody Lipputyyppi`. Jackson tekee `Tapahtuma`-kuoren jossa vain `id`. Hibernate käyttää sitä vierasavaimena.
+```java
+@PostMapping("/api/ticket-types")
+public Lipputyyppi luo(@RequestBody Lipputyyppi lipputyyppi) {
+    return repo.save(lipputyyppi);
+}
+```
 
-Ei erillistä DTO-luokkaa. Kevyt demossa. Vaara: `lipputyyppi.getTapahtuma().getNimi()` ennen latausta → `null` / NPE. Entiteetin kentät (salasana, sisäiset listat) vuotavat helposti GET:ssä jos sama luokka palautetaan.
+JPA/Hibernate käyttää tuota id:tä vierasavaimena (`tapahtuma_id = 5`), vaikka nimeä ja paikkaa ei ole oliossa. Erillistä DTO-luokkaa ei ole: entityä käytetään kuin se olisi pyyntö.
+
+Vaara: `lipputyyppi.getTapahtuma().getNimi()` ennen latausta → `null` / NPE. Jos sama luokka palautetaan GET:ssä, salasanat ja listat vuotavat ja kehä voi syntyä. Kevyt demo; ei TicketGurun julkiseen API:in.
 
 ---
 
@@ -223,7 +256,7 @@ Kolmea POST-tapaa **saa** käyttää samassa TicketGurussa. REST ei pakota yhtä
 | Tapa | Esimerkki TicketGurussa | Milloin |
 | --- | --- | --- |
 | 1 — id URL:ssa | `POST /api/events/{id}/ticket-types` | Front on jo tapahtuman sivulla; lapsi kuuluu yhdelle isännälle |
-| 2 — Request DTO | `POST /api/ticket-types` body `{ nimi, hinta, tapahtumaId }` | Useita kenttiä / viite bodyssa, validointi, vakaa sopimus clientille |
+| 2 — Request DTO | `POST /api/ticket-types` body `{ "nimi": "Normaali", "hinta": 25.00, "tapahtumaId": 5 }` | Useita kenttiä / viite bodyssa, validointi, vakaa sopimus clientille |
 | 3 — Entity Trick | `{ "tapahtuma": { "id": 5 } }` suoraan entiteettiin | Vain pika-demo / sisäinen kokeilu; ei TicketGurun julkiseen API:in |
 
 **Johdonmukaisuus** tekee rajapinnasta käyttökelpoisen. Jos jokainen endpoint noudattaa eri periaatetta, React-tiimin on vaikea arvata, onko id polussa vai bodyssa.

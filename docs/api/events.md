@@ -361,7 +361,7 @@ Demossa: luo ensin uusi tapahtuma POST:lla ja poista sen `id`. Valmiin testdatan
 | `paikka` | string | Paikka |
 | `lippujaKpl` | integer | Kapasiteetti |
 
-Lipputyyppejä ei palauteta tässä versiossa. Ne tulevat omassa endpointissaan myöhemmässä sprintissä.
+Lipputyyppejä ei palauteta tapahtuman rungossa. Ne haetaan osoitteesta `GET /api/events/{id}/ticket-types` ([ticket-types.md](ticket-types.md)).
 
 ## Virherunko
 

@@ -6,6 +6,7 @@ Tiimin roolit ja Definition of Done. **Taulun rakentaminen klikki kerrallaan:** 
 | --- | --- |
 | Product Backlog | https://github.com/users/petlappa/projects/1/views/1 |
 | Current sprint | https://github.com/users/petlappa/projects/1/views/9 |
+| Sprint 4 | https://github.com/users/petlappa/projects/1/views/6 |
 | Sprint 3 | https://github.com/users/petlappa/projects/1/views/5 |
 | Sprint 2 | https://github.com/users/petlappa/projects/1/views/4 |
 | Sprint 1 | https://github.com/users/petlappa/projects/1/views/3 |
@@ -21,7 +22,7 @@ GitHubissa:
 | Scrum-rooli | Kuka |
 | --- | --- |
 | Product Owner | Opettaja / asiakas: priorisoi työjonon |
-| Scrum Master (sprintit 1–3) | Petteri Lappalainen |
+| Scrum Master (sprintit 1–4) | Petteri Lappalainen |
 | Developers | Koko tiimi (toistaiseksi yksi GitHub-käyttäjä; työpaketit #13–#17 on silti jaettu) |
 
 Scrum Master ei ole pomo. Hän huolehtii, että Daily Scrum pidetään, taulu vastaa totuutta ja esteet nousevat esiin.
@@ -110,3 +111,18 @@ Kun tiimiin tulee lisää GitHub-käyttäjiä, seuraavat vastaavat paketit assig
 | #40 | Spring Boot -toteutus |
 | #41 | Postman-kokoelma katselmukseen |
 | #43 | Arkkitehtuuridokumentti: pyynnön kulku controller → H2 |
+
+## Sprint 4 — myyntitapahtuman ensimmäinen versio
+
+Valinnat: [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md).
+
+| Issue | Sisältö |
+| --- | --- |
+| #32 TK5 | Lipputyyppi tapahtumalle (`POST /api/events/{id}/ticket-types`) |
+| #20 M3 | Lipputyyppien lista (`GET /api/events/{id}/ticket-types`) |
+| #21 M4 | Useita lippuja samaan myyntiin (`POST /api/sales`, rivilista) |
+| #23 M6 | Myynti kuitataan maksetuksi (aika ja summa palvelimelta) |
+| #24 M7 | Yksilöllinen koodi jokaiselle lipulle |
+| #34 J1 | Kapasiteetin ylitys `409` |
+| #27 M10 | Avaa myynti numerolla (`GET /api/sales/{id}`) |
+| #47 | API-dokumentaatio, Postman ja arkkitehtuurivalinnat |
