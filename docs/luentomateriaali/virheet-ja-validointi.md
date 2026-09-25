@@ -65,7 +65,11 @@ public ResponseEntity<MyyntiResponse> create(...) {
 }
 ```
 
-`created(location)` tekee molemmat: statuskoodin `201 Created` ja `Location`-otsakkeen. Poisto ilman runkoa on sama työkalu: `ResponseEntity.noContent().build()` → `204`.
+`created(location)` tekee molemmat: statuskoodin `201 Created` ja `Location`-otsakkeen. HTTP `DELETE` käyttää samaa `ResponseEntity`-työkalua, mutta eri metodia. `DELETE /api/events/{id}` ei palauta tapahtumaa JSONina:
+
+```java
+return ResponseEntity.noContent().build(); // 204 No Content, ei runkoa eikä Location-otsaketta
+```
 
 Älä laita `@ResponseStatus(CREATED)` ja `ResponseEntity` samaan metodiin. `ResponseEntity` voittaa, ja kahdesta ohjeesta tulee epäselvä koodi.
 
@@ -211,7 +215,7 @@ Osa virheistä on ehjiä pyyntöjä, jotka törmäävät jo olemassa olevaan til
 
 | Tilanne | Koodi |
 | --- | --- |
-| Tapahtumaa ei voi poistaa, koska sillä on lipputyyppejä tai myyntejä | 409 |
+| `DELETE /api/events/{id}` estetään, koska tapahtumalla on lipputyyppejä tai myyntejä | 409 |
 | Myynti ylittäisi `lippujaKpl` | 409 |
 
 Ne heitetään samalla `ResponseStatusException`-oliolla kuin `404`, koodina `HttpStatus.CONFLICT`. Client erottaa “korjaa JSON” (`400`) ja “liiketoimintasääntö esti” (`409`).
@@ -226,7 +230,7 @@ Hallittu polku:
 
 1. Puuttuva polun id → `orElseThrow` + `404` heti haun jälkeen. Älä kutsu `getNimi()` tyhjälle tulokselle.
 2. Runko → `@Valid` ja DTO:n annotaatiot, plus käsittelijä rikkinäiselle JSON:lle.
-3. Tunnettu sääntö (kapasiteetti, poiston esto, väärä tapahtuma lipputyypille) → `ResponseStatusException` koodilla `400` tai `409`.
+3. Tunnettu sääntö (kapasiteetti, `DELETE` estetty, väärä tapahtuma lipputyypille) → `ResponseStatusException` koodilla `400` tai `409`.
 4. `@Transactional` palvelussa peruu puolikkaan tallennuksen, jos heitto tulee kesken metodin.
 
 Odottamatonta vikaa ei pidä niellä tyhjäksi `200`:ksi. Silloin client luulee, että myynti onnistui. `500` saa jäädä vain bugille, jota ei osattu ennakoida.
