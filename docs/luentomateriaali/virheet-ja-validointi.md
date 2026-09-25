@@ -31,36 +31,88 @@ Onnistuminen ei ole aina `200`. Spring laittaa `200 OK`, jos metodi vain palautt
 
 ## Dia 2 — Onnistunut koodi: kaksi tapaa
 
+Käytännön sääntö:
+
+- Palautat pelkän olion → voit käyttää `@ResponseStatus`-annotaatiota.
+- Tarvitset otsakkeita, vaihtelevia statuksia tai muuten enemmän kontrollia → käytä `ResponseEntity`-oliota.
+
+Jos status on jotain muuta kuin Springin oletus `200` tai tarvitset headerit (esim. `Location`), käytä `ResponseEntity`-oliota. Muulloin pelkkä olio riittää.
+
 ### Tapa A — `@ResponseStatus` metodissa
 
-Kiinteä koodi, jos metodi päättyy normaalisti. Oletus on `200`, joten GET:iin tätä ei tarvita.
+Kiinteä koodi, jos metodi päättyy normaalisti ja palauttaa pelkän olion. Oletus on `200`, joten GET:iin tätä ei tarvita.
 
 ```java
 @PostMapping
 @ResponseStatus(HttpStatus.CREATED)
-public LipputyyppiResponse create(...) { /* ... */ }
+public MyyntiResponse create(...) {
+    return service.create(...);
+}
 ```
 
-Hyvä, kun koodi on aina sama eikä vastaukseen tarvita otsakkeita.
+Saat koodin `201`. Spring ei tiedä, mitä `Location`-otsakkeeseen laitetaan. Se pitäisi rakentaa itse, eikä tämä annotaatio tee sitä.
 
-Huono TicketGurun POST:iin: client tarvitsee `Location`-otsakkeen (`/api/sales/12`). Annotaatio ei rakenna sitä.
-
-### Tapa B — `ResponseEntity` (suositus, kun koodi ei ole 200)
+### Tapa B — `ResponseEntity`
 
 Metodi päättää koodin, otsakkeet ja rungon itse.
 
 ```java
-return ResponseEntity.created(location).body(created); // 201 + Location
-return ResponseEntity.noContent().build();             // 204, ei runkoa
+@PostMapping
+public ResponseEntity<MyyntiResponse> create(...) {
+    return ResponseEntity.created(location).body(created);
+}
 ```
 
-TicketGurussa tämä on jo käytössä:
+`created(location)` tekee molemmat: statuskoodin `201 Created` ja `Location`-otsakkeen. Poisto ilman runkoa on sama työkalu: `ResponseEntity.noContent().build()` → `204`.
 
-- `POST /api/sales` ja `POST /api/events` → `201`
-- `DELETE /api/events/{id}` → `204`
-- `GET` ja `PUT` palauttavat olion → Springin oletus `200` riittää
+Älä laita `@ResponseStatus(CREATED)` ja `ResponseEntity` samaan metodiin. `ResponseEntity` voittaa, ja kahdesta ohjeesta tulee epäselvä koodi.
 
-Älä laita `@ResponseStatus(CREATED)` ja `ResponseEntity` samaan metodiin “varmuuden vuoksi”. `ResponseEntity` voittaa, ja kahdesta ohjeesta tulee epäselvä koodi.
+### Miksi `Location`-otsake?
+
+TicketGurussa `Location` ei ole tekninen pakko. Rungossa on jo `id`, ja client voi koota osoitteen itse. REST-käytäntö on silti palauttaa se POST-vastauksessa, koska palvelin kertoo uuden resurssin osoitteen. Clientin ei tarvitse tuntea URL-rakennetta.
+
+```http
+POST /api/sales
+```
+
+Palvelin loi myynnin, jonka id on 12:
+
+```http
+HTTP/1.1 201 Created
+Location: /api/sales/12
+```
+
+Client tietää heti, että luotu resurssi on osoitteessa `/api/sales/12`. Ilman otsaketta sama tieto on vain rungossa:
+
+```json
+{ "id": 12, "summa": 37.50 }
+```
+
+Sekin toimii. Myöhemmin osoite voi muuttua, esimerkiksi `/api/v2/sales/12`. Jos client sai `Location`-arvon, sen ei tarvitse arvata polkua.
+
+Sama tapahtumalle:
+
+```http
+POST /api/events
+```
+
+```http
+HTTP/1.1 201 Created
+Location: /api/events/42
+```
+
+Siksi TicketGurun POST-metodit käyttävät `ResponseEntity.created(location).body(created)`.
+
+### Yhteenveto
+
+| Pyyntö | Mitä palautetaan |
+| --- | --- |
+| GET onnistui | Pelkkä olio. Otsakkeita ei tarvita, `200` riittää. |
+| PUT onnistui | Pelkkä olio, `200`. |
+| POST loi resurssin | `201 Created` ja `Location`. `ResponseEntity.created(...)`. |
+| DELETE onnistui | `204`, ei runkoa. `ResponseEntity.noContent()`. |
+
+TicketGurussa tämä on jo käytössä: `POST /api/sales` ja `POST /api/events` palauttavat `201` sekä `Location`-otsakkeen. `DELETE /api/events/{id}` palauttaa `204`.
 
 ---
 
