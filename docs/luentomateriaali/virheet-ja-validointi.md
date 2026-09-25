@@ -29,18 +29,20 @@ Onnistuminen ei ole aina `200`. Spring laittaa `200 OK`, jos metodi vain palautt
 
 ---
 
-## Dia 2 — Onnistunut koodi: kaksi tapaa
+## Dia 2 — Onnistunut HTTP-statuskoodi: kaksi tapaa
+
+Tässä “koodi” tarkoittaa HTTP-statuskoodia, numeroa vastauksen ensimmäisellä rivillä (`200`, `201`, `204`). Se ei ole Java-koodia eikä lipun koodia.
 
 Käytännön sääntö:
 
 - Palautat pelkän olion → voit käyttää `@ResponseStatus`-annotaatiota.
-- Tarvitset otsakkeita, vaihtelevia statuksia tai muuten enemmän kontrollia → käytä `ResponseEntity`-oliota.
+- Tarvitset otsakkeita, eri statuskoodin kutsusta riippuen, tai muuten enemmän kontrollia → käytä `ResponseEntity`-oliota.
 
-Jos status on jotain muuta kuin Springin oletus `200` tai tarvitset headerit (esim. `Location`), käytä `ResponseEntity`-oliota. Muulloin pelkkä olio riittää.
+Jos HTTP-statuskoodi on jotain muuta kuin Springin oletus `200` tai tarvitset headerit (esim. `Location`), käytä `ResponseEntity`-oliota. Muulloin pelkkä olio riittää.
 
 ### Tapa A — `@ResponseStatus` metodissa
 
-Kiinteä koodi, jos metodi päättyy normaalisti ja palauttaa pelkän olion. Oletus on `200`, joten GET:iin tätä ei tarvita.
+Statuskoodi on **kiinteä**: se on kirjoitettu annotaatioon etukäteen ja on joka kutsulla sama, kun metodi päättyy normaalisti eikä heitä poikkeusta. Metodi palauttaa vain olion. Springin oletus on `200`, joten GET:iin annotaatiota ei tarvita, jos `200` on oikea vastaus.
 
 ```java
 @PostMapping
@@ -50,7 +52,7 @@ public MyyntiResponse create(...) {
 }
 ```
 
-Saat koodin `201`. Spring ei tiedä, mitä `Location`-otsakkeeseen laitetaan. Se pitäisi rakentaa itse, eikä tämä annotaatio tee sitä.
+Jokainen onnistunut kutsu saa HTTP-statuskoodin `201`. Spring ei tiedä, mitä `Location`-otsakkeeseen laitetaan. Se pitäisi rakentaa itse, eikä tämä annotaatio tee sitä.
 
 ### Tapa B — `ResponseEntity`
 
