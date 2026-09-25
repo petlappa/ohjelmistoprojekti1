@@ -4,6 +4,14 @@ Haaga-Helia Ohjelmistoprojekti 1 · Sprint 4
 
 Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely**, **Käyttöliittymä**, **Tietokanta** ja **REST-rajapinta**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
 
+| Artefakti | Linkki |
+| --- | --- |
+| Tuotteen työjono | https://github.com/users/petlappa/projects/1/views/1 |
+| Scrum-taulu (nykyinen sprintti) | https://github.com/users/petlappa/projects/1/views/9 |
+| Sprint 4 | https://github.com/users/petlappa/projects/1/views/6 |
+| Sprint 4 arkkitehtuurivalinnat | [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md) |
+| API, lipputyypit ja myynti | [api/ticket-types.md](api/ticket-types.md), [api/sales.md](api/sales.md) |
+
 ---
 
 ## 1. Johdanto
