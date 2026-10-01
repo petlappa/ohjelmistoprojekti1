@@ -253,7 +253,7 @@ Yksi linja, joka vastaa Moodlen “selkeää tapaa” ja Sprint 4:n DTO-jakoa. O
 
 `@ResponseStatus` metodissa jää käyttämättä, koska POST ja DELETE tarvitsevat `ResponseEntity`-oliota. Omat `EiLoydyException`-luokat jäävät käyttämättä, koska `ResponseStatusException` + yksi käsittelijä riittää.
 
-Sprintin tarkistuslista (toteutus myöhemmin, tätä luentoa vasten):
+Sprintin tarkistuslista:
 
 - Jokainen POST palauttaa `201`, ei `200`.
 - Jokainen puuttuva polun id palauttaa `404`.
@@ -261,7 +261,7 @@ Sprintin tarkistuslista (toteutus myöhemmin, tätä luentoa vasten):
 - Mikään näistä ei palauta `500`.
 - Virhe-JSON on aina `status`, `error`, `messages`.
 
-Nykyinen koodi on jo tällä linjalla (`MyyntiController`, `MyyntiService`, `ApiExceptionHandler`, `*Request`-recordit). Sprint 5 on tarkistus ja aukkojen paikkaus, ei uuden virhekehyksen kirjoitus.
+Toteutus on tällä linjalla. Yhteenveto on tämän tiedoston lopussa.
 
 ---
 
@@ -273,3 +273,34 @@ Nykyinen koodi on jo tällä linjalla (`MyyntiController`, `MyyntiService`, `Api
 - [Reflectoring: Bean Validation with Spring Boot](https://reflectoring.io/bean-validation-with-spring-boot/)
 - [Baeldung: Java Bean Validation](https://www.baeldung.com/javax-validation)
 - TicketGuru: `web/ApiExceptionHandler.java`, `web/dto/ApiError.java`, `web/MyyntiController.java`, `service/MyyntiService.java`.
+
+---
+
+## Mitä tässä toteutuksessa käytettiin
+
+TicketGuru noudattaa dian 7 suositusta. Uutta virhekehystä ei kirjoitettu.
+
+| Tilanne | Mitä koodi tekee |
+| --- | --- |
+| GET ja PUT onnistuivat | Kontrolleri palauttaa olion. Spring antaa `200`. |
+| POST loi tapahtuman, lipputyypin tai myynnin | `ResponseEntity.created(location).body(...)` → `201` ja `Location`. |
+| DELETE onnistui | `ResponseEntity.noContent().build()` → `204`, ei runkoa. |
+| Polun id puuttuu | Palvelu heittää `ResponseStatusException(NOT_FOUND)` → `404`. |
+| Rungosta puuttuu pakollinen kenttä | `@Valid` ja annotaatiot Request DTO:ssa → `400`. |
+| JSON ei jäsenny | `ApiExceptionHandler` → `400`. |
+| Viite on väärä (myyjä, tapahtuma, toisen tapahtuman lipputyyppi) | `ResponseStatusException(BAD_REQUEST)` → `400`. |
+| Sääntö estää ehjän pyynnön (kapasiteetti, estetty DELETE) | `ResponseStatusException(CONFLICT)` → `409`. |
+| Virherungon muoto | Yksi `@RestControllerAdvice`, sama `ApiError` (`status`, `error`, `messages`). |
+
+Samaan käsittelijään lisättiin neljä tapausta, joita luento ei eritellyt omiksi metodeikseen. Ne käyttävät samaa `ApiError`-runkoa:
+
+- Polun id ei ole numero (`/api/events/abc`) → `400`.
+- Tietokantarajoite, esimerkiksi uniikki lippukoodi → `409`.
+- HTTP-metodi, jota osoite ei tue (esimerkiksi `PATCH`) → `405`.
+- Tuntematon osoite → `404`.
+
+Käyttämättä jäivät luennon vaihtoehdot, jotka suositus jätti sivuun:
+
+- `@ResponseStatus` onnistuneen metodin päällä. POST ja DELETE tarvitsevat `ResponseEntity`-oliota.
+- Oma poikkeusluokka ja `@ResponseStatus` siinä. `ResponseStatusException` riittää.
+- `@Validated` kyselyparametreille. Valinnainen suodatin jäi ilman erillistä tarkistusta.
