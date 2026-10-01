@@ -17,6 +17,8 @@ Kooste vaihtoehdoista ja TicketGurun suositus: [virheet-ja-validointi.md](virhee
 - Rungon tarkistus: `@Valid` ja annotaatiot Request DTO:ssa, ei entityssä.
 - Sama virhe-JSON kaikille koodeille: yksi `@RestControllerAdvice`.
 
-## Mitä ei tehdä vielä tässä muistiinpanossa
+## Toteutus
 
-Toteutusta ei muutettu. Sprintin tehtävä (oikeat koodit, ei `500`:aa, pakolliset kentät POST:ssa ja PUT:ssa) tarkistetaan luentoa vasten myöhemmin.
+Rajapinta tarkistettiin luentoa vasten. POST palauttaa `201`, DELETE `204`, puuttuva polun id `404`, kelvoton runko ja vääräntyyppinen id `400`. Tietokantarajoite on `409`, väärä HTTP-metodi `405`. Tuntematon osoite on `404`. Näistä ei tule `500`:aa. Virherunko on `ApiError`.
+
+Käytetyt ja käyttämättä jääneet tavat on koottu luennon loppuun: [virheet-ja-validointi.md](virheet-ja-validointi.md), osio «Mitä tässä toteutuksessa käytettiin».
