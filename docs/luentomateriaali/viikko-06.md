@@ -1,0 +1,25 @@
+# Viikko 6 — luentomuistiinpanot
+
+Päivämäärä: 2026-10-01 (Sprint 6, materiaali)
+
+## Luennon aihe
+
+REST-rajapinnan autentikointi ja auktorisointi. Rajapinta on tilaton, joten tunnistus tulee joka pyynnössä. TicketGurussa käyttäjät ja roolit ovat jo kannassa (`myyja`, `koordinaattori`).
+
+Kooste vaihtoehdoista ja suositus: [autentikointi-ja-auktorisointi.md](autentikointi-ja-auktorisointi.md).
+
+## Mitä luento suosittelee
+
+- Nyt: HTTP Basic omia `Kayttaja`-rivejä vasten, roolit `Rooli`-taulusta.
+- Sallitut toimenpiteet ovat koodin `hasRole`-säännöissä. Roolitauluun ei kirjata osoitteita.
+- Kirjasto on `spring-boot-starter-security`. Omaa Basic-suodatinta ei kirjoiteta.
+- Ei yhtä `admin`-tunnusta asetuksissa, eikä jaettua API-avainta.
+- Salasana bcrypt-hashina. Myyjä luetaan kirjautuneesta käyttäjästä.
+- Myöhemmin, jos web-client tulee: sama käyttäjä, otsikko `Authorization: Bearer` ja JWT. Osoitteet ja roolit eivät vaihdu.
+- Ulkoista tunnistuspalvelua ei rakenneta.
+
+## Mitä ei tehdä vielä
+
+- Ei Spring Security -riippuvuutta, ei suodatinta, ei login-osoitetta.
+- Ei JWT:tä eikä selainclienttiä.
+- Rajapinta jää tämän luennon jälkeen yhä auki.
