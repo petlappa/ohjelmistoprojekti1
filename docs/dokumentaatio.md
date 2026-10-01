@@ -1,6 +1,6 @@
 # TicketGuru-dokumentaatio
 
-Haaga-Helia Ohjelmistoprojekti 1 · Sprint 4
+Haaga-Helia Ohjelmistoprojekti 1 · Sprint 5
 
 Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely**, **Käyttöliittymä**, **Tietokanta** ja **REST-rajapinta**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
 
@@ -8,7 +8,9 @@ Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely*
 | --- | --- |
 | Tuotteen työjono | https://github.com/users/petlappa/projects/1/views/1 |
 | Scrum-taulu (nykyinen sprintti) | https://github.com/users/petlappa/projects/1/views/9 |
+| Sprint 5 | https://github.com/users/petlappa/projects/1/views/7 |
 | Sprint 4 | https://github.com/users/petlappa/projects/1/views/6 |
+| Virheet ja validointi (Sprint 5) | [luentomateriaali/virheet-ja-validointi.md](luentomateriaali/virheet-ja-validointi.md) |
 | Sprint 4 arkkitehtuurivalinnat | [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md) |
 | API, lipputyypit ja myynti | [api/ticket-types.md](api/ticket-types.md), [api/sales.md](api/sales.md) |
 
@@ -493,7 +495,7 @@ Tuoteomistajan rajaus Sprint 4:lle: lipputyypin luonti ja listaus sekä yhden my
 | POST | `/api/sales` | 201 | Myynti ja liput yhdellä kutsulla |
 | GET | `/api/sales/{id}` | 200 | Kuitti: nimet, summa, koodit |
 
-Virheet: `400` validointi tai myynnin bodyn tuntematon viite, `404` tuntematon polun id, `409` poisto estetty tai kapasiteetti ylittyisi.
+Virheet, Sprint 5: `400` puuttuva tai vääräntyyppinen kenttä, rikki JSON tai polun id joka ei ole luku. `404` tuntematon polun id tai osoite. `405` metodi ei ole sallittu. `409` `DELETE` estetty, kapasiteetti ylittyisi tai tietokantarajoite. Odotettu virhe ei ole `500`. Runko on aina `status`, `error`, `messages`.
 
 ### 5.2 Demo katselmuksessa
 

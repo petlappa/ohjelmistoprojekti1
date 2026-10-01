@@ -6,6 +6,7 @@ Tiimin roolit ja Definition of Done. **Taulun rakentaminen klikki kerrallaan:** 
 | --- | --- |
 | Product Backlog | https://github.com/users/petlappa/projects/1/views/1 |
 | Current sprint | https://github.com/users/petlappa/projects/1/views/9 |
+| Sprint 5 | https://github.com/users/petlappa/projects/1/views/7 |
 | Sprint 4 | https://github.com/users/petlappa/projects/1/views/6 |
 | Sprint 3 | https://github.com/users/petlappa/projects/1/views/5 |
 | Sprint 2 | https://github.com/users/petlappa/projects/1/views/4 |
@@ -126,3 +127,11 @@ Valinnat: [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md).
 | #34 J1 | Kapasiteetin ylitys `409` |
 | #27 M10 | Avaa myynti numerolla (`GET /api/sales/{id}`) |
 | #47 | API-dokumentaatio, Postman ja arkkitehtuurivalinnat |
+
+## Sprint 5 — HTTP-statuskoodit
+
+Luento: [luentomateriaali/virheet-ja-validointi.md](luentomateriaali/virheet-ja-validointi.md).
+
+| Issue | Sisältö |
+| --- | --- |
+| #51 | Oikeat koodit: `200`/`201`/`204`, puuttuva resurssi `404`, kelvoton pyyntö `400`, ei `500`:aa odotetussa virheessä |
