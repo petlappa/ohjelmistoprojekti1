@@ -18,6 +18,7 @@ Nämä ovat opiskelijoille jaettuja ohjeita. Esimerkit noudattavat luentojen aih
 | Käsiteanalyysi → tietokanta → Spring Boot (Entity, DAO/Repository, JPA Query Methods) | [tietokanta-spring-bootissa.md](tietokanta-spring-bootissa.md) |
 | REST: suhteen merkintä GET/POST, Jackson, DTO | [api-suhteet-ja-dto.md](api-suhteet-ja-dto.md) |
 | REST: vastauskoodit, virheet, validointi | [virheet-ja-validointi.md](virheet-ja-validointi.md) |
+| REST: autentikointi ja auktorisointi | [autentikointi-ja-auktorisointi.md](autentikointi-ja-auktorisointi.md) |
 | Sprint 4: tiimin valinta TicketGurussa | [../arkkitehtuuri-sprint-4.md](../arkkitehtuuri-sprint-4.md) |
 
 Jos et ole käynyt backend-kurssia, aloita ohjeesta kohdasta **Mitä syntyy automaattisesti** (*Tiedosto vai käynnistys?*): Entity- ja Repository-`.java`-tiedostot kirjoitetaan itse; Hibernate ja Spring täyttävät taulut ja `save`/`findAll` vasta kun sovellus käynnistyy.
@@ -33,3 +34,4 @@ Täydennä luennon jälkeen: mitä painotettiin, mitä tiimi päätti TicketGuru
 | 3 | [viikko-03.md](viikko-03.md) |
 | 4 | [viikko-04.md](viikko-04.md) |
 | 5 | [viikko-05.md](viikko-05.md) |
+| 6 | [viikko-06.md](viikko-06.md) |
