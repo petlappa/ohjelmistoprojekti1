@@ -214,6 +214,14 @@ http
 
 `csrf` sammutetaan, koska REST ei käytä evästeistuntoa, jota CSRF-suojaus vartioi. `STATELESS` vastaa dian 2 sääntöä: palvelin ei avaa istuntoa.
 
+`hasRole` ei ole kontrollerin kutsu. Spring Security ajaa sen suodattimessa ennen kuin pyyntö pääsee `TapahtumaController`-luokkaan. Ketju on:
+
+1. `BasicAuthenticationFilter` lukee otsikon, hakee käyttäjän ja jättää tuloksen talteen: käyttäjä `myyja`, rooli `ROLE_MYYJA`. Salasana ei täsmää tai tunnus puuttuu: `401`, eikä ketju jatku.
+2. `AuthorizationFilter` lukee konfiguraation `hasRole`-rivit ja vertaa niitä tuohon rooliin. `POST /api/events` vaatii `TAPAHTUMAKOORDINAATTORI`. Myyjällä sitä ei ole: `403`.
+3. Sääntö täsmää: pyyntö jatkaa kontrolleriin, joka tekee varsinaisen toimenpiteen.
+
+Salasana todistaa vain, kuka käyttäjä on. Oikeus tehdä toiminto on toisessa vaiheessa, roolista. Kontrolleri ei kutsu `hasRole`-metodia itse.
+
 ### Salasana hashina
 
 Nyt `salasana`-sarake on teksti `salasana`. Tunnistuksen yhteydessä sitä ei saa verrata merkkijonona, eikä uutta salasanaa saa tallentaa selväkielisenä. Salasanasta lasketaan yksisuuntainen **hash** (kurssilla bcrypt). Hashista ei päästä takaisin salasanaan, mutta annettu salasana voidaan tarkistaa sitä vasten.
@@ -272,7 +280,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJteXlqYSJ9.allekirjoitus
 5. Palvelin tarkistaa allekirjoituksen ja `exp`-ajan. Tokenia ei haeta kannasta.
 6. Uloskirjautuminen on clientin teko: se hävittää tokenin. Palvelimella ei ole riviä, jonka voisi poistaa.
 
-Resurssien osoitteet pysyvät. `GET /api/events` on sama kutsu. Vain `Authorization`-otsikon muoto vaihtuu Basicista Bearer-tokeniin. Roolisäännöt diasta 4 pysyvät.
+Resurssien osoitteet pysyvät. `GET /api/events` on sama kutsu. Vain `Authorization`-otsikon muoto vaihtuu Basicista Bearer-tokeniin.
+
+Roolisäännöt eivät muutu, eikä `hasRole` siirry kontrolleriin. Vaihtuu se suodatin, joka täyttää käyttäjän ja roolin:
+
+1. Kirjautuminen `POST /api/login` on sovelluksen oma koodi. Se tarkistaa tunnuksen ja salasanan samalla `UserDetailsService`-palvelulla ja `PasswordEncoder`-luokalla kuin Basic, ja kirjoittaa JWT:n. Spring Security ei luo tokenia puolesta.
+2. Seuraavilla pyynnöillä Spring Securityn JWT-suodatin tarkistaa allekirjoituksen ja `exp`-ajan. Tokenissa ei ole salasanaa. Suodatin lukee sieltä käyttäjän ja roolin ja jättää ne samaan paikkaan kuin Basicissa: `myyja`, `ROLE_MYYJA`.
+3. Sama `AuthorizationFilter` ajaa dian 4 `hasRole`-säännöt. Väärä tai vanha token on `401`. Oikea käyttäjä, jolta osoite on kielletty, on `403`.
+
+Kirjasto on yhä Spring Security. Basic kytketään metodilla `.httpBasic()`. Tokenin tarkistus kytketään saman kirjaston JWT-tuella. `hasRole`-rivit pysyvät ennallaan.
 
 ### Mitä token sisältää
 
@@ -308,7 +324,8 @@ Keycloak, Auth0 tai organisaation tunnuspalvelu tunnistavat käyttäjän muualla
 | Salasana kannassa? | Bcrypt-hash, ei selväkielistä `salasana`-saraketta. |
 | Mistä myyjä tiedetään? | Kirjautuneesta käyttäjästä, ei vapaasta `myyjaId`-kentästä. |
 | Missä sallitut toimenpiteet ovat? | Koodin `hasRole`-säännöissä. Roolitaulussa on vain nimi. |
-| Mistä kirjasto? | `spring-boot-starter-security`. Omaa Basic-suodatinta ei kirjoiteta. |
+| Kuka ajaa `hasRole`? | Spring Securityn `AuthorizationFilter` ennen kontrolleria. Samat säännöt Basicille ja JWT:lle. |
+| Mistä kirjasto? | `spring-boot-starter-security`. Omaa Basic-suodatinta ei kirjoiteta. Tokenin luonti on oma koodi, tarkistus on Spring Securityn. |
 | Web-client tai JWT? | Ei vielä. Kun client tulee, sama käyttäjä, otsikko `Bearer`. |
 | Ulkoinen tunnistuspalvelu? | Ei tällä kurssilla. |
 
