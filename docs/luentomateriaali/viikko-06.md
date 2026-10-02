@@ -13,7 +13,7 @@ Kooste vaihtoehdoista ja suositus: [autentikointi-ja-auktorisointi.md](autentiko
 - Nyt: HTTP Basic omia `Kayttaja`-rivejä vasten, roolit `Rooli`-taulusta.
 - Sallitut toimenpiteet ovat koodin `hasRole`-säännöissä. Roolitauluun ei kirjata osoitteita.
 - Kirjasto on `spring-boot-starter-security`. Omaa Basic-suodatinta ei kirjoiteta.
-- Ei yhtä `admin`-tunnusta asetuksissa, eikä jaettua API-avainta.
+- Ei yhtä `admin`-tunnusta asetuksissa. API-avain sopii yhdelle kutsujalle, ei yhteiseen kassaan, jossa moni kirjautuu samaan clienttiin.
 - Salasana bcrypt-hashina. Myyjä luetaan kirjautuneesta käyttäjästä.
 - Myöhemmin, jos web-client tulee: sama käyttäjä, otsikko `Authorization: Bearer` ja JWT. Osoitteet ja roolit eivät vaihdu.
 - Ulkoista tunnistuspalvelua ei rakenneta.

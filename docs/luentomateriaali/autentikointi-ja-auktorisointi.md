@@ -58,17 +58,37 @@ Kolmas esillä ollut tapa, **API-avain**, ei sovi tähän tuotteeseen. Se on muk
 | | API-avain | HTTP Basic | JWT |
 | --- | --- | --- | --- |
 | Mitä pyyntö kantaa | `X-API-Key: secret123` | `Authorization: Basic …` | `Authorization: Bearer …` |
-| Kuka tunnistetaan | Sovellus, jolla on avain | Yksi `Kayttaja` | Sama `Kayttaja`, tokenin sisällä |
-| Roolit | Ei | Kyllä, kannan `Rooli` | Kyllä, tokenin claim |
+| Kuka tunnistetaan | Sovellus tai tili, jolla on avain | Yksi `Kayttaja` | Sama `Kayttaja`, tokenin sisällä |
+| Roolit | Vain jos avain on sidottu rooliin tai käyttäjään | Kyllä, kannan `Rooli` | Kyllä, tokenin claim |
 | Salasana joka pyynnössä | Ei käyttäjäsalasanaa | Kyllä | Ei, vain token |
 | Palvelin muistaa kirjautumisen | Ei | Ei | Ei |
 | Milloin järkevä | Kone kutsuu konetta, ei ihmisiä | Kehitys ja työkalut (Postman, curl), kun käyttäjät ovat jo kannassa | Selain tai muu client, joka ei saa lähettää salasanaa joka kutsussa |
 
-### API-avain — ei TicketGurun linja
+### API-avain — yksi kutsuja, ei yhteinen kassa
 
-Yksi suodatin vertaa otsaketta `X-API-Key` asetuksissa olevaan salaisuuteen. Jos avain puuttuu tai on väärä, vastaus on `401` eikä pyyntö jatku kontrolleriin.
+API-avain ei ole HTTP Basic eikä JWT. Pyyntö kuljettaa yhden salaisuuden omassa otsikossaan. Julkinen esimerkki on [The Cat API](https://docs.thecatapi.com/docs/authorization): rekisteröitynyt saa avaimen sähköpostiin ja lähettää sen joka kutsussa.
 
-Tämä on nopea, kun kutsujia on muutama taustapalvelu eikä kukaan ole “Maija” tai “Kalle”. TicketGurussa myynti on henkilön työtä. Avain ei kerro roolia eikä sitä, kenen nimissä lippu myytiin. Jaettu avain on myös vaihdettava kaikilta, jos se vuotaa. Avain jää sivuun.
+```bash
+curl -H "x-api-key: YOUR-API-KEY" https://api.thecatapi.com/v1/breeds
+```
+
+Avain puuttuu tai on väärä: kutsu hylätään. Oikea avain kertoo, kenen tili rajapintaa käyttää. Cat API rajaa tällä nopeuden (ilmaisella tilillä 10 pyyntöä minuutissa) ja sen, mitkä kentät vastauksessa näkyvät. Se on tunnistus ja karkea oikeuksien rajaus tilille, ei kirjautuneelle ihmiselle.
+
+Avain sopii, kun kutsuja on yksin liikkeellä:
+
+- yksi taustasovellus tai kumppanin integraatio
+- yksi skripti
+- yksi ihminen, joka hakee rajapinnasta tietoa omalla avaimellaan
+
+Silloin avain on sen yhden kutsujan salaisuus. Palvelin voi pitää taulua, jossa avain viittaa tiliin.
+
+Roolikohtainen avain näyttää ensin riittävältä. Kaikille myyjille yksi avain, kaikille koordinaattoreille toinen. Palvelin hakee avaimen ja tietää roolin, joten osoitteiden tarkistus onnistuu. Myyntiä ei silti voi kirjata Maijalle: kaikki saman avaimen haltijat ovat yksi kutsuja. Avaimen vuoto vaihdetaan koko roolilta.
+
+Käyttäjäkohtainen avain on jo henkilökohtainen salaisuus, sama idea kuin salasana. Otsikko on vain `x-api-key` eikä `Authorization: Basic`. Taulussa on silloin käyttäjä, rooli ja avain.
+
+Yhteinen client ei voi pitää listaa näistä avaimista. Lista olisi sovelluksen koodissa tai muistissa, ja jokainen clientin avaava näkisi kaikkien tunnukset. Clientin kuuluu tietää vain sen ihmisen salaisuus, joka sitä juuri käyttää. Avainten lista pysyy palvelimella.
+
+TicketGuru on yhteinen kassa. Sama client on monella myyjällä ja koordinaattorilla. Siksi avain jää sivuun ja tunnus on käyttäjäkohtainen Basic.
 
 ### Yksi tunnus `application.properties`-tiedostossa — vain demo
 
@@ -283,7 +303,7 @@ Keycloak, Auth0 tai organisaation tunnuspalvelu tunnistavat käyttäjän muualla
 | Suojataanko rajapinta nyt? | Kyllä, seuraavassa toteutuksessa. Ei tässä luennossa. |
 | Millä? | HTTP Basic, käyttäjät taulusta `Kayttaja`. |
 | Yksi `admin` asetuksissa? | Ei. Se ei erota Maijaa ja Kallea. |
-| API-avain? | Ei. Ei käyttäjää eikä roolia. |
+| API-avain? | Ei yhteiseen kassaan. Sopii yhdelle sovellukselle, skriptille tai yksin rajapintaa kutsualle ihmiselle. |
 | Istunto ja eväste? | Ei. Rajapinta pysyy tilattomana. |
 | Salasana kannassa? | Bcrypt-hash, ei selväkielistä `salasana`-saraketta. |
 | Mistä myyjä tiedetään? | Kirjautuneesta käyttäjästä, ei vapaasta `myyjaId`-kentästä. |
@@ -311,6 +331,7 @@ Sprintin tarkistuslista, kun toteutus myöhemmin tehdään:
 - [MDN: HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)
 - [REST statelessness](https://restfulapi.net/statelessness/)
 - [JWT introduction](https://jwt.io/introduction/)
+- [The Cat API: Authorization](https://docs.thecatapi.com/docs/authorization) (esimerkki otsikosta `x-api-key`)
 - [Spring Security: HTTP Basic](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/basic.html)
 - [Spring Boot: Security](https://docs.spring.io/spring-boot/reference/web/spring-security.html)
 - TicketGuru nyt: `domain/Kayttaja.java`, `domain/Rooli.java`, `DemoDataLoader.java`, `web/dto/MyyntiRequest.java`. Security-konfiguraatiota ei ole.
