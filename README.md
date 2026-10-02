@@ -19,7 +19,6 @@ Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoim
 | Tuotteen työjono (Product Backlog) | https://github.com/users/petlappa/projects/1/views/1 |
 | Scrum-taulu (nykyinen sprintti) | https://github.com/users/petlappa/projects/1/views/9 |
 | Sprint 5 | https://github.com/users/petlappa/projects/1/views/7 |
-| Virheet ja validointi | [docs/luentomateriaali/virheet-ja-validointi.md](docs/luentomateriaali/virheet-ja-validointi.md) |
 | Sprint 4 | https://github.com/users/petlappa/projects/1/views/6 |
 | Sprint 3 | https://github.com/users/petlappa/projects/1/views/5 |
 | Sprint 2 | https://github.com/users/petlappa/projects/1/views/4 |
