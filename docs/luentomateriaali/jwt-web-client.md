@@ -200,6 +200,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/refresh-token").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/events/**")
                     .hasAnyRole("MYYJA", "TAPAHTUMAKOORDINAATTORI")
                 .requestMatchers(HttpMethod.POST, "/api/events/**")
@@ -298,11 +299,48 @@ public class JwtTokenProvider {
 
 Avain luetaan asetuksesta `app.jwt.secret`. Se on sama joka käynnistyksellä, jotta `validateToken` tunnistaa aiemmin annetun tokenin. `Keys.secretKeyFor(...)` loisi uuden avaimen joka käynnistyksellä, ja vanhat tokenit lakkaisivat toimimasta.
 
-Allekirjoitus ei salaa payloadia. Base64URL:n purkaa kuka tahansa, joten tokenista näkee tunnuksen ja ajat. Salasanaa tai muuta salaista ei siis kirjoiteta payloadiin. Väärennös estetään sillä, että vain palvelin tietää avaimen. Tokenia ei voi perua palvelimelta ilman erillistä listaa, joten `exp` pidetään lyhyenä. Tunnin jälkeen client kirjautuu uudelleen.
+Allekirjoitus ei salaa payloadia. Base64URL:n purkaa kuka tahansa, joten tokenista näkee tunnuksen ja ajat. Salasanaa tai muuta salaista ei siis kirjoiteta payloadiin. Väärennös estetään sillä, että vain palvelin tietää avaimen. Tokenia ei voi perua palvelimelta ilman erillistä listaa, joten `exp` pidetään lyhyenä. Yksinkertainen client kirjautuu tunnin jälkeen uudelleen. Virkistystoken on diassa 5, jos salasanaa ei haluta kysyä uudestaan.
 
 ---
 
-## Dia 5 — CORS, kun client on eri osoitteessa
+## Dia 5 — Virkistystoken
+
+`JwtRequestFilter` tarkistaa tavallisen pyynnön access-tokenin jo diassa 4. Virkistys on eri kutsu. Sillä tasapainotetaan kahta asiaa: varastettu token kelpaa vain vähän aikaa, mutta käyttäjän ei tarvitse kirjoittaa salasanaa varttitunnin välein.
+
+| Token | Käyttöaika | Mihin se lähetetään |
+| --- | --- | --- |
+| Access token | lyhyt, esimerkiksi 15 minuuttia | jokaiseen tavalliseen pyyntöön, otsikkona `Bearer` |
+| Refresh token | pitkä, esimerkiksi 7–30 päivää | vain osoitteeseen `POST /api/refresh-token` |
+
+Kulku:
+
+1. `POST /api/login` palauttaa molemmat: `accessToken` ja `refreshToken`.
+2. Tavalliset kutsut käyttävät vain access-tokenia. `JwtRequestFilter` tarkistaa sen allekirjoituksen ja vanhenemisen.
+3. Kun access-token on vanha, palvelin vastaa `401`. `403` ei ole vanheneminen: rooli ei riitä, eikä silloin virkistetä.
+4. Client lähettää refresh-tokenin osoitteeseen `POST /api/refresh-token`. Palvelin tarkistaa sen ja palauttaa uuden access-tokenin.
+5. Client tallentaa uuden access-tokenin ja tekee alkuperäisen pyynnön uudelleen.
+6. Jos myös refresh-token on vanha, virkistys vastaa `401`. Client poistaa molemmat ja palaa kirjautumiseen.
+
+Virkistysosoite on julkinen samalla tavalla kuin login, koska vanhentunut access-token ei läpäise `hasRole`-sääntöjä. Tarkistus tehdään kontrollerissa refresh-tokenille itselleen.
+
+```java
+@PostMapping("/refresh-token")
+public ResponseEntity<JwtResponse> refresh(@RequestBody RefreshRequest request) {
+    if (!tokenProvider.validateToken(request.refreshToken())) {
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Virkistystoken ei kelpaa");
+    }
+    String kayttajanimi = tokenProvider.getUsernameFromToken(request.refreshToken());
+    return ResponseEntity.ok(new JwtResponse(tokenProvider.generateToken(kayttajanimi)));
+}
+```
+
+Yksinkertainen client dioissa 2 ja 3 ei tee tätä. Se kirjautuu uudelleen, kun access-token vanhenee. Virkistys kannattaa vasta, kun lomaketta ei haluta näyttää kesken myyntiä.
+
+Refresh-tokenia ei lähetetä jokaiseen pyyntöön. Jos se on vain allekirjoitettu merkkijono eikä sitä ole kannassa, sitä ei voi perua ennen `exp`-aikaa. Peruutus onnistuu, jos palvelin tallentaa refresh-tokenin ja poistaa rivin uloskirjautuessa. Access-tokenia ei silti tallenneta.
+
+---
+
+## Dia 6 — CORS, kun client on eri osoitteessa
 
 Selain ei lähetä pyyntöä toiselle palvelimelle, ennen kuin backend lupaa. Ensimmäinen kutsu on `OPTIONS`. Siinä selain kysyy, saako tämä sivu lähettää otsikon `Authorization`.
 
@@ -312,7 +350,7 @@ Postman ja curl eivät lähetä `OPTIONS`-kyselyä. Niillä rajapinta voi toimia
 
 ---
 
-## Dia 6 — Jos toinen tiimi teki Basicin
+## Dia 7 — Jos toinen tiimi teki Basicin
 
 Silloin kirjautumiskutsua ei ole. Client lähettää tunnuksen ja salasanan joka pyynnössä:
 
@@ -328,7 +366,7 @@ TicketGurun oma suositus palvelimelle on Basic, kunnes web-client oikeasti tulee
 
 ---
 
-## Dia 7 — Mitä clientiin ei kirjoiteta
+## Dia 8 — Mitä clientiin ei kirjoiteta
 
 - Tokenin allekirjoitusta tai salaisuutta. Ne ovat palvelimella.
 - `hasRole`-sääntöjä. `403` tulee palvelimelta.
