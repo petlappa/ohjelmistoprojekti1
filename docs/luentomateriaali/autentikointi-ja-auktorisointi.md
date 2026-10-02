@@ -306,6 +306,82 @@ Allekirjoitus lasketaan kahdesta ensimmäisestä osasta ja palvelimen salaisuude
 
 Token vanhenee. Ensimmäisessä versiossa client kirjautuu uudelleen. Erillistä refresh-tokenia ei tarvita, ennen kuin client oikeasti on olemassa.
 
+### Postman, jos tiimi tekee JWT:n
+
+Kurssin linja on Basic. Selainclientiä ei tässä vaiheessa ole. Jos tiimi silti toteuttaa JWT:n, rajapintaa kokeillaan Postmanilla. Tunnukset ovat demokäyttäjät `myyja` / `salasana` ja `koordinaattori` / `salasana`. Osoite on paikallisesti `http://localhost:8080`. Julkaisun jälkeen sama polku toimii palvelimen osoitteessa.
+
+**Kirjautuminen**
+
+1. Uusi pyyntö, metodi `POST`, osoite `http://localhost:8080/api/login`.
+2. Body-välilehti: `raw` ja muoto `JSON`.
+3. Runko:
+
+```json
+{
+  "kayttajanimi": "myyja",
+  "salasana": "salasana"
+}
+```
+
+4. Send. Oikea tunnus palauttaa `200` ja kentän `token`. Väärä tunnus on `401`.
+5. Kopioi `token`-merkkijono.
+
+```json
+{ "token": "eyJhbGciOiJIUzI1NiI..." }
+```
+
+**Suojattu pyyntö**
+
+`GET http://localhost:8080/api/events`. Authorization-välilehti, tyyppi Bearer Token, ja liitä token kenttään. Postman lisää otsikon `Authorization: Bearer …`. Sama otsikko kelpaa `POST /api/sales` -kutsuun. Myyjän tokenilla `POST /api/events` on `403`.
+
+Otsikon voi kirjoittaa myös Headers-välilehdelle. Key on `Authorization` ja value on `Bearer`, välilyönti ja token. Ilman välilyöntiä palvelin ei tunnista tokenia.
+
+**Token talteen ilman kopiointia**
+
+Kirjautumispyynnön Tests-välilehti (uudemmassa Postmanissa Scripts, Post-response):
+
+```javascript
+const response = pm.response.json();
+pm.environment.set("jwt_token", response.token);
+```
+
+Muissa pyynnöissä Bearer Token -kenttään kirjoitetaan `{{jwt_token}}`. Postman vaihtaa sen kirjautumisen jälkeen. Ympäristö pitää olla valittuna, jotta `pm.environment.set` löytää paikan.
+
+**401 ja 403 Postmanissa**
+
+Tilakoodi näkyy vastauksen oikeassa yläkulmassa. Runko on Body-välilehdellä. Nämä kaksi koodia ovat samat Basicissa ja JWT:ssä. Spring Securityn oletusrunko ei ole kontrollerin `ApiError`, vaan sen oma JSON, jossa on `timestamp`, `status`, `error` ja `path`.
+
+`401 Unauthorized` tarkoittaa, että palvelin ei tunnistanut kutsujia. Postmanissa syy on jokin näistä:
+
+- Authorization-välilehdellä on `No Auth`, eikä otsikkoa lähde.
+- Token on kentässä ilman sanaa `Bearer` ja välilyöntiä.
+- Tokenin `exp` on mennyt tai allekirjoitusta on muutettu.
+- Basicissa salasana on väärä.
+
+Kokeilu: `GET /api/events`, tyyppi No Auth, Send. Odotus on `401`.
+
+```json
+{
+  "timestamp": "2026-10-02T03:15:00.000+00:00",
+  "status": 401,
+  "error": "Unauthorized",
+  "path": "/api/events"
+}
+```
+
+`403 Forbidden` tarkoittaa, että token tai Basic-tunnus kelpasi, mutta rooli ei saa tehdä toimintoa. Myyjän tunnuksella `POST /api/events` on `403`, koska tapahtuman luonti on roolilla `TAPAHTUMAKOORDINAATTORI`.
+
+```json
+{
+  "timestamp": "2026-10-02T03:15:00.000+00:00",
+  "status": 403,
+  "error": "Forbidden",
+  "path": "/api/events"
+}
+```
+
+Jos vastaus ei täsmää, Postmanin Console näyttää otsikot, jotka oikeasti lähtivät. Macissa se avautuu näppäimillä `Cmd+Alt+C`, Windowsissa `Ctrl+Alt+C`.
+
 ### Mitä ei rakenneta JWT:n tilalle
 
 Keycloak, Auth0 tai organisaation tunnuspalvelu tunnistavat käyttäjän muualla ja antavat sovellukselle valmiin tokenin. Se on oikea malli, kun käyttäjät tulevat organisaation hakemistosta. TicketGurun kurssiversiossa myyjä ja koordinaattori syntyvät omassa kannassa. JWT niiden päälle riittää sinä päivänä, kun selainclient tulee. Uutta käyttäjäjärjestelmää ei tehdä sitä ennen.

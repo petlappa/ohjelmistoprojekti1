@@ -10,9 +10,11 @@ Kooste: [jwt-web-client.md](jwt-web-client.md).
 
 ## Mitä luento suosittelee
 
-- `POST /api/login` kerran. Token talteen muuttujaan. Sen jälkeen `Authorization: Bearer` jokaiseen kutsulle.
+- `POST /api/login` kerran. Token talteen `localStorage`-muistiin. Sen jälkeen otsikko on tismalleen `Bearer`, välilyönti ja token.
+- Palvelimella neljä osaa: JJWT, `JwtRequestFilter`, tilaton `SecurityFilterChain` ja kirjautuminen. Rooli haetaan taulusta `Kayttaja`.
+- `JwtTokenProvider` kokoaa `header.payload.signature`. Tokenia ei tallenneta palvelimelle. Payloadista näkyy tunnus, ei salasanaa.
 - Client ei rakenna JWT:tä, ei tarkista allekirjoitusta eikä päätä roolia.
-- `401` tarkoittaa uutta kirjautumista. `403` tarkoittaa, että rooli ei riitä.
+- `401` access-tokenille tarkoittaa uutta kirjautumista. Virkistystoken on valinnainen jatko: sillä haetaan uusi access-token ilman salasanaa. `403` tarkoittaa, että rooli ei riitä.
 - Eri osoitteessa oleva selain tarvitsee backendin CORS-luvan otsikolle `Authorization`.
 - Jos toinen tiimi teki Basicin, otsikko on `Basic` joka pyynnössä eikä erillistä login-kutsua ole.
 
