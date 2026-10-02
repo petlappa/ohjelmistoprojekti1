@@ -297,7 +297,28 @@ public class JwtTokenProvider {
 }
 ```
 
-Avain luetaan asetuksesta `app.jwt.secret`. Se on sama joka käynnistyksellä, jotta `validateToken` tunnistaa aiemmin annetun tokenin. `Keys.secretKeyFor(...)` loisi uuden avaimen joka käynnistyksellä, ja vanhat tokenit lakkaisivat toimimasta.
+### Salainen avain ei ole token
+
+Nämä kaksi menevät helposti sekaisin. Salainen avain on palvelimen kiinteä merkkijono. JWT on se merkkijono, jonka palvelin antaa yhdelle kirjautumiselle.
+
+| | Salainen avain | JWT |
+| --- | --- | --- |
+| Montako | Yksi koko palvelimelle | Uusi jokaisesta kirjautumisesta |
+| Kuka sen tekee | Ihminen kerran ennen julkaisua | Spring Boot kirjautumisen yhteydessä, `Jwts.builder()` |
+| Missä se on | Ympäristömuuttuja, esimerkiksi `JWT_SECRET` | Clientillä, otsikossa `Authorization: Bearer` |
+| Vaihtuuko käynnistyksessä | Ei | Vanhat tokenit kelpaavat vain, jos avain pysyy samana |
+
+Avain luodaan kerran, esimerkiksi komennolla `openssl rand -base64 32`. Tulos on pitkä satunnainen merkkijono. Se laitetaan palvelimen ympäristömuuttujaan, josta asetus `app.jwt.secret` lukee sen. Samaa avainta käytetään kaikkien tokenien allekirjoitukseen ja tarkistukseen. Avainta ei lähetetä clientille eikä kirjoiteta tokenin payloadiin.
+
+Kun käyttäjä kirjautuu, `JwtTokenProvider` ottaa tunnuksen ja laskee allekirjoituksen tällä avaimella. Palvelin ei tallenna valmista tokenia.
+
+Java osaa luoda avaimen myös itse:
+
+```java
+private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+```
+
+Silloin uusi avain syntyy muistiin joka käynnistyksellä. Päivitys tai uudelleenkäynnistys mitätöi heti kaikki voimassa olevat tokenit, ja jokainen käyttäjä joutuu kirjautumaan uudelleen. Siksi avain luodaan kerran ja pidetään ympäristömuuttujassa. Koodiesimerkki lukee sen asetuksesta `app.jwt.secret`.
 
 Allekirjoitus ei salaa payloadia. Base64URL:n purkaa kuka tahansa, joten tokenista näkee tunnuksen ja ajat. Salasanaa tai muuta salaista ei siis kirjoiteta payloadiin. Väärennös estetään sillä, että vain palvelin tietää avaimen. Tokenia ei voi perua palvelimelta ilman erillistä listaa, joten `exp` pidetään lyhyenä. Yksinkertainen client kirjautuu tunnin jälkeen uudelleen. Virkistystoken on diassa 5, jos salasanaa ei haluta kysyä uudestaan.
 
