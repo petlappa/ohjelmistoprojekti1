@@ -245,13 +245,60 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.kayttajanimi(), request.salasana()));
-        String token = tokenProvider.generateToken(authentication);
+        String token = tokenProvider.generateToken(authentication.getName());
         return ResponseEntity.ok(new JwtResponse(token));
     }
 }
 ```
 
 `LoginRequest` on record, jossa on kentät `kayttajanimi` ja `salasana`. `JwtResponse` on record, jossa on kenttä `token`. Clientin dia 2 lukee juuri tämän kentän.
+
+### Miten token syntyy
+
+Palvelin ei tallenna tokenia muistiin eikä tietokantaan. Se palauttaa allekirjoitetun merkkijonon. Merkkijonossa on kolme osaa, pisteellä erotettuna: `header.payload.signature`.
+
+| Osa | Sisältö |
+| --- | --- |
+| Header | Algoritmi, tässä `HS256`, ja tyyppi `JWT`. |
+| Payload | Käyttäjänimi kentässä `sub`, luontiaika `iat` ja vanheneminen `exp`. |
+| Signature | HMAC-SHA256 laskettuna kahdesta ensimmäisestä osasta ja salaisesta avaimesta, jonka vain palvelin tietää. |
+
+Luonti etenee näin:
+
+1. `AuthenticationManager` on jo tarkistanut salasanan hashin taulusta `Kayttaja`.
+2. Payloadiin laitetaan `kayttajanimi` ja vanheneminen. Tunnin mittainen token riittää esimerkissä. Salasanaa ei laiteta mukaan.
+3. Header ja payload muutetaan Base64URL-merkkijonoiksi.
+4. Allekirjoitus on `HMACSHA256(header + "." + payload, salainenAvain)`.
+5. Kolme osaa palautetaan JSON-kentässä `token`.
+
+```java
+@Component
+public class JwtTokenProvider {
+
+    private final Key secretKey;
+    private final long validityInMilliseconds = 3_600_000;
+
+    public JwtTokenProvider(@Value("${app.jwt.secret}") String secret) {
+        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
+
+    public String generateToken(String kayttajanimi) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
+
+        return Jwts.builder()
+                .setSubject(kayttajanimi)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+}
+```
+
+Avain luetaan asetuksesta `app.jwt.secret`. Se on sama joka käynnistyksellä, jotta `validateToken` tunnistaa aiemmin annetun tokenin. `Keys.secretKeyFor(...)` loisi uuden avaimen joka käynnistyksellä, ja vanhat tokenit lakkaisivat toimimasta.
+
+Allekirjoitus ei salaa payloadia. Base64URL:n purkaa kuka tahansa, joten tokenista näkee tunnuksen ja ajat. Salasanaa tai muuta salaista ei siis kirjoiteta payloadiin. Väärennös estetään sillä, että vain palvelin tietää avaimen. Tokenia ei voi perua palvelimelta ilman erillistä listaa, joten `exp` pidetään lyhyenä. Tunnin jälkeen client kirjautuu uudelleen.
 
 ---
 

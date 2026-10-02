@@ -11,7 +11,8 @@ Kooste: [jwt-web-client.md](jwt-web-client.md).
 ## Mitä luento suosittelee
 
 - `POST /api/login` kerran. Token talteen `localStorage`-muistiin. Sen jälkeen otsikko on tismalleen `Bearer`, välilyönti ja token.
-- Palvelimella neljä osaa: JJWT-riippuvuudet, `JwtRequestFilter`, tilaton `SecurityFilterChain` ja `POST /api/login`, joka palauttaa kentän `token`. Rooli haetaan taulusta `Kayttaja`, ja `hasRole` ajetaan suodattimen jälkeen.
+- Palvelimella neljä osaa: JJWT, `JwtRequestFilter`, tilaton `SecurityFilterChain` ja kirjautuminen. Rooli haetaan taulusta `Kayttaja`.
+- `JwtTokenProvider` kokoaa `header.payload.signature`. Tokenia ei tallenneta palvelimelle. Payloadista näkyy tunnus, ei salasanaa.
 - Client ei rakenna JWT:tä, ei tarkista allekirjoitusta eikä päätä roolia.
 - `401` tarkoittaa uutta kirjautumista. `403` tarkoittaa, että rooli ei riitä.
 - Eri osoitteessa oleva selain tarvitsee backendin CORS-luvan otsikolle `Authorization`.
