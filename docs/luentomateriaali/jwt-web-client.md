@@ -103,16 +103,155 @@ Postmanissa sama asia tehdään ilman koodia: kokoelman tai pyynnön Authorizati
 
 ---
 
-## Dia 4 — Miten Spring Boot käsittelee pyynnön
+## Dia 4 — Palvelimen neljä osaa
 
-Clientin `fetch` päättyy tähän. Seuraava tapahtuu palvelimella, ennen kontrolleria.
+Clientin `fetch` päättyy tähän. Palvelin on tilaton: istuntoa ei luoda, ja jokainen pyyntö tarkistetaan suodattimella. Koodi ei ole vielä tässä repositoriossa. Neljä osaa riittää.
 
-1. Suodatin lukee jokaisesta pyynnöstä otsikon `Authorization`. Tiimi kirjoittaa sen usein luokaksi, joka perii `OncePerRequestFilter`-luokan, esimerkiksi `JwtRequestFilter`. Spring Securityn oma JWT-tuki tekee saman työn.
-2. Suodatin tarkistaa, että arvo alkaa merkkijonolla `Bearer `.
-3. Se tarkistaa allekirjoituksen palvelimen salaisuudella ja `exp`-ajan. Tokenia ei haeta kannasta. Jos allekirjoitus täsmää, suodatin asettaa käyttäjän ja roolin kontekstiin (`SecurityContextHolder`): `myyja`, `ROLE_MYYJA`.
-4. Sama `AuthorizationFilter` kuin Basicissa ajaa `hasRole`-säännöt. Token puuttuu, on väärä tai vanha: `401`. Käyttäjä on oikea, mutta osoite on kielletty: `403`.
+### Riippuvuudet
 
-Tokenin kirjoitus `POST /api/login` -metodissa on yhä sovelluksen oma koodi. Suodatin vain tarkistaa valmiin tokenin.
+`spring-boot-starter-security` on sama kuin Basicissa. JWT:n allekirjoitus tulee kirjastosta JJWT. Pelkkä `jjwt-api` ei riitä ajoon, vaan mukaan tarvitaan myös toteutus ja JSON-kirjasto.
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+### Suodatin
+
+`JwtRequestFilter` perii `OncePerRequestFilter`-luokan. Se lukee otsikon, tarkistaa etuliitteen `Bearer `, validoi tokenin ja asettaa käyttäjän kontekstiin. Roolia ei lueta tokenista vaan haetaan uudelleen `UserDetailsService`-palvelulla, joka lukee taulun `Kayttaja`. Näin rooli on sama rivi kuin Basicissa.
+
+`JwtTokenProvider` on tiimin oma luokka, ei Springin. Se tekee kolme asiaa: `generateToken`, `validateToken` ja `getUsernameFromToken`.
+
+```java
+@Component
+public class JwtRequestFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+
+            if (tokenProvider.validateToken(token)) {
+                String kayttajanimi = tokenProvider.getUsernameFromToken(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(kayttajanimi);
+
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
+}
+```
+
+Jos otsikko puuttuu tai token on väärä, suodatin ei aseta käyttäjää. Ketju jatkuu, ja seuraava vaihe vastaa `401`.
+
+### SecurityConfig
+
+Istuntoa ei luoda ja CSRF on pois päältä, kuten Basicin luennossa. `POST /api/login` on julkinen. Muut osoitteet käyttävät samoja `hasRole`-sääntöjä. Suodatin ajetaan ennen Springin oletussuodatinta `UsernamePasswordAuthenticationFilter`.
+
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/events/**")
+                    .hasAnyRole("MYYJA", "TAPAHTUMAKOORDINAATTORI")
+                .requestMatchers(HttpMethod.POST, "/api/events/**")
+                    .hasRole("TAPAHTUMAKOORDINAATTORI")
+                .requestMatchers(HttpMethod.POST, "/api/sales").hasRole("MYYJA")
+                .anyRequest().authenticated())
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
+        return config.getAuthenticationManager();
+    }
+}
+```
+
+`AuthorizationFilter` ajaa `hasRole`-rivit sen jälkeen, kun suodatin on täyttänyt kontekstin. Token puuttuu, on väärä tai vanha: `401`. Käyttäjä on oikea, mutta osoite on kielletty: `403`.
+
+### Kirjautuminen
+
+`AuthController` tarkistaa tunnuksen ja salasanan `AuthenticationManager`-oliolla. Se käyttää samaa `UserDetailsService`-palvelua ja `PasswordEncoder`-luokkaa kuin Basic. Onnistuneesta tarkistuksesta syntyy token, joka palautetaan kentässä `token`. Rekisteröintiosoitetta ei ole: käyttäjät ovat jo taulussa `Kayttaja`.
+
+```java
+@RestController
+@RequestMapping("/api")
+public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @PostMapping("/login")
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.kayttajanimi(), request.salasana()));
+        String token = tokenProvider.generateToken(authentication);
+        return ResponseEntity.ok(new JwtResponse(token));
+    }
+}
+```
+
+`LoginRequest` on record, jossa on kentät `kayttajanimi` ja `salasana`. `JwtResponse` on record, jossa on kenttä `token`. Clientin dia 2 lukee juuri tämän kentän.
 
 ---
 
