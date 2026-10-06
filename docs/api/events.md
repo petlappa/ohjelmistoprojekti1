@@ -6,7 +6,7 @@ Client-tiimille: **mitä** kutsutaan (URL, JSON, paluukoodit).
 
 Pohja: [REST API Documentation Templates](https://github.com/jamescooke/restapidocs) (James Cooke).
 
-Sprint 3 toteuttaa **tapahtumien** CRUD:n. Kirjautumista ei vielä ole: rajapinta on avoin kehityskäytössä.
+Sprint 3 toteuttaa **tapahtumien** CRUD:n. Rajapinta vaatii HTTP Basic -tunnuksen joka pyynnössä.
 
 ## Version
 
@@ -24,6 +24,17 @@ Sprint 3 toteuttaa **tapahtumien** CRUD:n. Kirjautumista ei vielä ole: rajapint
 | **CORS** | `Access-Control-Allow-Origin: *` kehityksessä (`/api/events`) |
 
 Ajan esitys on ISO-8601 ilman aikavyöhykettä, esim. `2026-10-02T17:00:00`.
+
+## Authentication
+
+HTTP Basic. Tunnus ja salasana tulevat joka pyynnössä otsikossa `Authorization: Basic …`. Ilman otsikkoa tai väärällä salasanalla vastaus on `401`. Tunnistettu käyttäjä, jonka rooli ei saa tehdä toimintoa, saa `403`.
+
+| Käyttäjä | Salasana | Rooli | Tapahtumat |
+| --- | --- | --- | --- |
+| `myyja` | `salasana` | `MYYJA` | vain `GET` |
+| `koordinaattori` | `salasana` | `TAPAHTUMAKOORDINAATTORI` | `GET`, `POST`, `PUT`, `DELETE` |
+
+Postman: Authorization → Basic Auth. Curl: `curl -u koordinaattori:salasana http://localhost:8080/api/events`.
 
 ---
 

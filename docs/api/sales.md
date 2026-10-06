@@ -2,7 +2,7 @@
 
 Client-tiimille: yhden kassakaupan luonti ja kuitti. Valinnat: [../arkkitehtuuri-sprint-4.md](../arkkitehtuuri-sprint-4.md). Lipputyypit: [ticket-types.md](ticket-types.md).
 
-Sprint 4. Kirjautumista ei ole. Myyjä annetaan bodyssa kenttänä `myyjaId` (esimerkkidata: käyttäjä `myyja`, nimi Maija Myyjä).
+Sprint 4. Myynti vaatii HTTP Basic -tunnuksen `myyja` / `salasana`. Koordinaattori saa tästä osoitteesta `403`. Myyjä annetaan bodyssa kenttänä `myyjaId` (esimerkkidata: käyttäjä `myyja`, nimi Maija Myyjä). Tunnukset: [events.md](events.md#authentication).
 
 ## Version
 

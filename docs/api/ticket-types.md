@@ -2,7 +2,7 @@
 
 Client-tiimille: tapahtuman lipputyypit. Valinnat: [../arkkitehtuuri-sprint-4.md](../arkkitehtuuri-sprint-4.md).
 
-Sprint 4. Kirjautumista ei ole: rajapinta on avoin kehityskäytössä.
+Sprint 4. `GET` onnistuu tunnuksella `myyja` tai `koordinaattori`. `POST` vaatii tunnuksen `koordinaattori`. Salasana on `salasana`. Tunnukset: [events.md](events.md#authentication).
 
 Tapahtuman id on **polussa**. Bodyyn ei laiteta `tapahtumaId`:tä. Vastaus ei upota tapahtumaa.
 

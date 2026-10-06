@@ -127,7 +127,7 @@ Hallinnoi järjestelmän käyttäjiä ja rooleja (toteutus myöhemmin, kun kirja
 | Tapahtumakoordinaattori | CRUD | CRUD | tarvittaessa | kyllä | ei |
 | Pääkäyttäjä | kyllä | kyllä | kyllä | kyllä | kyllä |
 
-Oikeudet tarkennetaan, kun Spring Security lisätään. Sprint 1:ssä backend on vielä avoin paikallinen REST-palvelin.
+Rajapinta käyttää HTTP Basicia. Myyjä näkee tapahtumat ja myy lippuja. Tapahtumakoordinaattori ylläpitää tapahtumia ja lipputyyppejä. Pääkäyttäjän käyttäjähallintaa ei ole vielä.
 
 ### 2.2 Käyttäjätarinat
 
@@ -386,7 +386,7 @@ Myyntitapahtuman `tapahtuma_id` on tietoinen denormalisointi: kassalla myydään
 | --- | --- | --- | --- |
 | id | BIGINT | PK, generoitu | |
 | kayttajanimi | VARCHAR(50) | UNIQUE, NOT NULL | kirjautumistunnus |
-| salasana | VARCHAR | NOT NULL | toistaiseksi selväkielinen; hash kun Spring Security lisätään |
+| salasana | VARCHAR | NOT NULL | bcrypt-hash; Postmanissa selvä salasana `salasana` |
 | etunimi | VARCHAR(80) | NOT NULL | |
 | sukunimi | VARCHAR(80) | NOT NULL | |
 | rooli_id | BIGINT | FK, NOT NULL | viittaa `Rooli` |
@@ -467,7 +467,7 @@ Tiedot ovat muistissa ja katoavat, kun prosessi sammutetaan. Sprint 4:n kokeilta
 ### 4.7 Mitä ei ole vielä kannassa
 
 - Ennakkomyynnin päättymisaika (M11) — tarkennetaan, kun ovimyynti toteutetaan.
-- Salasanan hash ja Spring Security.
+- Pääkäyttäjän käyttäjähallinta. Salasanan bcrypt-hash ja HTTP Basic ovat käytössä.
 - Ostajataulu (verkkokauppa).
 - Paikkakartta / istumapaikka.
 

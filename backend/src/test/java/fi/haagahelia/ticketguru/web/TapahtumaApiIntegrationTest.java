@@ -27,19 +27,19 @@ class TapahtumaApiIntegrationTest {
 
     @Test
     void demoDataIsListedAndSingleEventCanBeFetched() throws Exception {
-        mockMvc.perform(get("/api/events"))
+        mockMvc.perform(get("/api/events").with(BasicAuth.koordinaattori()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(greaterThanOrEqualTo(2)))
                 .andExpect(jsonPath("$[0].nimi").exists());
 
-        mockMvc.perform(get("/api/events").param("kaupunki", "Tampere"))
+        mockMvc.perform(get("/api/events").with(BasicAuth.koordinaattori()).param("kaupunki", "Tampere"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].kaupunki").value("Tampere"));
     }
 
     @Test
     void createUpdateAndDeleteRoundTripPersistsToDatabase() throws Exception {
-        MvcResult created = mockMvc.perform(post("/api/events")
+        MvcResult created = mockMvc.perform(post("/api/events").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -56,11 +56,11 @@ class TapahtumaApiIntegrationTest {
 
         long id = ((Number) JsonPath.read(created.getResponse().getContentAsString(), "$.id")).longValue();
 
-        mockMvc.perform(get("/api/events/" + id))
+        mockMvc.perform(get("/api/events/" + id).with(BasicAuth.koordinaattori()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paikka").value("Sellosali"));
 
-        mockMvc.perform(put("/api/events/" + id)
+        mockMvc.perform(put("/api/events/" + id).with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -75,21 +75,21 @@ class TapahtumaApiIntegrationTest {
                 .andExpect(jsonPath("$.nimi").value("Sprint 3 demo muokattu"))
                 .andExpect(jsonPath("$.kaupunki").value("Vantaa"));
 
-        mockMvc.perform(delete("/api/events/" + id))
+        mockMvc.perform(delete("/api/events/" + id).with(BasicAuth.koordinaattori()))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/api/events/" + id))
+        mockMvc.perform(get("/api/events/" + id).with(BasicAuth.koordinaattori()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void deletingEventWithSalesReturnsConflict() throws Exception {
-        MvcResult list = mockMvc.perform(get("/api/events").param("kaupunki", "Helsinki"))
+        MvcResult list = mockMvc.perform(get("/api/events").with(BasicAuth.koordinaattori()).param("kaupunki", "Helsinki"))
                 .andExpect(status().isOk())
                 .andReturn();
         long id = ((Number) JsonPath.read(list.getResponse().getContentAsString(), "$[0].id")).longValue();
 
-        mockMvc.perform(delete("/api/events/" + id))
+        mockMvc.perform(delete("/api/events/" + id).with(BasicAuth.koordinaattori()))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409));
     }

@@ -34,49 +34,49 @@ class StatusCodeApiIntegrationTest {
 
     @Test
     void missingPathIdIs404() throws Exception {
-        mockMvc.perform(get("/api/events/999999"))
+        mockMvc.perform(get("/api/events/999999").with(BasicAuth.myyja()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
 
-        mockMvc.perform(put("/api/events/999999")
+        mockMvc.perform(put("/api/events/999999").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TAPAHTUMA))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
 
-        mockMvc.perform(delete("/api/events/999999"))
+        mockMvc.perform(delete("/api/events/999999").with(BasicAuth.koordinaattori()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
 
-        mockMvc.perform(get("/api/sales/999999"))
+        mockMvc.perform(get("/api/sales/999999").with(BasicAuth.myyja()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
 
-        mockMvc.perform(get("/api/events/999999/ticket-types"))
+        mockMvc.perform(get("/api/events/999999/ticket-types").with(BasicAuth.myyja()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
     }
 
     @Test
     void invalidPathIdAndBodyAre400() throws Exception {
-        mockMvc.perform(get("/api/events/abc"))
+        mockMvc.perform(get("/api/events/abc").with(BasicAuth.myyja()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
 
-        mockMvc.perform(post("/api/events")
+        mockMvc.perform(post("/api/events").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("Validation failed"));
 
-        mockMvc.perform(post("/api/events")
+        mockMvc.perform(post("/api/events").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Malformed JSON"));
 
-        mockMvc.perform(post("/api/events")
+        mockMvc.perform(post("/api/events").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -90,7 +90,7 @@ class StatusCodeApiIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
 
-        mockMvc.perform(put("/api/events/1")
+        mockMvc.perform(put("/api/events/1").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         { "nimi": "Puuttuu loput" }
@@ -101,11 +101,11 @@ class StatusCodeApiIntegrationTest {
 
     @Test
     void unknownPathIs404AndWrongMethodIs405() throws Exception {
-        mockMvc.perform(get("/api/ei-ole"))
+        mockMvc.perform(get("/api/ei-ole").with(BasicAuth.myyja()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
 
-        mockMvc.perform(patch("/api/events/1")
+        mockMvc.perform(patch("/api/events/1").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
                 .andExpect(status().isMethodNotAllowed())
@@ -114,7 +114,7 @@ class StatusCodeApiIntegrationTest {
 
     @Test
     void successfulWritesUse201And204() throws Exception {
-        mockMvc.perform(post("/api/events")
+        mockMvc.perform(post("/api/events").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TAPAHTUMA))
                 .andExpect(status().isCreated())
