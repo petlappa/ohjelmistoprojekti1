@@ -207,9 +207,19 @@ Rahti on CSC:n konttipalvelu suomalaisille korkeakouluille, myös Haaga-Helialle
 
 Kevään ohjeen PostgreSQL-templatea ei enää käytetä uuteen kantaan. CSC merkitsee katalogin templatet vanhentuneiksi. Bitnami-imageihin nojaavat Helm-chartit on tarkoitettu kokeiluun 29.9.2025 jälkeen, koska Bitnami siirsi ylläpidetyt imaget maksulliseen katalogiin. Kurssin keston kanta tehdään Pukkiin.
 
+Haaga-Helian omat ohjeet ovat sivustolla [CSC-palvelut Haaga-Heliassa](https://haagahelia.github.io/hh-csc-docs/). Tunnus ja projekti tehdään sivun [Opiskelijan aloitusohjeet](https://haagahelia.github.io/hh-csc-docs/aloitus_opiskelija/) mukaan. Jos opettaja on lähettänyt kutsun kurssiprojektiin, liittyminen on sivulla [Kurssiprojektiin liittyminen](https://haagahelia.github.io/hh-csc-docs/kurssiprojekti_opiskelijan_ohje/).
+
+### CSC-tunnus
+
+1. Avaa [my.csc.fi](https://my.csc.fi) ja kirjaudu **Haka**-tunnuksella (Haaga-Helian verkkotunnus).
+2. Ensimmäisellä kerralla portaali ohjaa CSC-käyttäjätilin luontiin. CSC valitsee tunnuksen ja lähettää sen sähköpostilla.
+3. Jatkossa samaan portaaliin pääsee Haka-tunnuksella tai sillä CSC-tunnuksella.
+
+Tämän jälkeen aloitusohjeen järjestys on: Student-projekti, palvelut Rahti ja Pukki, tiimin jäsenet, sitten palvelujen käyttö.
+
 ### Tunnus ja projekti
 
-1. Kirjaudu [my.csc.fi](https://my.csc.fi) Haka-tunnuksella. Ensimmäinen kirjautuminen luo CSC-tunnuksen.
+1. Tee CSC-tunnus yllä olevan kohdan mukaan, jos sitä ei vielä ole.
 2. Luo **CSC Student** -projekti, jos tiimi tarvitsee oman nimiavaruuden. Jaetussa Course-projektissa opiskelijat näkevät toistensa ympäristöt. Course-projektin enimmäiskesto on kuusi kuukautta, eikä sitä jatketa.
 3. Aktivoi projektiin palvelut **Rahti** ja, kun kanta tulee Pukkiin, **Pukki**. Hyväksy käyttöehdot.
 4. Avaa [rahti.csc.fi](https://rahti.csc.fi) ja luo Project, esimerkiksi `ticketguru`. MyCSC-projekti ja Rahti-projekti ovat eri asioita: ensimmäinen on hallinnollinen, toinen on se nimiavaruus, johon kontit tulevat.
@@ -303,7 +313,7 @@ Tätä levyä CSC ei varmuuskopioi. Katalogin PostgreSQL-template on vanhentunut
 ### Pikaohje, Rahti ja Pukki
 
 1. Sama Dockerfile ja prod-profiili kuin Render-osiossa.
-2. MyCSC: Student-projekti, Rahti ja Pukki käyttöön.
+2. [CSC-tunnus ja Student-projekti](https://haagahelia.github.io/hh-csc-docs/aloitus_opiskelija/). Palveluiksi Rahti ja Pukki.
 3. `docker build`, tag, `docker push` Docker Hubiin.
 4. Rahti: +Add → image, portti 8080.
 5. Route, TLS päällä. Osoite `https://ticketguru-<projekti>.2.rahtiapp.fi`.
@@ -328,6 +338,8 @@ Tarkistettu 2026-10-06.
 - [Render: Deploy for Free](https://render.com/docs/free)
 - [Render: Docker](https://render.com/docs/docker)
 - [Render: Free PostgreSQL expires after 30 days](https://render.com/changelog/free-postgresql-instances-now-expire-after-30-days-previously-90)
+- [CSC-palvelut Haaga-Heliassa](https://haagahelia.github.io/hh-csc-docs/)
+- [Opiskelijan aloitusohjeet](https://haagahelia.github.io/hh-csc-docs/aloitus_opiskelija/)
 - [Rahti](https://rahti.csc.fi/)
 - [Rahti catalog](https://docs.csc.fi/cloud/rahti/usage/catalog/)
 - [Kurssi CSC:n resursseilla](https://docs.csc.fi/fi/support/tutorials/services-for-courses/)
