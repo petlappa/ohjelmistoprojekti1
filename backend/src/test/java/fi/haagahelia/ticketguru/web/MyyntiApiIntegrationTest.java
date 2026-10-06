@@ -31,7 +31,7 @@ class MyyntiApiIntegrationTest {
     void demoEventListsTicketTypes() throws Exception {
         long tapahtumaId = helsinkiEventId();
 
-        mockMvc.perform(get("/api/events/" + tapahtumaId + "/ticket-types"))
+        mockMvc.perform(get("/api/events/" + tapahtumaId + "/ticket-types").with(BasicAuth.myyja()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(greaterThanOrEqualTo(2)))
                 .andExpect(jsonPath("$[0].kuvaus").exists())
@@ -42,7 +42,7 @@ class MyyntiApiIntegrationTest {
     void createTicketTypeThenSaleReturnsReceipt() throws Exception {
         long tapahtumaId = createEvent(2);
 
-        MvcResult type = mockMvc.perform(post("/api/events/" + tapahtumaId + "/ticket-types")
+        MvcResult type = mockMvc.perform(post("/api/events/" + tapahtumaId + "/ticket-types").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         { "kuvaus": "Opiskelija", "hinta": 10.00 }
@@ -53,7 +53,7 @@ class MyyntiApiIntegrationTest {
                 .andReturn();
         long tyyppiId = idOf(type);
 
-        MvcResult sale = mockMvc.perform(post("/api/sales")
+        MvcResult sale = mockMvc.perform(post("/api/sales").with(BasicAuth.myyja())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -74,7 +74,7 @@ class MyyntiApiIntegrationTest {
                 .andReturn();
 
         long saleId = idOf(sale);
-        mockMvc.perform(get("/api/sales/" + saleId))
+        mockMvc.perform(get("/api/sales/" + saleId).with(BasicAuth.myyja()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(saleId))
                 .andExpect(jsonPath("$.liput", hasSize(2)));
@@ -85,7 +85,7 @@ class MyyntiApiIntegrationTest {
         long tapahtumaId = createEvent(1);
         long tyyppiId = createType(tapahtumaId);
 
-        mockMvc.perform(post("/api/sales")
+        mockMvc.perform(post("/api/sales").with(BasicAuth.myyja())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(saleBody(tapahtumaId, myyjaId, tyyppiId, 2)))
                 .andExpect(status().isConflict())
@@ -98,7 +98,7 @@ class MyyntiApiIntegrationTest {
         long tapahtumaB = createEvent(10);
         long tyyppiB = createType(tapahtumaB);
 
-        mockMvc.perform(post("/api/sales")
+        mockMvc.perform(post("/api/sales").with(BasicAuth.myyja())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(saleBody(tapahtumaA, myyjaId, tyyppiB, 1)))
                 .andExpect(status().isBadRequest())
@@ -110,20 +110,20 @@ class MyyntiApiIntegrationTest {
         long tapahtumaId = createEvent(5);
         long tyyppiId = createType(tapahtumaId);
 
-        mockMvc.perform(post("/api/sales")
+        mockMvc.perform(post("/api/sales").with(BasicAuth.myyja())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(saleBody(tapahtumaId, 999999L, tyyppiId, 1)))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(get("/api/sales/999999"))
+        mockMvc.perform(get("/api/sales/999999").with(BasicAuth.myyja()))
                 .andExpect(status().isNotFound());
 
-        mockMvc.perform(get("/api/events/999999/ticket-types"))
+        mockMvc.perform(get("/api/events/999999/ticket-types").with(BasicAuth.myyja()))
                 .andExpect(status().isNotFound());
     }
 
     private long helsinkiEventId() throws Exception {
-        MvcResult list = mockMvc.perform(get("/api/events").param("kaupunki", "Helsinki"))
+        MvcResult list = mockMvc.perform(get("/api/events").with(BasicAuth.myyja()).param("kaupunki", "Helsinki"))
                 .andExpect(status().isOk())
                 .andReturn();
         return ((Number) JsonPath.read(list.getResponse().getContentAsString(), "$[0].id")).longValue();
@@ -140,7 +140,7 @@ class MyyntiApiIntegrationTest {
     }
 
     private long createEvent(int kapasiteetti) throws Exception {
-        MvcResult created = mockMvc.perform(post("/api/events")
+        MvcResult created = mockMvc.perform(post("/api/events").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -157,7 +157,7 @@ class MyyntiApiIntegrationTest {
     }
 
     private long createType(long tapahtumaId) throws Exception {
-        MvcResult created = mockMvc.perform(post("/api/events/" + tapahtumaId + "/ticket-types")
+        MvcResult created = mockMvc.perform(post("/api/events/" + tapahtumaId + "/ticket-types").with(BasicAuth.koordinaattori())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         { "kuvaus": "Aikuinen", "hinta": 12.50 }

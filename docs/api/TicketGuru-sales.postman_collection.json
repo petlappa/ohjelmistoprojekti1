@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "TicketGuru Sales API",
-    "description": "Sprint 4: lipputyypit ja myyntitapahtuma.\nBase-URL: http://localhost:8080/api\nAja järjestyksessä: List events → List ticket types → Create ticket type → Create sale → Get sale.",
+    "description": "Lipputyypit ja myynti. HTTP Basic. Listaus ja myynti: myyja / salasana. Lipputyypin luonti: koordinaattori / salasana.\nBase-URL: http://localhost:8080/api\nAja järjestyksessä: List events → List ticket types → Create ticket type → Create sale → Get sale.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -28,6 +28,13 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "myyja", "type": "string" },
+            { "key": "password", "value": "salasana", "type": "string" }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": "{{baseUrl}}/events"
@@ -48,6 +55,13 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "myyja", "type": "string" },
+            { "key": "password", "value": "salasana", "type": "string" }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": "{{baseUrl}}/events/{{eventId}}/ticket-types"
@@ -69,6 +83,13 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "koordinaattori", "type": "string" },
+            { "key": "password", "value": "salasana", "type": "string" }
+          ]
+        },
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
@@ -94,6 +115,13 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "myyja", "type": "string" },
+            { "key": "password", "value": "salasana", "type": "string" }
+          ]
+        },
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
@@ -107,6 +135,13 @@
     {
       "name": "Get sale",
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "myyja", "type": "string" },
+            { "key": "password", "value": "salasana", "type": "string" }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": "{{baseUrl}}/sales/{{saleId}}"

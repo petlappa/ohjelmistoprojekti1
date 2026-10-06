@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import fi.haagahelia.ticketguru.domain.Kayttaja;
@@ -32,6 +33,7 @@ public class DemoDataLoader implements CommandLineRunner {
     private final LipputyyppiRepository lipputyyppiRepository;
     private final MyyntitapahtumaRepository myyntitapahtumaRepository;
     private final LippuRepository lippuRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DemoDataLoader(
             RooliRepository rooliRepository,
@@ -39,13 +41,15 @@ public class DemoDataLoader implements CommandLineRunner {
             TapahtumaRepository tapahtumaRepository,
             LipputyyppiRepository lipputyyppiRepository,
             MyyntitapahtumaRepository myyntitapahtumaRepository,
-            LippuRepository lippuRepository) {
+            LippuRepository lippuRepository,
+            PasswordEncoder passwordEncoder) {
         this.rooliRepository = rooliRepository;
         this.kayttajaRepository = kayttajaRepository;
         this.tapahtumaRepository = tapahtumaRepository;
         this.lipputyyppiRepository = lipputyyppiRepository;
         this.myyntitapahtumaRepository = myyntitapahtumaRepository;
         this.lippuRepository = lippuRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -58,10 +62,11 @@ public class DemoDataLoader implements CommandLineRunner {
         Rooli koordinaattoriRooli = rooliRepository.save(new Rooli("TAPAHTUMAKOORDINAATTORI"));
         rooliRepository.save(new Rooli("PAAKAYTTAJA"));
 
+        String salasana = passwordEncoder.encode("salasana");
         Kayttaja myyja = kayttajaRepository.save(
-                new Kayttaja("myyja", "salasana", "Maija", "Myyjä", myyjaRooli));
+                new Kayttaja("myyja", salasana, "Maija", "Myyjä", myyjaRooli));
         kayttajaRepository.save(
-                new Kayttaja("koordinaattori", "salasana", "Kalle", "Koordinaattori", koordinaattoriRooli));
+                new Kayttaja("koordinaattori", salasana, "Kalle", "Koordinaattori", koordinaattoriRooli));
 
         Tapahtuma tapahtumaA = tapahtumaRepository.save(new Tapahtuma(
                 "Tapahtuma A",

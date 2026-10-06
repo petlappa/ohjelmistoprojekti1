@@ -56,8 +56,10 @@ Windows: `mvnw.cmd spring-boot:run`
 
 Sovellus vastaa osoitteessa:
 
-- Terveystarkistus: http://localhost:8080/api/health
+- Terveystarkistus: http://localhost:8080/api/health (Basic Auth)
 - Tapahtumat (lista): http://localhost:8080/api/events
+
+Rajapinta vaatii HTTP Basicin. Esimerkkidatan tunnukset: `myyja` / `salasana` ja `koordinaattori` / `salasana`. `curl -u myyja:salasana http://localhost:8080/api/events`
 - H2-konsoli: http://localhost:8080/h2-console  
   JDBC URL: `jdbc:h2:mem:ticketguru` · käyttäjä: `sa` · salasana tyhjä
 
