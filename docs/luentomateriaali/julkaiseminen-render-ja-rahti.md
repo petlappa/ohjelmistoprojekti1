@@ -1,6 +1,6 @@
 # Julkaiseminen: Render ja Rahti
 
-Yleinen luento-ohje Ohjelmistoprojekti 1 -opiskelijoille. Päivitetty **2026-10-06**. Tämä korvaa kevään 2026 deployment-ohjeen.
+Yleinen luento-ohje Ohjelmistoprojekti 1 -opiskelijoille. Päivitetty **2026-10-06**. 
 
 Ohje julkaisee tämän repositorion Spring Boot -backendin (Java 25, hakemisto `backend/`). Vaihda palvelun nimi, Docker Hub -tunnus, API-polut ja tietokannan tunnukset oman tiimin mukaisiksi. Kevään ohjeen käyttäjät (`cashier`, `organizer`, …) olivat yhden demon tunnuksia.
 
