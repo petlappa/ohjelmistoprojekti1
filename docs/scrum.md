@@ -135,3 +135,18 @@ Luento: [luentomateriaali/virheet-ja-validointi.md](luentomateriaali/virheet-ja-
 | Issue | Sisältö |
 | --- | --- |
 | #51 | Oikeat koodit: `200`/`201`/`204`, puuttuva resurssi `404`, kelvoton pyyntö `400`, ei `500`:aa odotetussa virheessä |
+
+## Sprint 6 — HTTP Basic
+
+Luento kertoo vaihtoehdot ja suosituksen: [luentomateriaali/autentikointi-ja-auktorisointi.md](luentomateriaali/autentikointi-ja-auktorisointi.md). Tähän projektiin tehtiin se suositus, ei erillistä askelohjetta.
+
+| Päätös | Toteutus |
+| --- | --- |
+| Käyttäjät | Kannan `Kayttaja`, ei yhtä `admin`-tunnusta asetuksissa |
+| Tunnistus | HTTP Basic joka pyynnössä. `myyja` / `salasana`, `koordinaattori` / `salasana` |
+| Salasana | bcrypt-hash `DemoDataLoaderissa`. Postmanissa selvä `salasana` |
+| Oikeudet | `myyja`: tapahtumien ja lipputyyppien `GET`, myynti. `koordinaattori`: tapahtumien ja lipputyyppien kirjoitus. Väärä rooli `403`, puuttuva tunnus `401` |
+| Koodi | `spring-boot-starter-security` ja `security/SecurityConfig.java`. Omaa Basic-suodatinta ei kirjoitettu |
+| Kokeilu | Postman-kokoelmat `docs/api/`. Testit `BasicAuthenticationTest` |
+
+Erillistä `POST /api/login` -osoitetta ei ole. JWT jäi luennon myöhemmäksi vaiheeksi. `myyjaId` on yhä myyntipyynnön rungossa.

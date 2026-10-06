@@ -479,7 +479,7 @@ Sprint 3 toi tapahtumien CRUD:n. Sprint 4 lisää lipputyypit ja myyntitapahtuma
 
 **Miksi rajapinta on laadittu näin** (DTO, id polussa vs. bodyssa): [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md). Tapahtumapyynnön kulku koodissa: [arkkitehtuuri-tapahtuma.md](arkkitehtuuri-tapahtuma.md).
 
-Tuoteomistajan rajaus Sprint 4:lle: lipputyypin luonti ja listaus sekä yhden myyntitapahtuman luonti ja haku. Raportti, ovitarkastus ja kirjautuminen eivät ole vielä REST-resursseja.
+Tuoteomistajan rajaus Sprint 4:lle: lipputyypin luonti ja listaus sekä yhden myyntitapahtuman luonti ja haku. Raportti ja ovitarkastus eivät ole vielä REST-resursseja. Sprint 6 suojaa nämä osoitteet HTTP Basicilla. Erillistä kirjautumisosoitetta ei ole. Valinnat: [scrum.md](scrum.md#sprint-6--http-basic).
 
 ### 5.1 Yhteenveto
 
