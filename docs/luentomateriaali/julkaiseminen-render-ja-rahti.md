@@ -128,6 +128,14 @@ Ilmainen työtila riittää demoon. Palvelun compute-suunnitelmaksi valitaan eri
 
 Jos lomakkeessa ei ole Root Directory -kenttää: Dockerfile Path `backend/Dockerfile` ja Docker Build Context `backend`.
 
+### GitHubista Renderiin
+
+Julkaisu ei kulje GitHub Actionsin kautta. Repositorion workflow `.github/workflows/backend-ci.yml` ajaa vain testit pushissa ja pull requestissa. Se ei lähetä imagea Renderiin.
+
+Renderin oma deploy käynnistyy, kun palvelu on kerran yhdistetty GitHub-repoon. Yhteys tehdään ensimmäisellä kerralla dashboardissa kohdassa **Build and deploy from a Git repository**. Render pyytää luvan GitHub-tiliin. Sen jälkeen valittu haara (tässä `main`) on oletuksena **Auto-Deploy**. Uusi push siihen haaraan rakentaa imagen `backend/Dockerfile`-tiedostosta ja käynnistää palvelun uudelleen.
+
+**Manual Deploy** tarvitaan, kun ympäristömuuttujia muutetaan ilman uutta committia, tai jos Auto-Deploy on kytketty pois palvelun asetuksista. Palvelua ei voi yhdistää, ennen kuin Dockerfile ja `prod`-profiili ovat siinä haarassa, jonka Render lukee.
+
 Kun palvelu on Live, osoite on muotoa `https://<nimi>.onrender.com`.
 
 | Rajoite | Mitä se tarkoittaa kurssilla |

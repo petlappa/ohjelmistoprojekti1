@@ -125,6 +125,8 @@ Takaisin H2-muistiin: käynnistä ilman profiilia, eli pelkkä `./mvnw spring-bo
 
 Toinen osoite, käyttäjä tai salasana: aseta ennen käynnistystä `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME` ja `DB_PASSWORD`. Ilman niitä käytetään oletuksia `localhost`, `5432`, `ticketguru`.
 
+Render käyttää eri profiilia, `prod` (`application-prod.properties`). Siinä ei ole paikallisia oletuksia: `DB_HOST` ja muut tulevat Renderin ympäristömuuttujista. GitHub Actions ei julkaise palvelua. Kun Render on yhdistetty repoon, push haaraan `main` käynnistää Renderin deployn. Ohje: [luentomateriaali/julkaiseminen-render-ja-rahti.md](luentomateriaali/julkaiseminen-render-ja-rahti.md).
+
 ## 4. Testit
 
 ```bash
