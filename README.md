@@ -2,31 +2,30 @@
 
 Haaga-Helia **Ohjelmistoprojekti 1** -kurssin tiimityö. TicketGuru on lipputoimiston myyntipisteeseen tarkoitettu lipunmyyntijärjestelmä.
 
-## Palautuslinkit (Sprint 5)
+## Palautus
 
 | Artefakti | Linkki |
 | --- | --- |
 | GitHub-repositorio | https://github.com/petlappa/ohjelmistoprojekti1 |
-| Dokumentaatio | [docs/dokumentaatio.md](docs/dokumentaatio.md) |
-| API-dokumentaatio (events, Sprint 3) | [docs/api/events.md](docs/api/events.md) |
-| API-dokumentaatio (lipputyypit) | [docs/api/ticket-types.md](docs/api/ticket-types.md) |
-| API-dokumentaatio (myynti) | [docs/api/sales.md](docs/api/sales.md) |
-| Sprint 4 arkkitehtuurivalinnat | [docs/arkkitehtuuri-sprint-4.md](docs/arkkitehtuuri-sprint-4.md) |
-| Pyynnön kulku Springissä (tapahtuma, Sprint 3) | [docs/arkkitehtuuri-tapahtuma.md](docs/arkkitehtuuri-tapahtuma.md) |
-| Postman, tapahtumat | [docs/api/TicketGuru-events.postman_collection.json](docs/api/TicketGuru-events.postman_collection.json) |
-| Postman, myynti | [docs/api/TicketGuru-sales.postman_collection.json](docs/api/TicketGuru-sales.postman_collection.json) |
-| Tietokantakaavio | [docs/dokumentaatio.md#43-tietokantakaavio](docs/dokumentaatio.md#43-tietokantakaavio) |
-| Tuotteen työjono (Product Backlog) | https://github.com/users/petlappa/projects/1/views/1 |
+| Tuotteen määrittely | [docs/dokumentaatio.md](docs/dokumentaatio.md) |
+| Tuotteen työjono | https://github.com/users/petlappa/projects/1/views/1 |
 | Scrum-taulu (nykyinen sprintti) | https://github.com/users/petlappa/projects/1/views/9 |
-| Sprint 5 | https://github.com/users/petlappa/projects/1/views/7 |
-| Sprint 4 | https://github.com/users/petlappa/projects/1/views/6 |
-| Sprint 3 | https://github.com/users/petlappa/projects/1/views/5 |
-| Sprint 2 | https://github.com/users/petlappa/projects/1/views/4 |
-| Sprint 1 | https://github.com/users/petlappa/projects/1/views/3 |
-| Scrum GitHubissa (tiimin muistiinpanot) | [docs/scrum.md](docs/scrum.md) |
-| Scrum-taulun rakennusohje (opiskelijoille) | [docs/github-projects-scrum-ohje.md](docs/github-projects-scrum-ohje.md) |
-| Kehitysympäristö | [docs/kehitysymparisto.md](docs/kehitysymparisto.md) |
-| Luentomateriaalin tarkennukset | [docs/luentomateriaali/](docs/luentomateriaali/) |
+
+Sprinttien taulut ja päätökset: [docs/scrum.md](docs/scrum.md).
+
+## Dokumentaatio
+
+| Mitä etsit | Missä se on |
+| --- | --- |
+| Johdanto, roolit, käyttöliittymä, tietokanta, rajapinnan yhteenveto | [docs/dokumentaatio.md](docs/dokumentaatio.md) |
+| Tietokantakaavio | [docs/dokumentaatio.md#43-tietokantakaavio](docs/dokumentaatio.md#43-tietokantakaavio) |
+| Client-kuvaus: tapahtumat, lipputyypit, myynti | [events](docs/api/events.md), [ticket-types](docs/api/ticket-types.md), [sales](docs/api/sales.md) |
+| Postman | [tapahtumat](docs/api/TicketGuru-events.postman_collection.json), [myynti](docs/api/TicketGuru-sales.postman_collection.json) |
+| Rajapinnan rakenne | [arkkitehtuuri-sprint-4.md](docs/arkkitehtuuri-sprint-4.md), [arkkitehtuuri-tapahtuma.md](docs/arkkitehtuuri-tapahtuma.md) |
+| Sprintit ja taulun rakennus | [scrum.md](docs/scrum.md), [github-projects-scrum-ohje.md](docs/github-projects-scrum-ohje.md) |
+| Julkaisu, sprintti 7 | [julkaiseminen-render-ja-rahti.md](docs/luentomateriaali/julkaiseminen-render-ja-rahti.md), kirjaus [scrum.md](docs/scrum.md#sprint-7--julkaisu) |
+| Käynnistys | [kehitysymparisto.md](docs/kehitysymparisto.md) |
+| Luennot | [luentomateriaali/](docs/luentomateriaali/) |
 
 ## Tiimi
 

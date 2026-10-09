@@ -1,18 +1,27 @@
 # TicketGuru-dokumentaatio
 
-Haaga-Helia Ohjelmistoprojekti 1 · Sprint 5
+Haaga-Helia Ohjelmistoprojekti 1. Tämä sivu on tuotteen määrittely. Sprinttien taulut ja viikkokohtaiset päätökset ovat sivulla [scrum.md](scrum.md).
 
-Tämä dokumentti sisältää luvut **Johdanto**, **Järjestelmän määrittely**, **Käyttöliittymä**, **Tietokanta** ja **REST-rajapinta**. Lukuja täydennetään sprinteittäin, kun toteutus etenee.
+## Sisällys
 
-| Artefakti | Linkki |
+| Luku | Mitä siinä on |
 | --- | --- |
-| Tuotteen työjono | https://github.com/users/petlappa/projects/1/views/1 |
-| Scrum-taulu (nykyinen sprintti) | https://github.com/users/petlappa/projects/1/views/9 |
-| Sprint 5 | https://github.com/users/petlappa/projects/1/views/7 |
-| Sprint 4 | https://github.com/users/petlappa/projects/1/views/6 |
-| Virheet ja validointi (Sprint 5) | [luentomateriaali/virheet-ja-validointi.md](luentomateriaali/virheet-ja-validointi.md) |
-| Sprint 4 arkkitehtuurivalinnat | [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md) |
-| API, lipputyypit ja myynti | [api/ticket-types.md](api/ticket-types.md), [api/sales.md](api/sales.md) |
+| [1. Johdanto](#1-johdanto) | Tilaaja, tavoite, rajaus ja tekninen lähtökohta |
+| [2. Järjestelmän määrittely](#2-järjestelmän-määrittely) | Roolit, käyttäjätarinat ja käsitteet |
+| [3. Käyttöliittymä](#3-käyttöliittymä-alustava) | Näkymät ja kuka näkee minkäkin |
+| [4. Tietokanta](#4-tietokanta) | Käsiteanalyysi, [kaavio](#43-tietokantakaavio) ja taulut |
+| [5. REST-rajapinta](#5-rest-rajapinta) | Polut, vastauskoodit ja linkit client-kuvauksiin |
+
+## Muut dokumentit
+
+| Tarve | Minne |
+| --- | --- |
+| Client-kuvaus rajapinnasta | [api/events.md](api/events.md), [api/ticket-types.md](api/ticket-types.md), [api/sales.md](api/sales.md) |
+| Miksi rajapinta on tehty näin | [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md), [arkkitehtuuri-tapahtuma.md](arkkitehtuuri-tapahtuma.md) |
+| Sprintit, työjono ja taulut | [scrum.md](scrum.md) |
+| Julkaisu, sprintti 7 | [luentomateriaali/julkaiseminen-render-ja-rahti.md](luentomateriaali/julkaiseminen-render-ja-rahti.md), kirjaus [scrum.md](scrum.md#sprint-7--julkaisu) |
+| Käynnistys ja tietokantaprofiilit | [kehitysymparisto.md](kehitysymparisto.md) |
+| Luennot | [luentomateriaali/](luentomateriaali/) |
 
 ---
 
