@@ -58,22 +58,22 @@ Ensimmäisellä ajolla Maven lataa riippuvuudet. Onnistunut käynnistys näkyy l
 Tarkista selaimella tai terminaalista:
 
 ```bash
-curl http://localhost:8080/api/health
+curl -u myyja:salasana http://localhost:8080/api/health
 ```
 
 Odotettu vastaus: `{"status":"UP","application":"TicketGuru"}`.
 
-Tapahtumalista (Sprint 3):
+Tapahtumalista (Sprint 3). Tunnus `myyja` / `salasana` riittää lukemiseen:
 
 ```bash
-curl http://localhost:8080/api/events
+curl -u myyja:salasana http://localhost:8080/api/events
 ```
 
-Lipputyypit ja kuitti (Sprint 4). Korvaa id:t listan vastauksesta:
+Lipputyypit ja kuitti (Sprint 4). Korvaa id:t listan vastauksesta. Myynti onnistuu vain myyjän tunnuksella:
 
 ```bash
-curl http://localhost:8080/api/events/1/ticket-types
-curl http://localhost:8080/api/sales/1
+curl -u myyja:salasana http://localhost:8080/api/events/1/ticket-types
+curl -u myyja:salasana http://localhost:8080/api/sales/1
 ```
 
 ### H2-konsoli
@@ -85,6 +85,45 @@ curl http://localhost:8080/api/sales/1
 5. Connect
 
 H2 on muistissa: tiedot katoavat, kun sovellus sammutetaan. Käynnistyksessä `DemoDataLoader` lisää esimerkkirivit (Sprint 2). Taulut: `ROOLI`, `KAYTTAJA`, `TAPAHTUMA`, `LIPPUTYYPPI`, `MYYNTITAPAHTUMA`, `LIPPU`.
+
+### Paikallinen PostgreSQL
+
+Oletuskäynnistys käyttää H2:ta. Pysyvä kanta on profiili `postgres` (`application-postgres.properties`). Hibernate luo ja päivittää taulut, koska `spring.jpa.hibernate.ddl-auto=update` on asetettu. Ilman sitä PostgreSQL jäisi tyhjäksi: H2:lla Spring Boot tekee skeeman itse, oikealla kannalla oletus on ettei tehdä mitään.
+
+Ensimmäinen tyhjä kanta saa `DemoDataLoader`-rivit. Seuraava käynnistys ei lataa niitä uudestaan, jos tapahtumia on jo kannassa. Data säilyy, kun sovellus sammutetaan.
+
+1. Käynnistä PostgreSQL (Homebrew, tämä kone: `postgresql@14`):
+
+```bash
+brew services start postgresql@14
+```
+
+2. Luo kanta ja käyttäjä kerran. Komento käyttää paikallista pääkäyttäjää, joka Homebrew-asennuksessa on oma macOS-tunnuksesi.
+
+```bash
+psql postgres -c "CREATE USER ticketguru WITH PASSWORD 'ticketguru';"
+psql postgres -c "CREATE DATABASE ticketguru OWNER ticketguru;"
+```
+
+3. Käynnistä sovellus postgres-profiililla:
+
+```bash
+cd backend
+SPRING_PROFILES_ACTIVE=postgres ./mvnw spring-boot:run
+```
+
+Lokissa JDBC-osoite on `jdbc:postgresql://localhost:5432/ticketguru`. Tarkistus:
+
+```bash
+curl -u myyja:salasana http://localhost:8080/api/events
+psql -h localhost -U ticketguru -d ticketguru -c "SELECT id, nimi FROM tapahtuma;"
+```
+
+`psql` kysyy salasanan `ticketguru`.
+
+Takaisin H2-muistiin: käynnistä ilman profiilia, eli pelkkä `./mvnw spring-boot:run`. Silloin `SPRING_PROFILES_ACTIVE` ei ole asetettu ja `application.properties` valitsee H2:n. PostgreSQL-kannan rivit jäävät levylle. Ne eivät näy H2-ajossa, ja H2 tyhjenee taas sammutukseen.
+
+Toinen osoite, käyttäjä tai salasana: aseta ennen käynnistystä `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME` ja `DB_PASSWORD`. Ilman niitä käytetään oletuksia `localhost`, `5432`, `ticketguru`.
 
 ## 4. Testit
 

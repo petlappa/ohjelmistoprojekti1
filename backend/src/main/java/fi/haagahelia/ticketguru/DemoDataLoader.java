@@ -100,7 +100,7 @@ public class DemoDataLoader implements CommandLineRunner {
         lapsenLippu.setKaytetty(true);
         lippuRepository.save(lapsenLippu);
 
-        log.info("Esimerkkidata ladattu H2-kantaan ({} tapahtumaa, {} lippua).",
+        log.info("Esimerkkidata ladattu tietokantaan ({} tapahtumaa, {} lippua).",
                 tapahtumaRepository.count(), lippuRepository.count());
     }
 }
