@@ -1,6 +1,6 @@
 # Julkaiseminen: Render ja Rahti
 
-Yleinen luento-ohje Ohjelmistoprojekti 1 -opiskelijoille. Päivitetty **2026-10-09**. 
+Yleinen luento-ohje Ohjelmistoprojekti 1 -opiskelijoille. Päivitetty **2026-10-09**. TicketGuru-projektissa tämä on sprintin 7 aineisto: [scrum.md](../scrum.md#sprint-7--julkaisu). 
 
 Ohje julkaisee tämän repositorion Spring Boot -backendin (Java 25, hakemisto `backend/`). Vaihda palvelun nimi, Docker Hub -tunnus, API-polut ja tietokannan tunnukset oman tiimin mukaisiksi. Kevään ohjeen käyttäjät (`cashier`, `organizer`, …) olivat yhden demon tunnuksia.
 
@@ -179,16 +179,25 @@ Ilmainen työtila riittää demoon. Palvelun compute-suunnitelmaksi valitaan eri
 
 ### Web Service
 
-1. Koodi on GitHubissa. Tässä repositoriossa Dockerfile on hakemistossa `backend/`, ei juuressa.
+1. Koodi on GitHubissa haarassa `main`. Tässä repositoriossa Dockerfile on `backend/Dockerfile`, ei repositorion juuressa.
 2. [dashboard.render.com](https://dashboard.render.com) → **New** → **Web Service**.
-3. **Build and deploy from a Git repository**. Yhdistä GitHub ja valitse repo sekä haara `main`.
-4. **Root Directory:** `backend`.
-5. Runtime: **Docker**. Dockerfile Path: `Dockerfile`. Build Command ja Start Command jätetään tyhjiksi. Käynnistys on Dockerfilen `ENTRYPOINT`.
-6. Compute: **Free**.
-7. Region: lähin tarjolla oleva (Euroopassa tyypillisesti Frankfurt). Tietokanta luodaan myöhemmin samaan alueeseen.
-8. **Deploy**.
+3. **Build and deploy from a Git repository**. Yhdistä GitHub ja valitse repo. Lähdekoodi näkyy lomakkeessa repon nimenä.
+4. Täytä kentät näin. **Project** ja **Environment** (ympäristön valinta) jäävät tyhjiksi. Ympäristömuuttujia ei laiteta vielä: ensimmäinen deploy käyttää H2:ta.
 
-Jos lomakkeessa ei ole Root Directory -kenttää: Dockerfile Path `backend/Dockerfile` ja Docker Build Context `backend`.
+| Kenttä | Arvo |
+| --- | --- |
+| Name | Kuvaava nimi, esimerkiksi `lippupalvelu`. Osoitteeksi tulee `https://<nimi>.onrender.com`, jos nimi on vapaa. |
+| Language | **Docker** |
+| Branch | `main` |
+| Region | Frankfurt (EU Central). Tietokanta luodaan myöhemmin samaan alueeseen. |
+| Root Directory | `backend/` valikosta. Kenttä ehdottaa repositorion hakemistoja. |
+| Compute | **Free** (0 $/kk, 512 MB) |
+
+Kun Root Directory on `backend/`, lomake piilottaa **Dockerfile Path** -kentän. Render etsii silloin tiedoston `backend/Dockerfile`. Polkukenttää ei tarvitse etsiä takaisin. Käynnistys on Dockerfilen `ENTRYPOINT`. Lomake ei kysy Build- eikä Start-komentoa.
+
+Jos Root Directory jätetään tyhjäksi, Dockerfile Path näkyy ja siihen kirjoitetaan `backend/Dockerfile`. Kentän oletus `.` tai `./Dockerfile` etsii tiedostoa repositorion juuresta, jossa sitä ei ole.
+
+5. **Deploy web service**.
 
 ### GitHubista Renderiin
 

@@ -4,9 +4,10 @@ Tämä kansio on **kurssin yleisiä luento-ohjeita** ja viikoittaisia tarkennuks
 
 | Tarkoitus | Tiedosto |
 | --- | --- |
-| Tuote: johdanto, määrittely, UI | [../dokumentaatio.md](../dokumentaatio.md) |
+| Tuote: johdanto, määrittely, UI, tietokanta, REST | [../dokumentaatio.md](../dokumentaatio.md) |
+| Client-kuvaus rajapinnasta | [../api/events.md](../api/events.md), [../api/ticket-types.md](../api/ticket-types.md), [../api/sales.md](../api/sales.md) |
 | Kehitysympäristö | [../kehitysymparisto.md](../kehitysymparisto.md) |
-| Scrum-käytäntö GitHubissa | [../scrum.md](../scrum.md) |
+| Sprintit ja Scrum-taulut | [../scrum.md](../scrum.md) |
 | Luennot | tämä kansio |
 
 ## Yleiset luento-ohjeet
@@ -20,7 +21,7 @@ Nämä ovat opiskelijoille jaettuja ohjeita. Esimerkit noudattavat luentojen aih
 | REST: vastauskoodit, virheet, validointi | [virheet-ja-validointi.md](virheet-ja-validointi.md) |
 | REST: autentikointi ja auktorisointi | [autentikointi-ja-auktorisointi.md](autentikointi-ja-auktorisointi.md) |
 | Web-client JWT-rajapintaa vasten | [jwt-web-client.md](jwt-web-client.md) |
-| Julkaiseminen: Render ja Rahti (päivitetty 2026-10-06) | [julkaiseminen-render-ja-rahti.md](julkaiseminen-render-ja-rahti.md) |
+| Julkaiseminen: Render ja Rahti (sprintti 7) | [julkaiseminen-render-ja-rahti.md](julkaiseminen-render-ja-rahti.md) |
 | Sprint 4: tiimin valinta TicketGurussa | [../arkkitehtuuri-sprint-4.md](../arkkitehtuuri-sprint-4.md) |
 
 Jos et ole käynyt backend-kurssia, aloita ohjeesta kohdasta **Mitä syntyy automaattisesti** (*Tiedosto vai käynnistys?*): Entity- ja Repository-`.java`-tiedostot kirjoitetaan itse; Hibernate ja Spring täyttävät taulut ja `save`/`findAll` vasta kun sovellus käynnistyy.

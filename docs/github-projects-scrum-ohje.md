@@ -34,7 +34,7 @@ Kun ohje on tehty, tiimillä on **yksi** GitHub Project, jossa on:
 2. Kenttä **Priority**: High, Medium, Low
 3. Kenttä **Estimate**: numero (esim. story pointit)
 4. Näkymä **Product Backlog** (taulukko): issuet, joita ei ole vielä merkitty mihinkään sprinttiin
-5. Näkymät **Current sprint** sekä **Sprint 1 … Sprint 6** (kanban): yhden viikon kortit
+5. Näkymät **Current sprint** sekä **Sprint 1 … Sprint 7** (kanban): yhden viikon kortit
 
 Esimerkki (julkinen):
 
@@ -147,7 +147,7 @@ Tallenna aina muutokset: **View** → **Save changes**.
 | --- | --- | --- | --- |
 | Product Backlog | Table | `-status:Done no:Sprint` | Kaikki, joita ei ole otettu sprinttiin |
 | Current sprint | Board | `Sprint:@current` | Daily: tämä viikko automaattisesti |
-| Sprint 1 … Sprint 6 | Board | `Sprint:"Sprint 1"` jne. | Yhden viikon lista |
+| Sprint 1 … Sprint 7 | Board | `Sprint:"Sprint 1"` jne. | Yhden viikon lista |
 
 Siirto: Product Backlog → klikkaa **Sprint**-solua → Sprint 2. Kortti katoaa backlogin ja ilmestyy Sprint 2 -välilehdelle.
 

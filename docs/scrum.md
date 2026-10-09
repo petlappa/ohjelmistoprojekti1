@@ -32,7 +32,7 @@ Scrum Master ei ole pomo. Hän huolehtii, että Daily Scrum pidetään, taulu va
 
 - **Issue** = tarina tai tehtävä (`#1`). Luodaan Issues-välilehdellä.
 - **Product Backlog** = Project-näkymä: issuet ilman Sprint-arvoa.
-- **Sprint 1 … 6** = Project-näkymät: issuet, joiden kenttä **Sprint** on kyseinen viikko.
+- **Sprint 1 … 7** = Project-näkymät: issuet, joiden kenttä **Sprint** on kyseinen viikko.
 - **Status** (Todo / In Progress / Done) = onko työ käynnissä, ei mikä viikko.
 
 Siirto backlogista sprinttiin: Product Backlog → sarake **Sprint**. Ei milestonea, ei sprint-labelia.
@@ -150,3 +150,17 @@ Luento kertoo vaihtoehdot ja suosituksen: [luentomateriaali/autentikointi-ja-auk
 | Kokeilu | Postman-kokoelmat `docs/api/`. Testit `BasicAuthenticationTest` |
 
 Erillistä `POST /api/login` -osoitetta ei ole. JWT jäi luennon myöhemmäksi vaiheeksi. `myyjaId` on yhä myyntipyynnön rungossa.
+
+## Sprint 7 — julkaisu
+
+Ohje: [luentomateriaali/julkaiseminen-render-ja-rahti.md](luentomateriaali/julkaiseminen-render-ja-rahti.md).
+
+| Päätös | Toteutus |
+| --- | --- |
+| Oletuskanta | H2, kun `SPRING_PROFILES_ACTIVE` ei ole asetettu |
+| Paikallinen PostgreSQL | profiili `postgres`, käynnistys `SPRING_PROFILES_ACTIVE=postgres` |
+| Renderin koodi | profiili `prod`, `backend/Dockerfile`, portti `server.port=${PORT:8080}` |
+| CI | GitHub Actions ajaa testit. Renderin deploy lähtee dashboardin GitHub-yhteydestä |
+| Dashboard | Web Service, GitHub-yhteys, ilmainen PostgreSQL ja ympäristömuuttujat tehdään ohjeen luvussa Vaihtoehto 1 |
+
+Sama ohje kertoo myös Rahdin ja Pukin, kun kanta tarvitaan kurssin loppuun. Tämän sprintin julkaisupaikka on Render.
