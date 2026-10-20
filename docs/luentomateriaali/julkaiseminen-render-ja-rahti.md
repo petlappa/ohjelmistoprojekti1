@@ -1,6 +1,6 @@
 # Julkaiseminen: Render ja Rahti
 
-Yleinen luento-ohje Ohjelmistoprojekti 1 -opiskelijoille. Päivitetty **2026-10-09**. TicketGuru-projektissa tämä on sprintin 7 aineisto: [scrum.md](../scrum.md#sprint-7--julkaisu). 
+Yleinen luento-ohje Ohjelmistoprojekti 1 -opiskelijoille. Päivitetty **2026-10-20**. TicketGuru-projektissa tämä on sprintin 7 aineisto: [scrum.md](../scrum.md#sprint-7--julkaisu). 
 
 Ohje julkaisee tämän repositorion Spring Boot -backendin (Java 25, hakemisto `backend/`). Vaihda palvelun nimi, Docker Hub -tunnus, API-polut ja tietokannan tunnukset oman tiimin mukaisiksi. Kevään ohjeen käyttäjät (`cashier`, `organizer`, …) olivat yhden demon tunnuksia.
 
@@ -364,11 +364,27 @@ Pukki on CSC:n tietokantapalvelu. Sitä käytetään Rahtissa ajettavan sovelluk
 
 1. [pukki.dbaas.csc.fi](https://pukki.dbaas.csc.fi) → **Database** → **Instances** → **Launch Instance**.
 2. Datastore: PostgreSQL, uusin tarjolla oleva versio.
-3. **Allowed CIDRs** on pakollinen. Ilman sitä kantaan ei saa yhteyttä. Rahtin sovellusta varten lisää `86.50.229.150/32`. Omaa konetta varten lisää oman julkisen IP:n muodossa `x.x.x.x/32`, pilkulla erotettuna.
-4. Initial database, admin-käyttäjä ja salasana. Salasana on pitkä ja uniikki. Rahtin ulospäin lähtevä osoite `86.50.229.150` on **kaikkien** Rahti-projektien yhteinen, joten pelkkä IP-rajaus ei eristä kantaa muilta Rahti-käyttäjiltä. Sovelluksen oma autentikointi ja kannan salasana ovat se raja.
-5. Kun instanssi on käynnissä, julkinen IP on `DB_HOST` ja portti on aina `5432`.
+3. Sivulla **Database access** kenttä **Allowed CIDRs**. Oletus on tyhjä lista, ja tyhjällä listalla kantaan ei saa TCP-yhteyttä. Rahtin sovellusta varten lisää `86.50.229.150/32`. Omaa konetta varten lisää oman julkisen IP:n muodossa `x.x.x.x/32`. Oman IP:n näkee komennolla `curl -4 ifconfig.me`. Useampi osoite erotetaan pilkulla: `86.50.229.150/32,x.x.x.x/32`. Pukki hylkää `0.0.0.0/0`.
+4. Sivulla **Initialize Databases**: initial database, admin-käyttäjä ja salasana. Salasana on pitkä ja uniikki. Kenttä **Allowed Host** on valinnainen. CSC ei vielä käytä sitä IP-rajaukseen, joten sen voi jättää tyhjäksi. Rahtin ulospäin lähtevä osoite `86.50.229.150` on **kaikkien** Rahti-projektien yhteinen, joten pelkkä IP-rajaus ei eristä kantaa muilta Rahti-käyttäjiltä. Sovelluksen oma autentikointi ja kannan salasana ovat se raja.
+5. Kun instanssi on käynnissä, Overview-välilehden julkinen IP on `DB_HOST` ja portti on aina `5432`.
 
-Aseta TicketGuru-deploymentin ympäristömuuttujat (Deployment → ympäristö → tallenna, jolloin Pod käynnistyy uudelleen):
+Jos instanssi ehdittiin luoda ilman CIDR-osoitteita, lisää ne jälkikäteen instanssin toiminnolla **Update Instance**. Päivitys korvaa koko listan, joten kirjoita samalla kerralla sekä Rahtin osoite että oma IP. Users- ja Databases-välilehdillä palomuuria ei muuteta.
+
+Kolme näkymää kertovat eri asioista. Vain viimeinen avaa verkon:
+
+| Pukin näkymä | Mitä se kertoo |
+| --- | --- |
+| Users: käyttäjä, Allowed Host `%`, tietokannan nimi | Käyttäjä on olemassa. `%` ei ole palomuuri. CSC ei vielä rajoita käyttäjää tämän kentän perusteella. |
+| Databases: Access granted Yes | Käyttäjällä on oikeus kyseiseen tietokantaan. |
+| Update Instance → Allowed CIDRs | Instanssin palomuuri. Tyhjä lista estää yhteyden, vaikka käyttäjä ja salasana olisivat oikein. |
+
+Yhteys onnistuu, kun palomuurissa on soittajan osoite, Users-välilehdellä on käyttäjä ja Databases-välilehdellä oikeus on Yes. CSC:n yhteysmerkkijono on `postgresql://KAYTTAJA:SALASANA@JULKINEN_IP:5432/TIETOKANTA`.
+
+Tämän repositorion prod-profiili kokoaa JDBC-osoitteen muuttujista `DB_*`. Rahtiin ei laiteta `SPRING_DATASOURCE_URL`-muuttujaa. Lokissa osoite on `jdbc:postgresql://<pukin-ip>:5432/<nimi>`.
+
+Aseta `SPRING_PROFILES_ACTIVE=prod` vasta, kun Allowed CIDRs sisältää `86.50.229.150/32`. Ilman sitä Pod ei saa yhteyttä ja jää `CrashLoopBackOff`-tilaan. Prod-profiili pysyy pois päältä siihen asti, ja sovellus käyttää H2:ta.
+
+Aseta TicketGuru-deploymentin ympäristömuuttujat sen jälkeen (Deployment → ympäristö → tallenna, jolloin Pod käynnistyy uudelleen). `DB_PASSWORD` elää vain tässä ympäristössä. Sitä ei kirjoiteta `application.properties`-tiedostoon eikä commitoitavaan YAML-tiedostoon.
 
 | Key | Arvo |
 | --- | --- |
@@ -376,10 +392,16 @@ Aseta TicketGuru-deploymentin ympäristömuuttujat (Deployment → ympäristö �
 | `DB_HOST` | Pukin julkinen IP |
 | `DB_PORT` | `5432` |
 | `DB_NAME` | luomasi tietokannan nimi |
-| `DB_USERNAME` | admin-käyttäjä |
-| `DB_PASSWORD` | salasana |
+| `DB_USERNAME` | Users-välilehden käyttäjä |
+| `DB_PASSWORD` | salasana, jonka annoit sille käyttäjälle |
 
-Lokissa JDBC-osoite on `jdbc:postgresql://<pukin-ip>:5432/<nimi>`.
+Jos yhteys epäonnistuu, virhe kertoo kohdan:
+
+| Virhe | Tarkista |
+| --- | --- |
+| Timeout tai `connection refused` | Allowed CIDRs ja Overview-välilehden julkinen IP |
+| `database … does not exist` | `DB_NAME` vastaa Databases-välilehden nimeä |
+| `password authentication failed` | salasana ja että käyttäjä näkyy Users-välilehdellä |
 
 Pukin palomuuria ei pidetä auki koko internetiin. Renderin ilmaisella web-palvelulla ei ole kiinteää uloslähtevää IP:tä, jota palomuuriin voisi laittaa. Siksi Pukki paritetaan Rahtiin, ei Renderin ilmaiseen web-palveluun.
 
@@ -396,7 +418,7 @@ Tätä levyä CSC ei varmuuskopioi. Katalogin PostgreSQL-template on vanhentunut
 3. `docker build`, tag, `docker push` Docker Hubiin.
 4. Rahti: +Add → image, portti 8080.
 5. Route, TLS päällä. Osoite `https://ticketguru-<projekti>.2.rahtiapp.fi`.
-6. Pukki: PostgreSQL, Allowed CIDR `86.50.229.150/32` ja oma IP. Ympäristömuuttujat deploymenttiin.
+6. Pukki: PostgreSQL. Allowed CIDRs `86.50.229.150/32` ja oma IP, luonnissa tai myöhemmin **Update Instance** -toiminnolla. Users-välilehden Allowed Host `%` ei avaa verkkoa. Ympäristömuuttujat `DB_*` ja `SPRING_PROFILES_ACTIVE=prod` vasta kun CIDR on paikallaan.
 
 ## Mitä kevään 2026 ohjeesta päivitettiin
 
@@ -412,7 +434,7 @@ Tätä levyä CSC ei varmuuskopioi. Katalogin PostgreSQL-template on vanhentunut
 
 ## Lähteet
 
-Tarkistettu 2026-10-06.
+Tarkistettu 2026-10-20.
 
 - [Render: Deploy for Free](https://render.com/docs/free)
 - [Render: Docker](https://render.com/docs/docker)
@@ -424,3 +446,4 @@ Tarkistettu 2026-10-06.
 - [Kurssi CSC:n resursseilla](https://docs.csc.fi/fi/support/tutorials/services-for-courses/)
 - [Pukin web-käyttöliittymä](https://docs.csc.fi/cloud/dbaas/web-interface/)
 - [Pukin palomuuri ja Rahtin IP](https://docs.csc.fi/cloud/dbaas/firewalls/)
+- [PostgreSQL-yhteys Pukkiin](https://docs.csc.fi/cloud/dbaas/postgres-accessing/)
