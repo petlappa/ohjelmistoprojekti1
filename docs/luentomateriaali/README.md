@@ -21,6 +21,7 @@ Nämä ovat opiskelijoille jaettuja ohjeita. Esimerkit noudattavat luentojen aih
 | REST: vastauskoodit, virheet, validointi | [virheet-ja-validointi.md](virheet-ja-validointi.md) |
 | REST: autentikointi ja auktorisointi | [autentikointi-ja-auktorisointi.md](autentikointi-ja-auktorisointi.md) |
 | Web-client JWT-rajapintaa vasten | [jwt-web-client.md](jwt-web-client.md) |
+| Web-ohjelmointi: CORS ja lipuntarkastus (clientin tekee toinen tiimi) | [web-client-cors-ja-lipuntarkastus.md](web-client-cors-ja-lipuntarkastus.md) |
 | Julkaiseminen: Render ja Rahti (sprintti 7) | [julkaiseminen-render-ja-rahti.md](julkaiseminen-render-ja-rahti.md) |
 | Sprint 4: tiimin valinta TicketGurussa | [../arkkitehtuuri-sprint-4.md](../arkkitehtuuri-sprint-4.md) |
 
@@ -39,3 +40,4 @@ Täydennä luennon jälkeen: mitä painotettiin, mitä tiimi päätti TicketGuru
 | 5 | [viikko-05-vastauskoodit_virheidenKäsittely.md](viikko-05-vastauskoodit_virheidenKäsittely.md) |
 | 6 | [viikko-06-Autentikointi_Auktorisointi.md](viikko-06-Autentikointi_Auktorisointi.md) |
 | 8 | [viikko-08-Web-ohjelmointia.md](viikko-08-Web-ohjelmointia.md) |
+| 9 | [viikko-09-web-client-ja-cors.md](viikko-09-web-client-ja-cors.md) |
