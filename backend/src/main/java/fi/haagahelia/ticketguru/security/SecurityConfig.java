@@ -24,6 +24,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -39,6 +40,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/events/*/ticket-types")
                                 .hasRole("TAPAHTUMAKOORDINAATTORI")
                         .requestMatchers("/api/sales", "/api/sales/**").hasRole("MYYJA")
+                        .requestMatchers(HttpMethod.GET, "/api/tickets")
+                                .hasAnyRole("MYYJA", "TAPAHTUMAKOORDINAATTORI")
+                        .requestMatchers(HttpMethod.PATCH, "/api/tickets/*")
+                                .hasAnyRole("MYYJA", "TAPAHTUMAKOORDINAATTORI")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults());

@@ -16,8 +16,9 @@ Haaga-Helia Ohjelmistoprojekti 1. Tämä sivu on tuotteen määrittely. Sprintti
 
 | Tarve | Minne |
 | --- | --- |
-| Client-kuvaus rajapinnasta | [api/events.md](api/events.md), [api/ticket-types.md](api/ticket-types.md), [api/sales.md](api/sales.md) |
+| Client-kuvaus rajapinnasta | [api/events.md](api/events.md), [api/ticket-types.md](api/ticket-types.md), [api/sales.md](api/sales.md), [api/tickets.md](api/tickets.md) |
 | Miksi rajapinta on tehty näin | [arkkitehtuuri-sprint-4.md](arkkitehtuuri-sprint-4.md), [arkkitehtuuri-tapahtuma.md](arkkitehtuuri-tapahtuma.md) |
+| Sprint 9: CORS ja lipuntarkastus | [sprint-9-cors-ja-lipuntarkastus.md](sprint-9-cors-ja-lipuntarkastus.md), kirjaus [scrum.md](scrum.md#sprint-9--cors-ja-lipuntarkastus) |
 | Sprintit, työjono ja taulut | [scrum.md](scrum.md) |
 | Julkaisu, sprintti 7 | [luentomateriaali/julkaiseminen-render-ja-rahti.md](luentomateriaali/julkaiseminen-render-ja-rahti.md), kirjaus [scrum.md](scrum.md#sprint-7--julkaisu) |
 | Käynnistys ja tietokantaprofiilit | [kehitysymparisto.md](kehitysymparisto.md) |
