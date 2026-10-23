@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lipuntarkastus</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 36rem;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.4;
+    }
+    label { display: block; margin-top: 0.75rem; }
+    input { width: 100%; box-sizing: border-box; margin-top: 0.25rem; }
+    button { margin-top: 1rem; margin-right: 0.5rem; }
+    #viesti {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      white-space: pre-line;
+    }
+    #viesti.ok { background: #e7f6e7; }
+    #viesti.virhe { background: #fde8e8; }
+  </style>
+</head>
+<body>
+  <h1>Lipuntarkastus</h1>
+  <p>Erillinen sivu. Se kutsuu TicketGurun rajapintaa, eikä kuulu Spring Bootin <code>static</code>-kansioon. Avaa tämä osoitteesta <code>http://localhost:5500</code>, älä levyltä.</p>
+
+  <label>Rajapinnan osoite
+    <input id="osoite" value="http://localhost:8080">
+  </label>
+  <label>Tunnus
+    <input id="tunnus" value="myyja" autocomplete="username">
+  </label>
+  <label>Salasana
+    <input id="salasana" type="password" value="salasana" autocomplete="current-password">
+  </label>
+  <label>Lippukoodi
+    <input id="koodi" value="3er454aa">
+  </label>
+  <button type="button" onclick="hae()">Hae</button>
+  <button type="button" onclick="merkitseKaytetyksi()">Merkitse käytetyksi</button>
+  <div id="viesti" role="status" hidden></div>
+
+  <script>
+    let lippuId = null;
+
+    function authHeader() {
+      const tunnus = document.getElementById("tunnus").value;
+      const salasana = document.getElementById("salasana").value;
+      return "Basic " + btoa(tunnus + ":" + salasana);
+    }
+
+    function rajapinta() {
+      return document.getElementById("osoite").value.replace(/\/$/, "");
+    }
+
+    function nayta(ok, teksti) {
+      const el = document.getElementById("viesti");
+      el.hidden = false;
+      el.className = ok ? "ok" : "virhe";
+      el.textContent = teksti;
+    }
+
+    function palvelimenTeksti(data) {
+      if (!data || !Array.isArray(data.messages) || data.messages.length === 0) {
+        return "";
+      }
+      return "\n" + data.messages.join("\n");
+    }
+
+    function viestiStatuksesta(status, data) {
+      const lisa = palvelimenTeksti(data);
+      switch (status) {
+        case 400:
+          return "400 — Lippukoodi puuttuu tai pyyntö on kelvoton." + lisa;
+        case 401:
+          return "401 — Tunnus tai salasana on väärä.";
+        case 404:
+          return "404 — Lippua ei löydy tällä koodilla tai id:llä.";
+        case 409:
+          return "409 — Lippu on jo käytetty.";
+        default:
+          return status + " — Pyyntö epäonnistui." + lisa;
+      }
+    }
+
+    async function lue(response) {
+      const text = await response.text();
+      if (!text) {
+        return null;
+      }
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function naytaLippu(lippu, merkinta) {
+      const kaytetty = lippu.kaytetty ? "kyllä" : "ei";
+      let alku = "200 — Lippu löytyi.";
+      if (merkinta) {
+        alku = "200 — Lippu on merkitty käytetyksi.";
+      } else if (lippu.kaytetty) {
+        alku = "200 — Lippu on käytetty.";
+      }
+      nayta(true, alku
+        + "\nKoodi: " + lippu.koodi
+        + "\nHinta: " + lippu.hinta
+        + "\nTyyppi: " + lippu.lipputyypinKuvaus
+        + "\nKäytetty: " + kaytetty);
+    }
+
+    async function kutsu(url, options) {
+      try {
+        return await fetch(url, options);
+      } catch (e) {
+        nayta(false, "Yhteys epäonnistui. Sivu on ehkä auki levyltä, backend ei ole käynnissä, tai CORS esti kutsun.");
+        return null;
+      }
+    }
+
+    async function hae() {
+      lippuId = null;
+      const koodi = document.getElementById("koodi").value;
+      const response = await kutsu(
+        rajapinta() + "/api/tickets?koodi=" + encodeURIComponent(koodi),
+        { headers: { Authorization: authHeader() } }
+      );
+      if (!response) {
+        return;
+      }
+      const data = await lue(response);
+      if (response.status === 200 && data) {
+        lippuId = data.id;
+        naytaLippu(data, false);
+        return;
+      }
+      nayta(false, viestiStatuksesta(response.status, data));
+    }
+
+    async function merkitseKaytetyksi() {
+      if (lippuId == null) {
+        nayta(false, "Hae lippu ensin koodilla. Merkintä käyttää haun palauttamaa id:tä.");
+        return;
+      }
+      const response = await kutsu(rajapinta() + "/api/tickets/" + lippuId, {
+        method: "PATCH",
+        headers: {
+          Authorization: authHeader(),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ kaytetty: true })
+      });
+      if (!response) {
+        return;
+      }
+      const data = await lue(response);
+      if (response.status === 200 && data) {
+        lippuId = data.id;
+        naytaLippu(data, true);
+        return;
+      }
+      nayta(false, viestiStatuksesta(response.status, data));
+    }
+  </script>
+</body>
+</html>

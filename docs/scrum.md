@@ -164,3 +164,15 @@ Ohje: [luentomateriaali/julkaiseminen-render-ja-rahti.md](luentomateriaali/julka
 | Dashboard | Web Service, GitHub-yhteys, ilmainen PostgreSQL ja ympäristömuuttujat tehdään ohjeen luvussa Vaihtoehto 1 |
 
 Sama ohje kertoo myös Rahdin ja Pukin, kun kanta tarvitaan kurssin loppuun. Tämän sprintin julkaisupaikka on Render.
+
+## Sprint 9 — CORS ja lipuntarkastus
+
+Toteutus: [sprint-9-cors-ja-lipuntarkastus.md](sprint-9-cors-ja-lipuntarkastus.md). Luento: [luentomateriaali/web-client-cors-ja-lipuntarkastus.md](luentomateriaali/web-client-cors-ja-lipuntarkastus.md).
+
+| Päätös | Toteutus |
+| --- | --- |
+| CORS | `@CrossOrigin(origins = "*")` joka `/api`-kontrollerissa ja `.cors(Customizer.withDefaults())` luokassa `SecurityConfig`. Erillistä `CorsConfigurationSource`-papua ei ole |
+| Lipun haku ja merkintä | `GET /api/tickets?koodi=` ja `PATCH /api/tickets/{id}` rungolla `{ "kaytetty": true }`. Roolit `MYYJA` ja `TAPAHTUMAKOORDINAATTORI` |
+| Tunnistus | HTTP Basic säilyy |
+| Client | Erillinen sivu [../client/index.html](../client/index.html). Ei Bootin `static`-kansiossa |
+| Sopimus | [api/tickets.md](api/tickets.md) |

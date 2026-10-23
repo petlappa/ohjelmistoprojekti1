@@ -1,8 +1,8 @@
 # Lipuntarkastuksen web-client ja CORS
 
-Viikon luentoaihe on web-ohjelmointi. Jokaisen pitää osata, miten Spring Boot -ohjelmaan tehdään oma staattinen sivusto, ja miten erillinen sivu toisesta osoitteesta kutsuu rajapintaa. Sivuston ohje on diassa 7. Kutsun ohje on diassa 4.
+Viikon luentoaihe on web-ohjelmointi. Client voidaan tarjota kahdella tavalla. Full stack -sovelluksessa Spring Boot palvelee sivun kansiosta `src/main/resources/static/` samasta ohjelmasta kuin rajapinnan. Ohje on diassa 7. Erillinen sivu on oma osoitteensa ja kutsuu rajapintaa toisesta alkuperästä. Kutsun ohje on diassa 4.
 
-Erillinen sivu (client) ei ole tämän Spring Boot -projektin kansiossa. Se voi olla yksi HTML-tiedosto tai React-sovellus. CORS (Cross-Origin Resource Sharing) on selaimen tarkistus: saako se sivu kutsua toista osoitetta. Postman ei tarkistusta tee.
+Erillinen sivu (client) ei ole tämän Spring Boot -projektin kansiossa. Se voi olla yksi HTML-tiedosto tai React-sovellus. CORS (Cross-Origin Resource Sharing) on selaimen tarkistus: saako se sivu kutsua toista osoitetta. Postman ei tarkistusta tee. Erillinen client on tavallinen, kun sivun ja rajapinnan tekevät eri tiimit tai kun sivua kehitetään omalla palvelimellaan. Sama Boot on selkeä, kun yksi tiimi julkaisee yhden sovelluksen yhteen osoitteeseen.
 
 Tämän viikon sprintissä sivustoa ei lisätä omaan Bootiin. Backend on julkaistu, esimerkiksi Renderiin osoitteeseen `https://<nimi>.onrender.com`. Clientin tekee toinen tiimi omalla koneellaan, localhostissa. Heidän erillinen sivunsa käyttää rajapintaa ja ottaa sillä yhteyden julkaistuun backendiin. Sivu itse ei ole Renderissä.
 
@@ -33,7 +33,7 @@ CORS-ohje tälle sprintille on dian 5 tarkistuslista: annotaatio kontrollereihin
 
 | | Luennolla | Tämän viikon sprintissä |
 | --- | --- | --- |
-| Staattinen sivusto Spring Bootissa | Jokainen osaa lisätä HTML-tiedoston kansioon `src/main/resources/static/`. Sivu aukeaa samasta Bootista. Dia 7. | Sivustoa ei lisätä omaan Bootiin. |
+| Staattinen sivusto Spring Bootissa | Full stack -sovelluksessa sivun tiedostot tulevat kansioon `src/main/resources/static/`. Sivu aukeaa samasta Bootista. Dia 7. | Tämän viikon sivua ei lisätä omaan Bootiin. |
 | Web-client | Jokainen ymmärtää dian 4 kutsut: otsikko `Authorization: Basic`, `GET` ja `PATCH`. | Clientin tekee toinen tiimi erillisenä sivuna. Sivu kutsuu tämän tiimin rajapintaa. |
 | Tämä tiimi | Osaa kytkeä CORS:n päälle viikon 6 luokassa `SecurityConfig`. | Lipun haku koodilla ja merkintä käytetyksi. Samat virhekoodit ja sama `LippuResponse` kuin myynnissä. |
 
@@ -269,7 +269,7 @@ Kutsua `allowCredentials(true)` ei lisätä. Se tarkoittaa, että selain saisi l
 
 ## Dia 7 — Näin staattinen sivusto (static content) laitetaan Spring Bootiin
 
-Tämä kuuluu luentoaiheeseen. Jokaisen pitää osata se. Tämän viikon sprintissä tiedostoa ei lisätä, koska clientin tekee toinen tiimi erillisenä sivuna.
+Näin full stack -sovellus tarjoaa sivun samasta ohjelmasta kuin rajapinnan. Tämän viikon sprintissä tiedostoa ei lisätä, koska client on erillinen sivu.
 
 Boot palvelee tiedostoja ilman kontrolleria näistä kansioista:
 

@@ -5,7 +5,7 @@ Tämä kansio on **kurssin yleisiä luento-ohjeita** ja viikoittaisia tarkennuks
 | Tarkoitus | Tiedosto |
 | --- | --- |
 | Tuote: johdanto, määrittely, UI, tietokanta, REST | [../dokumentaatio.md](../dokumentaatio.md) |
-| Client-kuvaus rajapinnasta | [../api/events.md](../api/events.md), [../api/ticket-types.md](../api/ticket-types.md), [../api/sales.md](../api/sales.md) |
+| Client-kuvaus rajapinnasta | [../api/events.md](../api/events.md), [../api/ticket-types.md](../api/ticket-types.md), [../api/sales.md](../api/sales.md), [../api/tickets.md](../api/tickets.md) |
 | Kehitysympäristö | [../kehitysymparisto.md](../kehitysymparisto.md) |
 | Sprintit ja Scrum-taulut | [../scrum.md](../scrum.md) |
 | Luennot | tämä kansio |
