@@ -48,7 +48,29 @@ Client-tiimin sopimus: suomenkieliset kentät, paluukoodit, Basic. Linkki lisät
 
 Postman kutsuu samoja osoitteita. Sivu näyttää vastauksen sanoina.
 
-Sivu on yksi HTML-tiedosto, jossa on lomake ja `fetch`. Se tarvitsee oman osoitteen, esimerkiksi `http://localhost:5500`. Tiedoston avaaminen levyltä (`file://`) ei toimi: selaimella ei ole silloin `http`-alkuperää, ja `fetch` epäonnistuu ennen kuin palvelin ehtii vastata. Live Server tai `python3 -m http.server 5500` kansiossa `client/` riittää. Backend voi olla `http://localhost:8080` tai Renderin osoite. CORS on jo päällä, joten eri portti on sallittu.
+Sivu on yksi HTML-tiedosto, jossa on lomake ja `fetch`. Se tarvitsee oman `http`-osoitteen. Tiedoston avaaminen levyltä (`file://`) näyttää lomakkeen, mutta selaimella ei ole silloin `http`-alkuperää, ja `fetch` epäonnistuu ennen kuin palvelin ehtii vastata. Backend voi olla `http://localhost:8080` tai Renderin osoite. CORS on jo päällä, joten sivun portti saa poiketa backendin portista.
+
+### Miten sivu avataan
+
+Backend käynnistetään erikseen. Sivu avataan jollakin näistä, kansiosta `client/`. Selain osoitetaan komentorivin tulostamaan osoitteeseen. Sivun kentässä **Rajapinnan osoite** on oletuksena `http://localhost:8080`.
+
+**Python.** Useimmilla koneilla on jo Python.
+
+```bash
+cd client
+python3 -m http.server 5500
+```
+
+Sivu aukeaa osoitteessa `http://localhost:5500`.
+
+**Node.** Sama komento käy, jos koneella on Node React-kurssilta. `npx` lataa pienen palvelimen eikä sitä asenneta projektiin.
+
+```bash
+cd client
+npx serve -l 5500
+```
+
+**Live Server.** Cursorissa tai VS Codessa laajennus Live Server: avaa `client/index.html` ja valitse *Open with Live Server*. Sivu aukeaa yleensä osoitteessa `http://127.0.0.1:5500`. Sivun kenttään **Rajapinnan osoite** jätetään backendin osoite. `127.0.0.1` ja `localhost` ovat eri nimiä, mutta CORS sallii molemmat.
 
 Sivulla on kenttä lippukoodille, nappi **Hae** ja nappi **Merkitse käytetyksi**. JavaScript kokoaa tunnuksen itse otsikkoon `Authorization: Basic`. Oletus on `myyja` / `salasana`. Rajapinnan osoitteen voi vaihtaa sivun kentästä.
 
