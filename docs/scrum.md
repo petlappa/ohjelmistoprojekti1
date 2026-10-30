@@ -176,3 +176,15 @@ Toteutus: [sprint-9-cors-ja-lipuntarkastus.md](sprint-9-cors-ja-lipuntarkastus.m
 | Tunnistus | HTTP Basic säilyy |
 | Client | Erillinen sivu [../client/index.html](../client/index.html). Ei Bootin `static`-kansiossa |
 | Sopimus | [api/tickets.md](api/tickets.md) |
+
+## Sprint 10 — testaus ja lipunmyynti
+
+Luento: [luentomateriaali/testaus-junit-ja-tasot.md](luentomateriaali/testaus-junit-ja-tasot.md). Päätökset: [sprint-10-testaus.md](sprint-10-testaus.md).
+
+| Päätös | Toteutus |
+| --- | --- |
+| Työkalut | Jo `pom.xml`-tiedostossa. Uutta JUnit-riippuvuutta ei lisätä |
+| Yksikkö | `LippuService` ilman Springiä, Mockito-vale repositoriolle |
+| Integraatio | Olemassa olevat `@SpringBootTest` + `MockMvc` -testit |
+| E2E | `RANDOM_PORT` ja `RestTestClient`. Selainajuria ei lisätä |
+| Myyntisivu | MVP `client/myynti.html`, sopimus [api/sales.md](api/sales.md) |
