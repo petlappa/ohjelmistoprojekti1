@@ -2,7 +2,7 @@
 
 Päivitetty **2026-10-30**. Viikko 10, sprintti 10. Tausta: [viikko-10-testaus.md](viikko-10-testaus.md).
 
-Testaus ei ole yhden ihmisen tehtävä. Sitä ei aina näe työjonossa, mutta se kuuluu jokaiselle muutokselle. Tuoteomistaja kysyy, onko palvelinpuolta testattu ja miten. Tässä repossa on jo integraatiotestejä, ja GitHub Actions ajaa ne haarassa `main` sekä pull requesteissa. Tällä viikolla tasot nimetään, puuttuva yksikkötesti ja palvelimen päästä päähän -testi kirjoitetaan, ja lipunmyynnistä tehdään pieni erillinen sivu samaan tapaan kuin lipuntarkastuksesta.
+Testaus ei ole yhden ihmisen tehtävä. Sitä ei aina näe työjonossa, mutta se kuuluu jokaiselle muutokselle. Tuoteomistaja kysyy, onko palvelinpuolta testattu ja miten. Tässä repossa on jo integraatiotestejä, ja GitHub Actions ajaa ne haarassa `main` sekä pull requesteissa. Tällä viikolla tasot nimetään. Yksikkötestit ovat `LippuServiceTest` ja `MyyntiServiceTest`. Palvelimen päästä päähän -testit ovat `LippuE2ETest` ja `MyyntiE2ETest`. Lipunmyynnistä on pieni erillinen sivu samaan tapaan kuin lipuntarkastuksesta.
 
 ## Lähteet
 
@@ -19,11 +19,11 @@ Moodlen tiedostot *Johdanto testaukseen*, *Testitapausten suunnittelu* ja *Yksik
 | Kohde | Mitä tarkistetaan | Miten |
 | --- | --- | --- |
 | `LippuService` | Tyhjä koodi on 400, tuntematon koodi tai id on 404, jo käytetty lippu on 409, muuten `kaytetty` on `true` | Yksikkötesti. Tietokanta on vale (mock). |
-| `MyyntiService` | Kapasiteetin ylitys on 409, vieraan tapahtuman lipputyyppi on 400 | Yksikkötesti samalla tavalla, tai jo oleva integraatiotesti. |
+| `MyyntiService` | Tuntematon tapahtuma tai myyjä on 400, vieraan tapahtuman lipputyyppi on 400, kapasiteetin ylitys on 409 | Yksikkötesti `MyyntiServiceTest`. Sama polku on myös integraatiotestissä. |
 | Kontrolleri | Polku, JSON ja statuskoodi, kun palvelu on vaihdettu valheeseen | `@WebMvcTest`. Luokka `TapahtumaControllerTest` on tämä kapea viipale. |
 | Tietokanta | `findByKoodi` ja tallennus | `@DataJpaTest`. Luokka `TicketGuruRepositoryTests`. |
 | Rajapinta kokonaisuutena | HTTP Basic, roolit, palvelu ja H2 yhdessä | `@SpringBootTest` ja `MockMvc`. Luokat `LippuApiIntegrationTest` ja `MyyntiApiIntegrationTest`. |
-| Sama polku kuin Postman | Oikea upotettu palvelin ja HTTP-kutsu | `webEnvironment = RANDOM_PORT` ja `RestTestClient`. Tätä luokkaa ei vielä ole. |
+| Sama polku kuin Postman | Oikea upotettu palvelin ja HTTP-kutsu | `webEnvironment = RANDOM_PORT` ja `RestTestClient`. Luokat `LippuE2ETest` ja `MyyntiE2ETest`. |
 | Selain | Lomake, `fetch` ja virheilmoitus | Käsin sivu `client/index.html`. Automaattista selaintestiä ei lisätä tällä viikolla. |
 
 ## Työkalut ovat jo classpathilla
@@ -56,9 +56,9 @@ Maven käynnistää JUnitin. JUnit katsoo testiluokan annotaatiosta, mitä muuta
 
 | Testi | Komento | Mitä ajo käynnistää |
 | --- | --- | --- |
-| Yksikkö, `LippuServiceTest` | `./mvnw -Dtest=LippuServiceTest test` | Vain sen luokan. Repositorio on Mockito-vale. Ei Tomcatia, ei tietokantaa, ei Springin kontekstia. |
+| Yksikkö, `LippuServiceTest` ja `MyyntiServiceTest` | `./mvnw -Dtest=LippuServiceTest,MyyntiServiceTest test` | Vain nämä luokat. Repositorio on Mockito-vale. Ei Tomcatia, ei tietokantaa, ei Springin kontekstia. |
 | Integraatio, `LippuApiIntegrationTest` | `./mvnw -Dtest=LippuApiIntegrationTest test` | Springin kontekstin ja H2-tietokannan. Kutsu menee `MockMvc`-oliolla saman prosessin sisällä. Porttia ei avata. |
-| E2E, `LippuE2ETest` | `./mvnw -Dtest=LippuE2ETest test` | Upotetun palvelimen satunnaiseen porttiin. `RestTestClient` lähettää siihen HTTP-kutsun. |
+| E2E, `LippuE2ETest` ja `MyyntiE2ETest` | `./mvnw -Dtest=LippuE2ETest,MyyntiE2ETest test` | Upotetun palvelimen satunnaiseen porttiin. `RestTestClient` lähettää siihen HTTP-kutsun. |
 
 Yksikkötestissä Spring Bootia ei siis käynnistetä. Integraatio- ja E2E-testissä Mavenin ajo käynnistää Springin testin sisällä. Selainta tai valmista `localhost:8080`-palvelinta ei tarvita.
 

@@ -179,7 +179,7 @@ Toteutus: [sprint-9-cors-ja-lipuntarkastus.md](sprint-9-cors-ja-lipuntarkastus.m
 
 ## Sprint 10 — testaus ja lipunmyynti
 
-Luento: [luentomateriaali/testaus-junit-ja-tasot.md](luentomateriaali/testaus-junit-ja-tasot.md). Päätökset: [sprint-10-testaus.md](sprint-10-testaus.md).
+Luento: [luentomateriaali/testaus-junit-ja-tasot.md](luentomateriaali/testaus-junit-ja-tasot.md). Päätökset: [sprint-10-testaus.md](sprint-10-testaus.md). Myyntitapahtuman testit, käsinkäyttö ja kokeellinen testaus: [sprint-10-myyntitapahtuman-testit.md](sprint-10-myyntitapahtuman-testit.md).
 
 | Päätös | Toteutus |
 | --- | --- |
