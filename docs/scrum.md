@@ -184,7 +184,7 @@ Luento: [luentomateriaali/testaus-junit-ja-tasot.md](luentomateriaali/testaus-ju
 | Päätös | Toteutus |
 | --- | --- |
 | Työkalut | Jo `pom.xml`-tiedostossa. Uutta JUnit-riippuvuutta ei lisätä |
-| Yksikkö | `LippuService` ilman Springiä, Mockito-vale repositoriolle |
+| Yksikkö | `LippuService` ilman käynnissä olevaa Bootia. Repositorio on Mockito-vale. Maven ajaa JUnitin |
 | Integraatio | Olemassa olevat `@SpringBootTest` + `MockMvc` -testit |
 | E2E | `RANDOM_PORT` ja `RestTestClient`. Selainajuria ei lisätä |
-| Myyntisivu | MVP `client/myynti.html`, sopimus [api/sales.md](api/sales.md) |
+| Myyntisivu | MVP [../client/myynti.html](../client/myynti.html), sopimus [api/sales.md](api/sales.md) |

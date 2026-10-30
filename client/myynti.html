@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lipunmyynti</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 36rem;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.4;
+    }
+    label { display: block; margin-top: 0.75rem; }
+    input, select { width: 100%; box-sizing: border-box; margin-top: 0.25rem; }
+    button { margin-top: 1rem; margin-right: 0.5rem; }
+    #viesti {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      white-space: pre-line;
+    }
+    #viesti.ok { background: #e7f6e7; }
+    #viesti.virhe { background: #fde8e8; }
+  </style>
+</head>
+<body>
+  <h1>Lipunmyynti</h1>
+  <p>Erillinen sivu. Se kutsuu TicketGurun rajapintaa, eikä kuulu Spring Bootin <code>static</code>-kansioon. Avaa tämä osoitteesta <code>http://localhost:5500/myynti.html</code>, älä levyltä. Lipuntarkastus on sivulla <a href="index.html">index.html</a>.</p>
+
+  <label>Rajapinnan osoite
+    <input id="osoite" value="http://localhost:8080">
+  </label>
+  <label>Tunnus
+    <input id="tunnus" value="myyja" autocomplete="username">
+  </label>
+  <label>Salasana
+    <input id="salasana" type="password" value="salasana" autocomplete="current-password">
+  </label>
+  <label>Myyjän id
+    <input id="myyjaId" type="number" value="1">
+  </label>
+  <label>Tapahtuma
+    <select id="tapahtuma" onchange="haeLipputyypit()"></select>
+  </label>
+  <label>Lipputyyppi
+    <select id="lipputyyppi"></select>
+  </label>
+  <label>Kappalemäärä
+    <input id="kpl" type="number" min="1" value="1">
+  </label>
+  <button type="button" onclick="haeTapahtumat()">Hae tapahtumat</button>
+  <button type="button" onclick="myy()">Myy</button>
+  <div id="viesti" role="status" hidden></div>
+
+  <script>
+    function authHeader() {
+      const tunnus = document.getElementById("tunnus").value;
+      const salasana = document.getElementById("salasana").value;
+      return "Basic " + btoa(tunnus + ":" + salasana);
+    }
+
+    function rajapinta() {
+      return document.getElementById("osoite").value.replace(/\/$/, "");
+    }
+
+    function nayta(ok, teksti) {
+      const el = document.getElementById("viesti");
+      el.hidden = false;
+      el.className = ok ? "ok" : "virhe";
+      el.textContent = teksti;
+    }
+
+    function palvelimenTeksti(data) {
+      if (!data || !Array.isArray(data.messages) || data.messages.length === 0) {
+        return "";
+      }
+      return "\n" + data.messages.join("\n");
+    }
+
+    function viestiStatuksesta(status, data) {
+      const lisa = palvelimenTeksti(data);
+      switch (status) {
+        case 400:
+          return "400 — Pyyntö on kelvoton. Tarkista tapahtuma, myyjä, lipputyyppi ja kappalemäärä." + lisa;
+        case 401:
+          return "401 — Tunnus tai salasana on väärä.";
+        case 403:
+          return "403 — Tunnuksella ei ole oikeutta myydä. Myynti onnistuu tunnuksella myyja.";
+        case 404:
+          return "404 — Tapahtumaa tai lipputyyppiä ei löydy.";
+        case 409:
+          return "409 — Lippuja ei ole enää jäljellä tähän tapahtumaan.";
+        default:
+          return status + " — Pyyntö epäonnistui." + lisa;
+      }
+    }
+
+    async function lue(response) {
+      const text = await response.text();
+      if (!text) {
+        return null;
+      }
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function kutsu(url, options) {
+      try {
+        return await fetch(url, options);
+      } catch (e) {
+        nayta(false, "Yhteys epäonnistui. Sivu on ehkä auki levyltä, backend ei ole käynnissä, tai CORS esti kutsun.");
+        return null;
+      }
+    }
+
+    function taytaValikko(select, rivit, teksti) {
+      select.replaceChildren();
+      rivit.forEach(function (rivi) {
+        const option = document.createElement("option");
+        option.value = rivi.id;
+        option.textContent = teksti(rivi);
+        select.appendChild(option);
+      });
+    }
+
+    async function haeTapahtumat() {
+      const response = await kutsu(rajapinta() + "/api/events", {
+        headers: { Authorization: authHeader() }
+      });
+      if (!response) {
+        return;
+      }
+      const data = await lue(response);
+      if (response.status !== 200 || !Array.isArray(data)) {
+        nayta(false, viestiStatuksesta(response.status, data));
+        return;
+      }
+      if (data.length === 0) {
+        nayta(false, "Tapahtumia ei ole.");
+        return;
+      }
+      taytaValikko(document.getElementById("tapahtuma"), data, function (tapahtuma) {
+        return tapahtuma.nimi + " (" + tapahtuma.kaupunki + ")";
+      });
+      nayta(true, "200 — Tapahtumia " + data.length + ". Valitse lipputyyppi ja myy.");
+      await haeLipputyypit();
+    }
+
+    async function haeLipputyypit() {
+      const tapahtumaId = document.getElementById("tapahtuma").value;
+      if (!tapahtumaId) {
+        return;
+      }
+      const response = await kutsu(
+        rajapinta() + "/api/events/" + encodeURIComponent(tapahtumaId) + "/ticket-types",
+        { headers: { Authorization: authHeader() } }
+      );
+      if (!response) {
+        return;
+      }
+      const data = await lue(response);
+      if (response.status !== 200 || !Array.isArray(data)) {
+        nayta(false, viestiStatuksesta(response.status, data));
+        return;
+      }
+      if (data.length === 0) {
+        document.getElementById("lipputyyppi").replaceChildren();
+        nayta(false, "Tällä tapahtumalla ei ole lipputyyppejä.");
+        return;
+      }
+      taytaValikko(document.getElementById("lipputyyppi"), data, function (tyyppi) {
+        return tyyppi.kuvaus + " " + tyyppi.hinta;
+      });
+    }
+
+    function naytaKuitti(myynti) {
+      const koodit = (myynti.liput || []).map(function (lippu) {
+        return lippu.koodi + " (" + lippu.lipputyypinKuvaus + ")";
+      }).join("\n");
+      nayta(true, "201 — Liput myyty."
+        + "\nTapahtuma: " + myynti.tapahtumanNimi
+        + "\nMyyjä: " + myynti.myyjanNimi
+        + "\nSumma: " + myynti.summa
+        + "\nLiput:\n" + koodit);
+    }
+
+    async function myy() {
+      const tapahtumaId = Number(document.getElementById("tapahtuma").value);
+      const lipputyyppiId = Number(document.getElementById("lipputyyppi").value);
+      const myyjaId = Number(document.getElementById("myyjaId").value);
+      const kpl = Number(document.getElementById("kpl").value);
+      if (!tapahtumaId || !lipputyyppiId) {
+        nayta(false, "Hae tapahtumat ensin ja valitse lipputyyppi.");
+        return;
+      }
+      const response = await kutsu(rajapinta() + "/api/sales", {
+        method: "POST",
+        headers: {
+          Authorization: authHeader(),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          tapahtumaId: tapahtumaId,
+          myyjaId: myyjaId,
+          rivit: [{ lipputyyppiId: lipputyyppiId, kpl: kpl }]
+        })
+      });
+      if (!response) {
+        return;
+      }
+      const data = await lue(response);
+      if (response.status === 201 && data) {
+        naytaKuitti(data);
+        return;
+      }
+      nayta(false, viestiStatuksesta(response.status, data));
+    }
+  </script>
+</body>
+</html>
