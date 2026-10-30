@@ -41,18 +41,34 @@ Spring Boot 4 jakoi vanhan `spring-boot-starter-test`-paketin näihin. Toista JU
 
 Testiluokka tulee kansioon `backend/src/test/java/`. Paketti peilaa tuotantokoodia. Maven ajaa luokat, joiden nimi päättyy `Test`.
 
-Ajo kansiosta `backend`:
+## Miten testit ajetaan
+
+Kaikki testit ajetaan Mavenilla kansiosta `backend`. Komentoa `spring-boot:run` ei käytetä. Sovellusta ei käynnistetä erikseen terminaaliin.
 
 ```bash
 ./mvnw test
-./mvnw -Dtest=LippuApiIntegrationTest test
+./mvnw -Dtest=LippuServiceTest test
 ```
 
-CI on tiedostossa `.github/workflows/backend-ci.yml`. Se ajaa saman `./mvnw -B test` -komennon.
+Ensimmäinen komento ajaa kaikki testit. Toinen ajaa yhden luokan. Nimi vaihdetaan sen luokan mukaan, jota ajetaan. CI-tiedosto `.github/workflows/backend-ci.yml` ajaa `./mvnw -B test`.
+
+Maven käynnistää JUnitin. JUnit katsoo testiluokan annotaatiosta, mitä muuta samaan ajoon nousee:
+
+| Testi | Komento | Mitä ajo käynnistää |
+| --- | --- | --- |
+| Yksikkö, `LippuServiceTest` | `./mvnw -Dtest=LippuServiceTest test` | Vain sen luokan. Repositorio on Mockito-vale. Ei Tomcatia, ei tietokantaa, ei Springin kontekstia. |
+| Integraatio, `LippuApiIntegrationTest` | `./mvnw -Dtest=LippuApiIntegrationTest test` | Springin kontekstin ja H2-tietokannan. Kutsu menee `MockMvc`-oliolla saman prosessin sisällä. Porttia ei avata. |
+| E2E, `LippuE2ETest` | `./mvnw -Dtest=LippuE2ETest test` | Upotetun palvelimen satunnaiseen porttiin. `RestTestClient` lähettää siihen HTTP-kutsun. |
+
+Yksikkötestissä Spring Bootia ei siis käynnistetä. Integraatio- ja E2E-testissä Mavenin ajo käynnistää Springin testin sisällä. Selainta tai valmista `localhost:8080`-palvelinta ei tarvita.
 
 ## Yksikkötesti
 
-Yksikkötesti (unit test) kutsuu yhtä luokkaa. Springiä ei käynnistetä, H2 ei nouse, eikä HTTP-kutsuja lähde. `LippuRepository` on Mockito-vale, koska tietokanta ei kuulu tähän testiin.
+Yksikkötesti (unit test) kutsuu yhtä luokkaa, tässä `LippuService`. Spring Bootia ei käynnistetä: ei Tomcatia, ei tietokantaa eikä sovelluksen kontekstia. Komentoa `spring-boot:run` ei tarvita.
+
+`LippuRepository` on Mockiton tekemä vale. Testi antaa sille sen lipun, jonka metodi saa takaisin. Oikeaa tietokantaa ei ole, koska se ei kuulu tähän testiin.
+
+Testi ajetaan samalla Maven-komennolla kuin muutkin testit. Komento on luvussa [Miten testit ajetaan](#miten-testit-ajetaan): `./mvnw -Dtest=LippuServiceTest test`. Maven lataa JUnitin ja Mockiton. Spring Bootia ei käynnistetä.
 
 Tiedosto `backend/src/test/java/fi/haagahelia/ticketguru/service/LippuServiceTest.java`:
 
@@ -168,7 +184,7 @@ Tämä on E2E-testi, koska palvelin kuuntelee porttia ja asiakas on HTTP-kirjast
 
 Asiakas pyytää lipunmyynnistä samanlaisen pienen sivun kuin lipuntarkastuksesta. Taso on MVP: myynti onnistuu, ylimääräistä ei rakenneta.
 
-Sivu on uusi tiedosto `client/myynti.html`. Sitä ei kopioida kansioon `static/`. Avaus on sama kuin sprintissä 9: Python, Node tai Live Server, ja backend erikseen. Sopimus on [../api/sales.md](../api/sales.md).
+Tässä ratkaisussa sivu on `client/myynti.html`. Sitä ei kopioida kansioon `static/`. Avaus on sama kuin sprintissä 9: Python, Node tai Live Server, ja backend erikseen. Sopimus on [../api/sales.md](../api/sales.md).
 
 Sivu:
 
